@@ -1,0 +1,13 @@
+# Default configuration
+mtn:
+  base: "https://sandbox.momodeveloper.mtn.com/collection"
+  subscription_key: "your_subscription_key"
+  target_environment: "sandbox"
+  x_reference_id: "your_reference_id"
+  api_key: "your_api_key"
+db:
+  host: localhost
+  port: 5433
+  username: postgres
+  password: postgres
+  database: gateway

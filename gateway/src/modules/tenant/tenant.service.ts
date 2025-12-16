@@ -1,0 +1,63 @@
+import { Injectable, BadRequestException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Tenant } from './tenant.entity';
+import { UsersService } from '../user/users.service';
+import { RoleType } from 'src/common/enums/role-type.enum';
+import { CreateTenantWithAdminDto } from './dto/create-tenant-with-admin.dto';
+import { User } from '../user/entities/user.entity';
+
+@Injectable()
+export class TenantService {
+  constructor(
+    @InjectRepository(Tenant)
+    private readonly tenantRepository: Repository<Tenant>,
+    private readonly usersService: UsersService,
+  ) {}
+
+  async createTenantWithAdmin(dto: CreateTenantWithAdminDto): Promise<{ tenant: Tenant; admin: User }> {
+    // Check if tenant name exists
+    const existing = await this.tenantRepository.findOne({ where: { name: dto.name } });
+    if (existing) throw new BadRequestException('Tenant name already exists');
+    // Create tenant
+    const slug = dto.name.toLowerCase().replace(/\s+/g, '-');
+    const tenant = this.tenantRepository.create({
+      name: dto.name,
+      slug,
+      description: dto.description,
+      isActive: true,
+    });
+    const savedTenant = await this.tenantRepository.save(tenant);
+    // Create admin user for tenant
+    const admin = await this.usersService.createUser({
+      username: dto.adminUsername,
+      password: dto.adminPassword,
+      email: dto.adminEmail,
+      role: RoleType.ADMIN,
+      tenantId: savedTenant.id,
+    });
+    return { tenant: savedTenant, admin };
+  }
+
+    async findAll(): Promise<Tenant[]> {
+    return this.tenantRepository.find();
+  }
+
+  async findOne(id: string): Promise<Tenant | null> {
+    return this.tenantRepository.findOne({ where: { id } });
+  }
+
+  async update(id: string, data: Partial<Tenant>): Promise<Tenant | null> {
+    await this.tenantRepository.update(id, data);
+    return this.findOne(id);
+  }
+
+  async deactivate(id: string): Promise<Tenant | null> {
+    await this.tenantRepository.update(id, { isActive: false });
+    return this.findOne(id);
+  }
+
+  async remove(id: string): Promise<void> {
+    await this.tenantRepository.delete(id);
+  }
+}

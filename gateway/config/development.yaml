@@ -1,0 +1,14 @@
+mtn:
+  base: "https://sandbox.momodeveloper.mtn.com/collection"
+  subscription_key: "4beb140fa35f417889e4799c5199646c"
+  target_environment: "sandbox"
+  x_reference_id: "2a9e64b4-42a3-4c0e-bf78-6b7a7d6f9e3b"
+  api_key: "your_api_key"
+db:
+  host: localhost
+  port: 5433
+  username: postgres
+  password: postgres
+  database: gateway
+olympus:
+  link: "https://api.olympustech.example.com/mtn/details?"
