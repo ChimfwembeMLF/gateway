@@ -1,0 +1,12 @@
+mtn:
+  base: "https://sandbox.momodeveloper.mtn.com/collection"
+  subscription_key: "your_subscription_key"
+  target_environment: "production"
+  x_reference_id: "your_reference_id"
+  api_key: "your_api_key"
+db:
+  host: prod-db
+  port: 5432
+  username: produser
+  password: prodpass
+  database: gateway_prod
