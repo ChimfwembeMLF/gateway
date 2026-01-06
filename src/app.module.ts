@@ -7,6 +7,7 @@ import { loadYamlConfig } from './config/config.loader';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { TransactionModule } from './modules/payments/transaction.module';
 import { typeOrmConfigFactory } from './common/database/database.config';
 import { TenantModule } from './modules/tenant/tenant.module';
 
@@ -25,6 +26,7 @@ import { TenantModule } from './modules/tenant/tenant.module';
     AuthModule,
     UserModule,
     PaymentsModule,
+    TransactionModule,
     TenantModule,
   ],
 })

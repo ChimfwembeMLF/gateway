@@ -10,6 +10,15 @@ import { Payment } from './entities/payment.entity';
 @UseGuards(ApiKeyGuard)
 @Controller('api/v1/payments')
 export class PaymentsController {
+    @Get()
+    @ApiResponse({ status: 200, type: [Payment] })
+    @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+    @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
+    async findAll(@Req() req: Request): Promise<Payment[]> {
+      const tenantId = (req.user as any)?.tenantId;
+      if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
+      return this.paymentsService.findAllByTenant(tenantId);
+    }
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Post()

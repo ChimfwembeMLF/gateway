@@ -20,7 +20,7 @@ export class CreatePaymentDto {
   @IsNotEmpty()
   externalId: string;
 
-  @ApiProperty({ example: '256771234567' })
+  @ApiProperty({ example: '260765725317' })
   @IsString()
   @IsNotEmpty()
   payer: string;

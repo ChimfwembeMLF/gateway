@@ -20,4 +20,13 @@ export class UpdateTenantDto {
   @ApiProperty({ required: false })
   @IsOptional()
   isActive?: boolean;
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  webhook_url?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  webhook_key?: string;
 }

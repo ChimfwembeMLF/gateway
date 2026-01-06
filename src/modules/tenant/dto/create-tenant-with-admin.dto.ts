@@ -26,4 +26,13 @@ export class CreateTenantWithAdminDto {
   @IsString()
   @IsOptional()
   adminEmail?: string;
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  webhookUrl?: string;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  webhookKey?: string;
 }

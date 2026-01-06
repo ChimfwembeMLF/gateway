@@ -143,11 +143,17 @@ export class MtnService {
           },
         },
       );
-      this.logger.debug('createMtnToken response');
+      this.logger.debug('createMtnToken response', response?.data);
       return response?.data?.access_token;
     } catch (error) {
-      this.logger.error('createMtnToken error', (error as AxiosError).message);
-      throw new BadRequestException((error as AxiosError).message || 'Failed to create MTN token');
+      const axiosError = error as AxiosError;
+      this.logger.error('createMtnToken error', {
+        message: axiosError.message,
+        status: axiosError.response?.status,
+        data: axiosError.response?.data,
+        headers: axiosError.response?.headers,
+      });
+      throw new BadRequestException(axiosError.message || 'Failed to create MTN token');
     }
   }
 

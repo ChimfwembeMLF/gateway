@@ -6,6 +6,7 @@ import { join } from 'path';
 import { Tenant } from 'src/modules/tenant/entities/tenant.entity';
 import { User } from 'src/modules/user/entities/user.entity';
 import { Payment } from 'src/modules/payments/entities/payment.entity';
+import { Transaction } from 'src/modules/payments/entities/transaction.entity';
 import { UserSubscriber } from 'src/modules/user/user.subscriber';
 import { TenantSubscriber } from 'src/modules/tenant/tenant.subscriber';
 
@@ -22,7 +23,7 @@ export function typeOrmConfigFactory(
 
     // This is the important part
     // entities: [join(__dirname, '/../**/*.entity.{js,ts}')],
-    entities: [Tenant, User, Payment],
+    entities: [Tenant, User, Payment, Transaction],
     subscribers: [UserSubscriber, TenantSubscriber],
 
     migrations: [join(__dirname, '/../migrations/*.{js,ts}')],

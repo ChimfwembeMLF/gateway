@@ -34,6 +34,8 @@ export class TenantService {
     const tenant = this.tenantRepository.create({
       name: dto.name,
       description: dto.description,
+      webhookUrl: dto.webhookUrl,
+      webhookKey: dto.webhookKey,
       isActive: true,
     });
     const savedTenant = await this.tenantRepository.save(tenant);
