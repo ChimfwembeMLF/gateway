@@ -9,5 +9,9 @@ export function setupSwagger(app: INestApplication): void {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('/documentation', app, document);
+  SwaggerModule.setup('/documentation', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  });
 }

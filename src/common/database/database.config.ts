@@ -1,7 +1,17 @@
+// src/database/typeorm.config.ts
+
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
+import { join } from 'path';
+import { Tenant } from 'src/modules/tenant/entities/tenant.entity';
+import { User } from 'src/modules/user/entities/user.entity';
+import { Payment } from 'src/modules/payments/entities/payment.entity';
+import { UserSubscriber } from 'src/modules/user/user.subscriber';
+import { TenantSubscriber } from 'src/modules/tenant/tenant.subscriber';
 
-export function typeOrmConfigFactory(configService: ConfigService): TypeOrmModuleOptions {
+export function typeOrmConfigFactory(
+  configService: ConfigService,
+): TypeOrmModuleOptions {
   return {
     type: 'postgres',
     host: configService.get<string>('db.host'),
@@ -9,16 +19,15 @@ export function typeOrmConfigFactory(configService: ConfigService): TypeOrmModul
     username: configService.get<string>('db.username'),
     password: configService.get<string>('db.password'),
     database: configService.get<string>('db.database'),
-    entities: [
-      process.env.NODE_ENV === 'production'
-        ? 'dist/modules/**/*.entity.js'
-        : 'src/modules/**/*.entity.ts',
-    ],
-    synchronize: true, // Set to false in production
-    migrations: [
-      process.env.NODE_ENV === 'production'
-        ? __dirname + '/migrations/*.js'
-        : __dirname + '/migrations/*.ts',
-    ],
+
+    // This is the important part
+    // entities: [join(__dirname, '/../**/*.entity.{js,ts}')],
+    entities: [Tenant, User, Payment],
+    subscribers: [UserSubscriber, TenantSubscriber],
+
+    migrations: [join(__dirname, '/../migrations/*.{js,ts}')],
+
+    synchronize: configService.get('NODE_ENV') !== 'production',
+    logging: configService.get('NODE_ENV') !== 'production',
   };
 }

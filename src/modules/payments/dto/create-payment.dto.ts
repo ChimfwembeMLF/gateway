@@ -1,48 +1,39 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString, IsOptional } from 'class-validator';
-import { AbstractDto } from '../../../common/dtos/abstract.dto';
-
-export class CreatePaymentDto extends AbstractDto {
-  @ApiProperty({ description: 'Payment provider (e.g., mtn, airtel, zamtel)' })
-  @IsString()
+import { IsNotEmpty, IsNumber, IsEnum, IsOptional, IsString } from 'class-validator';
+import { PaymentProvider } from '../../../common/enums/provider.enum';
+export class CreatePaymentDto {
+  @ApiProperty({ enum: PaymentProvider, example: 'MTN', description: 'Payment provider (e.g., MTN, AIRTEL, ZAMTEL)' })
+  @IsEnum(PaymentProvider)
   @IsNotEmpty()
-  provider: string;
-  @ApiProperty()
+  provider: PaymentProvider;
+  @ApiProperty({ example: 100 })
   @IsNumber()
   amount: number;
 
-  @ApiProperty({ default: 'EUR' })
+  @ApiProperty({ example: 'EUR', default: 'EUR' })
   @IsString()
   @IsOptional()
   currency?: string = 'EUR';
 
-  @ApiProperty()
+  @ApiProperty({ example: 'INV-20260105-001' })
   @IsString()
   @IsNotEmpty()
   externalId: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: '256771234567' })
   @IsString()
   @IsNotEmpty()
   payer: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'Payment for invoice' })
   @IsString()
   @IsOptional()
   payerMessage?: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'Thank you' })
   @IsString()
   @IsOptional()
   payeeNote?: string;
   
-  @ApiProperty({ required: false, description: 'Bearer token for provider (if required)' })
-  @IsString()
-  @IsOptional()
-  bearerToken?: string;
-  
-  @ApiProperty({ required: false, description: 'Transaction ID for provider (if required)' })
-  @IsString()
-  @IsOptional()
-  transactionId?: string;
+  // ...existing code...
 }

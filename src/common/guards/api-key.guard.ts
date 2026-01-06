@@ -18,9 +18,14 @@ export class ApiKeyGuard implements CanActivate {
     if (!apiKey) {
       throw new UnauthorizedException('API key missing');
     }
-    const user = await this.usersService['userRepository'].findOne({ where: { apiKey } });
+    // Require tenantId in the request (e.g., from a header or query param)
+    const tenantId = request.headers['x-tenant-id'] || request.query.tenantId;
+    if (!tenantId) {
+      throw new UnauthorizedException('Tenant ID missing');
+    }
+    const user = await this.usersService['userRepository'].findOne({ where: { apiKey, tenantId } });
     if (!user) {
-      throw new UnauthorizedException('Invalid API key');
+      throw new UnauthorizedException('Invalid API key or tenant');
     }
     request.user = user;
     return true;

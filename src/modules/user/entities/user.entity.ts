@@ -4,10 +4,12 @@ import { Entity, Column } from 'typeorm';
 
 @Entity('users')
 export class User extends AbstractEntity {
-  @Column({ nullable: false })
+  // tenantId is required for tenant scoping
+  @Column()
   tenantId: string;
-  
-  @Column({ unique: true })
+
+  // username is unique per tenant (enforced in service, not DB)
+  @Column()
   username: string;
 
   @Column({ unique: true, nullable: true })
