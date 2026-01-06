@@ -1,7 +1,9 @@
 import { AbstractEntity } from 'src/common/entities/abstract.entity';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, Index } from 'typeorm';
 
 @Entity('tenants')
+@Index(['name'])
+@Index(['slug'])
 export class Tenant  extends AbstractEntity {
   @Column({ unique: true })
   name: string;

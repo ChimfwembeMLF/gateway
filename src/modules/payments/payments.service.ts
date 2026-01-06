@@ -7,7 +7,7 @@ import { CreatePaymentDto } from './dto/create-payment.dto';
 import { CollectionService } from '../mtn/collection/collection.service';
 import { MtnPartyIdType } from '../mtn/dto/mtn.enums';
 import { PaymentProvider } from '../../common/enums/provider.enum';
-import { ensureUuid } from '../../common/utils/uuid.util';
+import { UuidGeneratorService } from './external-id.service';
 
 @Injectable()
 export class PaymentsService {
@@ -18,6 +18,7 @@ export class PaymentsService {
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
     private readonly collectionService: CollectionService,
+    private readonly uuidGenerator: UuidGeneratorService,
     // Future: inject other provider services here
   ) {}
 
@@ -25,12 +26,14 @@ export class PaymentsService {
     return this.paymentRepository.find({ where: { tenantId } });
   }
   
-  async create(createPaymentDto: CreatePaymentDto & { tenantId: string }): Promise<Payment> {
+  async create(createPaymentDto: CreatePaymentDto & { tenantId: string }, user: any): Promise<Payment> {
     let providerResult: any;
-    switch (createPaymentDto.provider.toLowerCase()) {
-      case 'mtn': {
-        // Use utility to ensure valid UUID
-        const externalId = ensureUuid(createPaymentDto.externalId);
+    // Always ensure externalId is set
+    const externalId = createPaymentDto.externalId
+      ? createPaymentDto.externalId
+      : this.uuidGenerator.generate();
+    switch (createPaymentDto.provider) {
+      case PaymentProvider.MTN: {
         try {
           // Transform CreatePaymentDto to RequestToPayDto
           const requestToPayDto = {
@@ -47,6 +50,7 @@ export class PaymentsService {
           providerResult = await this.collectionService.requestToPay(
             requestToPayDto,
             createPaymentDto.tenantId,
+            user,
           );
         } catch (error) {
           // Enhanced error handling for MoMo API
@@ -115,6 +119,7 @@ export class PaymentsService {
     // Save payment with provider result (e.g., transactionId)
     const payment = this.paymentRepository.create({
       ...createPaymentDto,
+      externalId, // always set
       status: PaymentStatus.PENDING,
       momoTransactionId: providerResult?.transactionId || null,
       tenantId: createPaymentDto.tenantId,
@@ -122,7 +127,7 @@ export class PaymentsService {
     const savedPayment = await this.paymentRepository.save(payment);
 
     // Save transaction record for MTN requestToPay
-    if (createPaymentDto.provider.toLowerCase() === 'mtn') {
+    if (createPaymentDto.provider === PaymentProvider.MTN) {
       await this.transactionRepository.save({
         tenantId: createPaymentDto.tenantId,
         payment: savedPayment,

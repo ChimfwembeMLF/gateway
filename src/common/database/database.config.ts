@@ -9,6 +9,8 @@ import { Payment } from 'src/modules/payments/entities/payment.entity';
 import { Transaction } from 'src/modules/payments/entities/transaction.entity';
 import { UserSubscriber } from 'src/modules/user/user.subscriber';
 import { TenantSubscriber } from 'src/modules/tenant/tenant.subscriber';
+import { Audit } from 'src/modules/audit/entities/audit.entity';
+import { AuditSubscriber } from 'src/modules/audit/audit.subscriber';
 
 export function typeOrmConfigFactory(
   configService: ConfigService,
@@ -23,8 +25,8 @@ export function typeOrmConfigFactory(
 
     // This is the important part
     // entities: [join(__dirname, '/../**/*.entity.{js,ts}')],
-    entities: [Tenant, User, Payment, Transaction],
-    subscribers: [UserSubscriber, TenantSubscriber],
+    entities: [Tenant, User, Payment, Transaction, Audit],
+    subscribers: [UserSubscriber, TenantSubscriber, AuditSubscriber],
 
     migrations: [join(__dirname, '/../migrations/*.{js,ts}')],
 

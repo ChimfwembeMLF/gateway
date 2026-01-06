@@ -4,6 +4,7 @@ import { Payment } from './entities/payment.entity';
 import { Transaction } from './entities/transaction.entity';
 import { PaymentsController } from './payments.controller';
 import { PaymentsService } from './payments.service';
+import { UuidGeneratorService } from './external-id.service';
 import { MtnModule } from '../mtn/mtn.module';
 import { CollectionService } from '../mtn/collection/collection.service';
 import { UserModule } from '../user/user.module';
@@ -11,7 +12,7 @@ import { UserModule } from '../user/user.module';
 @Module({
     imports: [TypeOrmModule.forFeature([Payment, Transaction]), MtnModule,UserModule],
     controllers: [PaymentsController],
-    providers: [PaymentsService, CollectionService],
-    exports: [PaymentsService],
+    providers: [PaymentsService, CollectionService, UuidGeneratorService],
+    exports: [PaymentsService, UuidGeneratorService],
 })
 export class PaymentsModule {}

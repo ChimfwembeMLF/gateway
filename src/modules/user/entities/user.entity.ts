@@ -1,8 +1,11 @@
 import { AbstractEntity } from 'src/common/entities/abstract.entity';
 import { RoleType } from 'src/common/enums/role-type.enum';
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, Index } from 'typeorm';
 
 @Entity('users')
+@Index(['tenantId'])
+@Index(['username'])
+@Index(['email'])
 export class User extends AbstractEntity {
   // tenantId is required for tenant scoping
   @Column()

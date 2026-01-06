@@ -1,7 +1,11 @@
-import { Injectable, BadRequestException, Logger } from '@nestjs/common';
+import { Injectable, BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosError } from 'axios';
 import { RequestToPayDto } from '../dto/mtn.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, LessThan } from 'typeorm';
+import { Payment, PaymentStatus } from '../../payments/entities/payment.entity';
+import { Transaction, TransactionType } from '../../payments/entities/transaction.entity';
 import { MtnService } from '../mtn.service';
 
 @Injectable()
@@ -10,9 +14,15 @@ export class CollectionService {
   constructor(
     private readonly configService: ConfigService,
     private readonly mtnService: MtnService,
+    @InjectRepository(Payment)
+    private readonly paymentRepository: Repository<Payment>,
+    @InjectRepository(Transaction)
+    private readonly transactionRepository: Repository<Transaction>,
   ) {}
 
-  async requestToPay(dto: RequestToPayDto, tenantId: string): Promise<any> {
+  // Only super admins can access this method (enforce in controller with @Roles(RoleType.SUPER_ADMIN))
+  async requestToPay(dto: RequestToPayDto, tenantId: string, user: any): Promise<any> {
+    // RBAC: Only super admins should be allowed (enforce in controller)
     const mtn = this.configService.get<any>('mtn');
     const url = `${mtn.base}/collection/v1_0/requesttopay`;
     try {
@@ -26,24 +36,27 @@ export class CollectionService {
           Authorization: `Bearer ${bearerToken}`,
         },
       });
+      // Log transaction only if payment exists
+      const payment = await this.paymentRepository.findOne({ where: { externalId: transactionId, tenantId } });
+      if (payment) {
+        await this.transactionRepository.save({
+          tenantId,
+          payment,
+          type: TransactionType.REQUEST_TO_PAY,
+          momoReferenceId: transactionId,
+          response: JSON.stringify(dto),
+          status: PaymentStatus.PENDING,
+        });
+      }
       return { success: true, transactionId };
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        this.logger.error('requestToPay error', {
-          message: error.message,
-          status: error.response?.status,
-          data: error.response?.data,
-          headers: error.response?.headers,
-          config: error.config,
-        });
-      } else {
-        this.logger.error('requestToPay error', error);
-      }
+      this.logger.error('requestToPay error', error);
       throw new BadRequestException('Failed to request to pay');
     }
   }
 
-  async getRequestToPayStatus(transactionId: string, tenantId: string): Promise<any> {
+  // Only super admins can access this method (enforce in controller with @Roles(RoleType.SUPER_ADMIN))
+  async getRequestToPayStatus(transactionId: string, tenantId: string, user: any): Promise<any> {
     const mtn = this.configService.get<any>('mtn');
     const url = `${mtn.base}/collection/v1_0/requesttopay/${transactionId}`;
     try {
@@ -55,10 +68,140 @@ export class CollectionService {
           Authorization: `Bearer ${bearerToken}`,
         },
       });
+      // Update payment and transaction status
+      const payment = await this.paymentRepository.findOne({ where: { externalId: transactionId, tenantId } });
+      if (payment) {
+        payment.status = response.data.status;
+        await this.paymentRepository.save(payment);
+        await this.transactionRepository.save({
+          tenantId,
+          payment,
+          type: TransactionType.STATUS_QUERY,
+          momoReferenceId: transactionId,
+          response: JSON.stringify(response.data),
+          status: response.data.status,
+        });
+      }
       return response.data;
     } catch (error) {
-      this.logger.error('getRequestToPayStatus error', (error as AxiosError).message);
+      this.logger.error('getRequestToPayStatus error', error);
       throw new BadRequestException('Failed to get request to pay status');
     }
+  }
+
+   // List all collection requests (stub)
+  // Only super admins can access this method (enforce in controller with @Roles(RoleType.SUPER_ADMIN))
+  async listRequests(query: any, tenantId: string, user: any) {
+    // Basic filter: status, payer, date range
+    const where: any = { tenantId };
+    if (query.status) where.status = query.status;
+    if (query.payer) where.payer = query.payer;
+    // Optionally add date range filtering
+    if (query.from || query.to) {
+      where.createdAt = {};
+      if (query.from) where.createdAt['$gte'] = new Date(query.from);
+      if (query.to) where.createdAt['$lte'] = new Date(query.to);
+    }
+    return this.paymentRepository.find({ where, order: { createdAt: 'DESC' } });
+  }
+
+  // Get details of a specific collection request by externalId (stub)
+  // Only super admins can access this method (enforce in controller with @Roles(RoleType.SUPER_ADMIN))
+  async getRequestByExternalId(externalId: string, tenantId: string, user: any) {
+    const payment = await this.paymentRepository.findOne({ where: { externalId, tenantId } });
+    if (!payment) throw new NotFoundException('Collection request not found');
+    return payment;
+  }
+
+  // Cancel a pending collection request (stub)
+  // Only super admins can access this method (enforce in controller with @Roles(RoleType.SUPER_ADMIN))
+  async cancelRequest(externalId: string, tenantId: string, user: any) {
+    const payment = await this.paymentRepository.findOne({ where: { externalId, tenantId } });
+    if (!payment) throw new NotFoundException('Collection request not found');
+    if (payment.status !== PaymentStatus.PENDING) {
+      throw new BadRequestException('Only pending requests can be cancelled');
+    }
+    payment.status = PaymentStatus.FAILED;
+    await this.paymentRepository.save(payment);
+    return { success: true };
+  }
+
+  // Handle webhook/callback from MTN (stub)
+  // Webhook endpoint, no RBAC (should validate signature if possible)
+  async handleWebhook(body: any) {
+    // Example: body should contain externalId and new status
+    const { externalId, status } = body;
+    if (!externalId || !status) return;
+    const payment = await this.paymentRepository.findOne({ where: { externalId } });
+    if (payment) {
+      payment.status = status;
+      await this.paymentRepository.save(payment);
+      await this.transactionRepository.save({
+        tenantId: payment.tenantId,
+        payment,
+        type: TransactionType.STATUS_QUERY,
+        momoReferenceId: externalId,
+        response: JSON.stringify(body),
+        status,
+      });
+    }
+    return;
+  }
+
+  // Poll pending collection requests (stub)
+  // Only super admins can access this method (enforce in controller with @Roles(RoleType.SUPER_ADMIN))
+  async pollPendingCollections(tenantId: string, user: any) {
+    // Optionally filter by tenantId if needed
+    // Find all pending payments and refresh their status from provider
+    const pending = await this.paymentRepository.find({ where: { status: PaymentStatus.PENDING, tenantId } });
+    for (const payment of pending) {
+      try {
+        await this.getRequestToPayStatus(payment.externalId, payment.tenantId, user);
+      } catch (err) {
+        this.logger.warn(`Failed to poll status for payment ${payment.externalId}: ${err}`);
+      }
+    }
+    return;
+  }
+
+  // Reconcile collections (stub)
+  // Only super admins can access this method (enforce in controller with @Roles(RoleType.SUPER_ADMIN))
+  async reconcileCollections(tenantId: string, user: any) {
+    // Optionally filter by tenantId if needed
+    // Fetch all payments for reconciliation
+    const payments = await this.paymentRepository.find({ where: { tenantId } });
+    let updated = 0;
+    for (const payment of payments) {
+      try {
+        const providerStatus = await this.getRequestToPayStatus(payment.externalId, payment.tenantId, user);
+        if (providerStatus.status && providerStatus.status !== payment.status) {
+          payment.status = providerStatus.status;
+          await this.paymentRepository.save(payment);
+          await this.transactionRepository.save({
+            tenantId: payment.tenantId,
+            payment,
+            type: TransactionType.STATUS_QUERY,
+            momoReferenceId: payment.externalId,
+            response: JSON.stringify(providerStatus),
+            status: providerStatus.status,
+          });
+          updated++;
+        }
+      } catch (err) {
+        this.logger.warn(`Reconciliation failed for payment ${payment.externalId}: ${err}`);
+      }
+    }
+    this.logger.log(`Reconciliation complete. Updated ${updated} payment(s).`);
+    return { updated };
+  }
+
+  // Cleanup old collections (stub)
+  // Only super admins can access this method (enforce in controller with @Roles(RoleType.SUPER_ADMIN))
+  async cleanupOldCollections(tenantId: string, user: any) {
+    // Delete payments older than 1 year (example)
+    const cutoff = new Date();
+    cutoff.setFullYear(cutoff.getFullYear() - 1);
+    await this.paymentRepository.delete({ createdAt: LessThan(cutoff), tenantId });
+    return;
   }
 }

@@ -28,7 +28,7 @@ export class PaymentsController {
   async create(@Body() createPaymentDto: CreatePaymentDto, @Req() req: Request): Promise<Payment> {
     const tenantId = (req.user as any)?.tenantId;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
-    return this.paymentsService.create({ ...createPaymentDto, tenantId });
+    return this.paymentsService.create({ ...createPaymentDto, tenantId }, req.user);
   }
 
   @Get(':id')

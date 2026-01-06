@@ -1,4 +1,4 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, Index } from 'typeorm';
 import { AbstractEntity } from '../../../common/entities/abstract.entity';
 
 export enum PaymentStatus {
@@ -8,6 +8,8 @@ export enum PaymentStatus {
 }
 
 @Entity('payments')
+@Index(['tenantId'])
+@Index(['externalId'])
 export class Payment extends AbstractEntity {
   @Column({ nullable: false })
   tenantId: string;
