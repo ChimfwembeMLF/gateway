@@ -21,7 +21,8 @@ export class MtnService {
   async createApiUser(tenantId: string): Promise<{ success: boolean; referenceId: string }> {
     // Optionally use tenantId for tenant-specific config or logging
     const mtn = this.configService.get<any>('mtn');
-    const subscriptionKey = mtn.subscription_key;
+    const mtnCollection = this.configService.get<any>('mtn.collection');
+    const subscriptionKey = mtnCollection.subscription_key;
     const referenceId = this.generateReferenceId();
     const url = `${mtn.base}/v1_0/apiuser`;
     try {
@@ -45,7 +46,8 @@ export class MtnService {
   async createApiKey(referenceId: string, tenantId: string): Promise<{ apiKey: string }> {
     // Optionally use tenantId for tenant-specific config or logging
     const mtn = this.configService.get<any>('mtn');
-    const subscriptionKey = mtn.subscription_key;
+    const mtnCollection = this.configService.get<any>('mtn.collection');
+    const subscriptionKey = mtnCollection.subscription_key;
     const url = `${mtn.base}/v1_0/apiuser/${referenceId}/apikey`;
     try {
       const response = await axios.post(url, null, {
@@ -63,8 +65,9 @@ export class MtnService {
   async createBearerToken(referenceId: string, apiKey: string, tenantId: string): Promise<string> {
     // Optionally use tenantId for tenant-specific config or logging
     const mtn = this.configService.get<any>('mtn');
-    const subscriptionKey = mtn.subscription_key;
-    const targetEnvironment = mtn.target_environment;
+    const mtnCollection = this.configService.get<any>('mtn.collection');
+    const subscriptionKey = mtnCollection.subscription_key;
+    const targetEnvironment = mtnCollection.target_environment;
     const url = `${mtn.base}/collection/token/`;
     const auth = Buffer.from(`${referenceId}:${apiKey}`).toString('base64');
     try {
@@ -89,6 +92,7 @@ export class MtnService {
     try {
       // Optionally use tenantId for tenant-specific config or logging
       const mtn = this.configService.get<any>('mtn');
+    const mtnCollection = this.configService.get<any>('mtn.collection');
       const paddedMomoNumber = mobileNumber.startsWith('26') ? mobileNumber : `26${mobileNumber.slice(1)}`;
   const token = await this.createMtnToken();
       const url = `${mtn.base}/v1_0/accountholder/MSISDN/${paddedMomoNumber}/basicuserinfo`;
@@ -126,19 +130,20 @@ export class MtnService {
 
   async createMtnToken(): Promise<string> {
     try {
-      const mtn = this.configService.get<any>('mtn');
-      const username = mtn.x_reference_id;
-      const apiKey = mtn.api_key;
+      const mtnBase = this.configService.get<string>('mtn.base');
+      const mtnCollection = this.configService.get<any>('mtn.collection');
+      const username = mtnCollection.x_reference_id;
+      const apiKey = mtnCollection.api_key;
       const authString = `${username}:${apiKey}`;
-      const url = `${mtn.base}/collection/token/`;
+      const url = `${mtnBase}/collection/token/`;
 
       const response = await axios.post(
         url,
         {},
         {
           headers: {
-            'Ocp-Apim-Subscription-Key': mtn.subscription_key,
-            'X-Target-Environment': mtn.target_environment,
+            'Ocp-Apim-Subscription-Key': mtnCollection.subscription_key,
+            'X-Target-Environment': mtnCollection.target_environment,
             Authorization: `Basic ${Buffer.from(authString).toString('base64')}`,
           },
         },

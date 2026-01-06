@@ -18,20 +18,23 @@ export class CollectionService {
     private readonly paymentRepository: Repository<Payment>,
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
-  ) {}
+  ) {
+  }
 
   // Only super admins can access this method (enforce in controller with @Roles(RoleType.SUPER_ADMIN))
   async requestToPay(dto: RequestToPayDto, tenantId: string, user: any): Promise<any> {
     // RBAC: Only super admins should be allowed (enforce in controller)
     const mtn = this.configService.get<any>('mtn');
+    const mtnCollection = this.configService.get<any>('mtn.collection');
+
     const url = `${mtn.base}/collection/v1_0/requesttopay`;
     try {
       const bearerToken = await this.mtnService.createMtnToken();
       const transactionId = dto.externalId;
       await axios.post(url, dto, {
         headers: {
-          'Ocp-Apim-Subscription-Key': mtn.subscription_key,
-          'X-Target-Environment': mtn.target_environment,
+          'Ocp-Apim-Subscription-Key': mtnCollection.subscription_key,
+          'X-Target-Environment': mtnCollection.target_environment,
           'X-Reference-Id': transactionId,
           Authorization: `Bearer ${bearerToken}`,
         },
@@ -58,13 +61,14 @@ export class CollectionService {
   // Only super admins can access this method (enforce in controller with @Roles(RoleType.SUPER_ADMIN))
   async getRequestToPayStatus(transactionId: string, tenantId: string, user: any): Promise<any> {
     const mtn = this.configService.get<any>('mtn');
+    const mtnCollection = this.configService.get<any>('mtn.collection');
     const url = `${mtn.base}/collection/v1_0/requesttopay/${transactionId}`;
     try {
       const bearerToken = await this.mtnService.createMtnToken();
       const response = await axios.get(url, {
         headers: {
-          'Ocp-Apim-Subscription-Key': mtn.subscription_key,
-          'X-Target-Environment': mtn.target_environment,
+          'Ocp-Apim-Subscription-Key': mtnCollection.subscription_key,
+          'X-Target-Environment': mtnCollection.target_environment,
           Authorization: `Bearer ${bearerToken}`,
         },
       });

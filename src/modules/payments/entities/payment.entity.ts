@@ -1,3 +1,7 @@
+export enum PaymentFlow {
+  COLLECTION = 'collection',
+  DISBURSEMENT = 'disbursement',
+}
 import { Entity, Column, Index } from 'typeorm';
 import { AbstractEntity } from '../../../common/entities/abstract.entity';
 
@@ -11,6 +15,8 @@ export enum PaymentStatus {
 @Index(['tenantId'])
 @Index(['externalId'])
 export class Payment extends AbstractEntity {
+    @Column({ type: 'enum', enum: PaymentFlow, default: PaymentFlow.COLLECTION })
+    flow: PaymentFlow;
   @Column({ nullable: false })
   tenantId: string;
   @Column({ type: 'decimal', precision: 12, scale: 2 })
