@@ -11,8 +11,8 @@ mtn:
     x_reference_id: "bf8318a6-2db3-4fe1-98f2-c002cefdd4d6"
     api_key: "21e3318d9b6a4f64a56a7209ddf83003"
 db:
-  host: prod-db
-  port: 5432
-  username: produser
-  password: prodpass
-  database: gateway_prod
+  host: localhost
+  port: 5433
+  username: postgres
+  password: postgres
+  database: gateway

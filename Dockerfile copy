@@ -1,0 +1,32 @@
+# Stage 1: Build
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+# Copy package files
+COPY package.json yarn.lock ./
+
+# Install all dependencies (including dev)
+RUN yarn install
+
+# Copy source + configs
+COPY . .
+COPY config/ ./config/
+
+# Build the app
+RUN yarn build
+
+# Stage 2: Production
+FROM node:20-alpine
+WORKDIR /app
+
+# Copy only production deps
+COPY package.json yarn.lock ./
+RUN yarn install --production
+
+# Copy built app from builder
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/config ./config
+
+EXPOSE 3000
+
+CMD ["node", "dist/main.js"]

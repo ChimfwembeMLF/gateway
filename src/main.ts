@@ -1,5 +1,8 @@
+
 import * as crypto from 'crypto';
-(global as any).crypto = crypto;
+if (typeof global.crypto === 'undefined') {
+  (global as any).crypto = crypto;
+}
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
