@@ -12,7 +12,7 @@ mtn:
     api_key: "21e3318d9b6a4f64a56a7209ddf83003"
 db:
   host: localhost
-  port: 5433
+  port: 5432
   username: postgres
   password: postgres
   database: gateway

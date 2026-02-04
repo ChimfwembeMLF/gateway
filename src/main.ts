@@ -5,15 +5,47 @@ if (typeof global.crypto === 'undefined') {
 }
 
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe, Logger } from '@nestjs/common';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
-
 import { setupSwagger } from './swagger/swagger.setup';
-
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const logger = new Logger('Bootstrap');
+  const port = process.env.PORT ?? 3000;
+  const nodeEnv = process.env.NODE_ENV ?? 'development';
+
+  // Security middleware
+  app.use(helmet());
+  app.enableCors({
+    origin: (process.env.ALLOWED_ORIGINS ?? 'http://localhost:3000,http://localhost:3001').split(','),
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key', 'x-tenant-id'],
+  });
+
+  // Global validation pipe
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  );
+
+  // Global exception filter
+  app.useGlobalFilters(new AllExceptionsFilter());
+
   setupSwagger(app);
-  await app.listen(process.env.PORT ?? 3000);
-  console.log(`System running at http://localhost:${process.env.PORT ?? 3000}/documentation`)
+  await app.listen(port);
+  logger.log(`🚀 Application running on port ${port} (${nodeEnv} mode)`);
+  logger.log(`📚 API Documentation: http://localhost:${port}/documentation`);
 }
-bootstrap();
+
+bootstrap().catch((err) => {
+  console.error('Failed to start application:', err);
+  process.exit(1);
+});

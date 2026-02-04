@@ -22,7 +22,7 @@ export class CollectionService {
   }
 
   // Only super admins can access this method (enforce in controller with @Roles(RoleType.SUPER_ADMIN))
-  async requestToPay(dto: RequestToPayDto, tenantId: string, user: any): Promise<any> {
+  async requestToPay(dto: RequestToPayDto, tenantId: string, user: any, paymentExternalId?: string): Promise<any> {
     // RBAC: Only super admins should be allowed (enforce in controller)
     const mtn = this.configService.get<any>('mtn');
     const mtnCollection = this.configService.get<any>('mtn.collection');
@@ -40,8 +40,11 @@ export class CollectionService {
         },
       });
       // Log transaction only if payment exists
-      const payment = await this.paymentRepository.findOne({ where: { externalId: transactionId, tenantId } });
+      const lookupExternalId = paymentExternalId || transactionId;
+      const payment = await this.paymentRepository.findOne({ where: { externalId: lookupExternalId, tenantId } });
       if (payment) {
+        payment.momoTransactionId = transactionId;
+        await this.paymentRepository.save(payment);
         await this.transactionRepository.save({
           tenantId,
           payment,
@@ -60,6 +63,10 @@ export class CollectionService {
 
   // Only super admins can access this method (enforce in controller with @Roles(RoleType.SUPER_ADMIN))
   async getRequestToPayStatus(transactionId: string, tenantId: string, user: any): Promise<any> {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!transactionId || !uuidRegex.test(transactionId)) {
+      throw new BadRequestException('Invalid MTN referenceId. A UUID is required.');
+    }
     const mtn = this.configService.get<any>('mtn');
     const mtnCollection = this.configService.get<any>('mtn.collection');
     const url = `${mtn.base}/collection/v1_0/requesttopay/${transactionId}`;
@@ -73,7 +80,12 @@ export class CollectionService {
         },
       });
       // Update payment and transaction status
-      const payment = await this.paymentRepository.findOne({ where: { externalId: transactionId, tenantId } });
+      const payment = await this.paymentRepository.findOne({
+        where: [
+          { momoTransactionId: transactionId, tenantId },
+          { externalId: transactionId, tenantId },
+        ],
+      });
       if (payment) {
         payment.status = response.data.status;
         await this.paymentRepository.save(payment);
@@ -90,6 +102,27 @@ export class CollectionService {
     } catch (error) {
       this.logger.error('getRequestToPayStatus error', error);
       throw new BadRequestException('Failed to get request to pay status');
+    }
+  }
+
+  // Get collection account balance
+  async getAccountBalance(tenantId: string, user: any): Promise<any> {
+    const mtn = this.configService.get<any>('mtn');
+    const mtnCollection = this.configService.get<any>('mtn.collection');
+    const url = `${mtn.base}/collection/v1_0/account/balance`;
+    try {
+      const bearerToken = await this.mtnService.createMtnToken();
+      const response = await axios.get(url, {
+        headers: {
+          'Ocp-Apim-Subscription-Key': mtnCollection.subscription_key,
+          'X-Target-Environment': mtnCollection.target_environment,
+          Authorization: `Bearer ${bearerToken}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      this.logger.error('getAccountBalance (collection) error', error);
+      throw new BadRequestException('Failed to get collection account balance');
     }
   }
 

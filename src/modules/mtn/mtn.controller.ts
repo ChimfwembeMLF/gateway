@@ -6,12 +6,16 @@ import { Auth } from '../../common/decorators/auth.decorator';
 import { BaseResponseDto } from '../../common/dtos/base-response.dto';
 import { RequestToPayDto } from './dto/mtn.dto';
 import { RequestToPayResultDto, ErrorReasonDto, PartyDto } from './dto/mtn.dto';
+import { DisbursementService } from './disbursement/disbursement.service';
 
 @ApiTags('MTN')
 @Controller('api/v1/mtn')
 @Auth()
 export class MtnController {
-  constructor(private readonly mtnService: MtnService) {}
+  constructor(
+    private readonly mtnService: MtnService,
+    private readonly disbursementService: DisbursementService,
+  ) {}
 
 
   @Post('apiuser')
@@ -52,4 +56,13 @@ export class MtnController {
     const data = await this.mtnService.fetchUserBasicDetails(phone, tenantId);
     return { name: data.name, status: data.status, message: data.message };
   }
-}
+
+  @Get('balance')
+  @ApiOperation({ summary: 'Get account balance for the tenant' })
+  @ApiResponse({ status: 200, description: 'Account balance information' })
+  async getBalance(@Req() req: any): Promise<BaseResponseDto> {
+    const tenantId = req.user?.tenantId;
+    if (!tenantId) throw new HttpException('Missing tenantId in request.', HttpStatus.BAD_REQUEST);
+    const balance = await this.disbursementService.getAccountBalance(tenantId, req.user);
+    return { success: true, data: balance };
+  }}

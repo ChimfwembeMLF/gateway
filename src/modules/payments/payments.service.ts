@@ -1,16 +1,18 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Payment, PaymentStatus } from './entities/payment.entity';
 import { Transaction, TransactionType } from './entities/transaction.entity';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { CollectionService } from '../mtn/collection/collection.service';
+import { DisbursementService } from '../mtn/disbursement/disbursement.service';
 import { MtnPartyIdType } from '../mtn/dto/mtn.enums';
 import { PaymentProvider } from '../../common/enums/provider.enum';
 import { UuidGeneratorService } from './external-id.service';
 
 @Injectable()
 export class PaymentsService {
+  private readonly logger = new Logger(PaymentsService.name);
 
   constructor(
     @InjectRepository(Payment)
@@ -18,6 +20,7 @@ export class PaymentsService {
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
     private readonly collectionService: CollectionService,
+    private readonly disbursementService: DisbursementService,
     private readonly uuidGenerator: UuidGeneratorService,
     // Future: inject other provider services here
   ) {}
@@ -29,9 +32,10 @@ export class PaymentsService {
   async create(createPaymentDto: CreatePaymentDto & { tenantId: string }, user: any): Promise<Payment> {
     let providerResult: any;
     // Always ensure externalId is set
-    const externalId = createPaymentDto.externalId
+    const paymentExternalId = createPaymentDto.externalId
       ? createPaymentDto.externalId
       : this.uuidGenerator.generate();
+    const momoReferenceId = this.uuidGenerator.generate();
     switch (createPaymentDto.provider) {
       case PaymentProvider.MTN: {
         try {
@@ -39,7 +43,7 @@ export class PaymentsService {
           const requestToPayDto = {
             amount: String(createPaymentDto.amount),
             currency: createPaymentDto.currency || 'ZMW',
-            externalId,
+            externalId: momoReferenceId,
             payer: {
               partyIdType: MtnPartyIdType.MSISDN,
               partyId: createPaymentDto.payer,
@@ -51,6 +55,7 @@ export class PaymentsService {
             requestToPayDto,
             createPaymentDto.tenantId,
             user,
+            paymentExternalId,
           );
         } catch (error) {
           // Enhanced error handling for MoMo API
@@ -98,7 +103,7 @@ export class PaymentsService {
             userMessage += ' ' + error.message;
           }
           // Log error details for debugging
-          console.error('[PaymentsService] MTN requestToPay error:', {
+          this.logger.error('[PaymentsService] MTN requestToPay error:', {
             error: error?.message,
             response: errData,
             requestData: createPaymentDto,
@@ -119,9 +124,9 @@ export class PaymentsService {
     // Save payment with provider result (e.g., transactionId)
     const payment = this.paymentRepository.create({
       ...createPaymentDto,
-      externalId, // always set
+      externalId: paymentExternalId, // always set
       status: PaymentStatus.PENDING,
-      momoTransactionId: providerResult?.transactionId || null,
+      momoTransactionId: providerResult?.transactionId || momoReferenceId,
       tenantId: createPaymentDto.tenantId,
     });
     const savedPayment = await this.paymentRepository.save(payment);
@@ -132,7 +137,7 @@ export class PaymentsService {
         tenantId: createPaymentDto.tenantId,
         payment: savedPayment,
         type: TransactionType.REQUEST_TO_PAY,
-        momoReferenceId: providerResult?.transactionId || undefined,
+        momoReferenceId: providerResult?.transactionId || momoReferenceId,
         response: providerResult ? JSON.stringify(providerResult) : '',
         status: PaymentStatus.PENDING,
       });
@@ -150,5 +155,60 @@ export class PaymentsService {
     const payment = await this.findOne(id, tenantId);
     payment.status = status;
     return this.paymentRepository.save(payment);
+  }
+
+  async getPaymentStatus(
+    paymentId: string,
+    tenantId: string,
+    provider?: string,
+    user?: any,
+  ): Promise<any> {
+    const payment = await this.findOne(paymentId, tenantId);
+    const providerToQuery = provider?.toUpperCase() || PaymentProvider.MTN;
+
+    switch (providerToQuery) {
+      case PaymentProvider.MTN: {
+        const transactionId = payment.momoTransactionId || payment.externalId;
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        if (!transactionId || !uuidRegex.test(transactionId)) {
+          throw new BadRequestException(
+            'Payment does not have a valid MTN referenceId yet. Create a new payment to get a valid referenceId.',
+          );
+        }
+        const status = await this.collectionService.getRequestToPayStatus(transactionId, tenantId, user);
+        return { payment, status };
+      }
+      default:
+        throw new BadRequestException(`Provider ${providerToQuery} not supported for status lookup`);
+    }
+  }
+
+  async getBalance(tenantId: string, provider?: string, user?: any): Promise<any> {
+    // If no provider specified, return MTN balance (default)
+    const providerToQuery = provider?.toUpperCase() || PaymentProvider.MTN;
+
+    try {
+      switch (providerToQuery) {
+        case PaymentProvider.MTN:
+          try {
+            return await this.disbursementService.getAccountBalance(tenantId, user);
+          } catch (error) {
+            this.logger.warn('Disbursement balance failed, falling back to collection balance');
+            return await this.collectionService.getAccountBalance(tenantId, user);
+          }
+        // TODO: Add other providers (Airtel, Vodafone, etc.)
+        // case PaymentProvider.AIRTEL:
+        //   return this.airtelService.getAccountBalance(tenantId, user);
+        default:
+          throw new BadRequestException(`Provider ${providerToQuery} not supported or balance endpoint not available`);
+      }
+    } catch (error) {
+      this.logger.error(`Failed to get balance for provider ${providerToQuery}`, {
+        tenantId,
+        error: error?.message,
+        details: error?.response?.data || error,
+      });
+      throw error;
+    }
   }
 }

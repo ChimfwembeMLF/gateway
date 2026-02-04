@@ -58,6 +58,21 @@ export class TenantService {
     return this.tenantRepository.findOne({ where: { id } });
   }
 
+  async findByNameOrId(identifier: string): Promise<Tenant | null> {
+    // Try to find by ID first
+    try {
+      const tenant = await this.tenantRepository.findOne({ where: { id: identifier } });
+      if (tenant) return tenant;
+    } catch (error) {
+      // ID is not a valid UUID, continue to name search
+    }
+    
+    // Try to find by name (case-insensitive)
+    const allTenants = await this.tenantRepository.find();
+    const matched = allTenants.find(t => t.name.toLowerCase() === identifier.toLowerCase());
+    return matched || null;
+  }
+
   async update(id: string, data: Partial<Tenant>): Promise<Tenant | null> {
     await this.tenantRepository.update(id, data);
     return this.findOne(id);

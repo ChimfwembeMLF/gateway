@@ -12,7 +12,7 @@ mtn:
     x_reference_id: "d525968f-00df-416f-839f-f838b1fb7a14"
     api_key: "ef88782b087d4d7d830153174ec5f6bb"
 db:
-  host: db
+  host: 127.0.0.1
   port: 5432
   username: postgres
   password: postgres

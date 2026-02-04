@@ -30,7 +30,7 @@ export function typeOrmConfigFactory(
 
     migrations: [join(__dirname, '/../migrations/*.{js,ts}')],
 
-    synchronize: configService.get('NODE_ENV') !== 'production',
-    logging: configService.get('NODE_ENV') !== 'production',
+    synchronize: false,
+    logging: configService.get('NODE_ENV') === 'development',
   };
 }

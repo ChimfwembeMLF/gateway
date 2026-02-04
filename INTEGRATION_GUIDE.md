@@ -57,11 +57,28 @@ Content-Type: application/json
   After registration, your API key is returned in the response. You can also retrieve it from your user profile (`/api/v1/users/:id`).
 
   ### Using the API Key
-  Include your API key in the `Authorization` header for every protected request:
+  Include your API key in the `Authorization` header and your **tenant identifier** in the `x-tenant-id` header for every protected request:
   ```
   Authorization: Bearer <api_key>
+  x-tenant-id: <tenant-name-or-id>
   ```
-  *No JWT or login required for API access. The API key is all you need for server-to-server integration.*
+  **The `x-tenant-id` can be either:**
+  - Tenant name (e.g., `"my-company"`)
+  - Tenant UUID (e.g., `"550e8400-e29b-41d4-a716-446655440000"`)
+  
+  Example with tenant name:
+  ```
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+  x-tenant-id: my-company
+  ```
+  
+  Example with tenant UUID:
+  ```
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+  x-tenant-id: 550e8400-e29b-41d4-a716-446655440000
+  ```
+  
+  *No JWT or login required for API access. The API key + tenant identifier is all you need for server-to-server integration.*
 
   ### Regenerating Your API Key
   If you need to rotate your API key, use the API endpoint `/api/v1/users/:id/generate-api-key` (see API docs for details).
@@ -115,7 +132,10 @@ Content-Type: application/json
     payerMessage: 'Payment for order 123',
     payeeNote: 'Thank you',
   }, {
-    headers: { Authorization: `Bearer ${api_key}` }
+    headers: { 
+      Authorization: `Bearer ${api_key}`,
+      'x-tenant-id': 'my-company'  // Use tenant name or UUID
+    }
   });
   ```
 
