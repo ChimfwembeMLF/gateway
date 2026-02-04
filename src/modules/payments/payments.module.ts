@@ -12,9 +12,10 @@ import { CollectionService } from '../mtn/collection/collection.service';
 import { DisbursementModule } from '../mtn/disbursement/disbursement.module';
 import { UserModule } from '../user/user.module';
 import { TenantModule } from '../tenant/tenant.module';
+import { TransactionModule } from './transaction.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Payment, Transaction]), MtnModule, DisbursementModule, UserModule, TenantModule],
+    imports: [TypeOrmModule.forFeature([Payment, Transaction]), MtnModule, DisbursementModule, UserModule, TenantModule, TransactionModule],
     controllers: [PaymentsController],
     providers: [PaymentsService, CollectionService, UuidGeneratorService, PaymentsStatusCronService, StalePaymentsCleanupService],
     exports: [PaymentsService, UuidGeneratorService],

@@ -28,7 +28,7 @@ export class AuditCleanupService {
         createdAt: LessThan(ninetyDaysAgo),
       });
 
-      if (result.affected > 0) {
+      if ((result.affected ?? 0) > 0) {
         this.logger.log(
           `Deleted ${result.affected} audit log(s) older than 90 days`,
         );

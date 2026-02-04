@@ -1,17 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UnauthorizedException } from '@nestjs/common';
+import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { ApiKeyGuard } from './api-key.guard';
-import { UsersService } from '../../modules/user/users.service';
-import { ExecutionContext } from '@nestjs/common';
+import { TenantService } from '../../modules/tenant/tenant.service';
 
 describe('ApiKeyGuard', () => {
   let guard: ApiKeyGuard;
-  let usersService: UsersService;
+  let tenantService: jest.Mocked<TenantService>;
 
-  const mockUser = {
-    id: 'user-123',
+  const mockTenant = {
+    id: 'tenant-123',
+    name: 'TestTenant',
     apiKey: 'test-api-key',
-    tenantId: 'tenant-123',
+    isActive: true,
   };
 
   beforeEach(async () => {
@@ -19,89 +19,164 @@ describe('ApiKeyGuard', () => {
       providers: [
         ApiKeyGuard,
         {
-          provide: UsersService,
+          provide: TenantService,
           useValue: {
             findByApiKey: jest.fn(),
+            findByName: jest.fn(),
           },
         },
       ],
     }).compile();
 
     guard = module.get<ApiKeyGuard>(ApiKeyGuard);
-    usersService = module.get<UsersService>(UsersService);
+    tenantService = module.get(TenantService) as jest.Mocked<TenantService>;
   });
 
-  it('should be defined', () => {
-    expect(guard).toBeDefined();
-  });
+  describe('canActivate', () => {
+    it('should allow request with valid API key and tenant ID', async () => {
+      const mockRequest: any = {
+        headers: {
+          'x-api-key': 'test-api-key',
+          'x-tenant-id': 'tenant-123',
+        },
+      };
 
-  it('should throw UnauthorizedException if API key is missing', async () => {
-    const mockContext = {
-      switchToHttp: () => ({
-        getRequest: () => ({
-          headers: {},
-          query: {},
+      tenantService.findByApiKey.mockResolvedValue(mockTenant as any);
+
+      const context = {
+        switchToHttp: () => ({
+          getRequest: () => mockRequest,
         }),
-      }),
-    } as ExecutionContext;
+      } as ExecutionContext;
 
-    await expect(guard.canActivate(mockContext)).rejects.toThrow(
-      UnauthorizedException,
-    );
-  });
+      const result = await guard.canActivate(context);
 
-  it('should throw UnauthorizedException if tenant ID is missing', async () => {
-    const mockContext = {
-      switchToHttp: () => ({
-        getRequest: () => ({
-          headers: { authorization: 'Bearer test-api-key' },
-          query: {},
+      expect(result).toBe(true);
+      expect(mockRequest.tenant).toEqual(mockTenant);
+      expect(tenantService.findByApiKey).toHaveBeenCalledWith('test-api-key');
+    });
+
+    it('should allow request with tenant name (case-insensitive)', async () => {
+      const mockRequest: any = {
+        headers: {
+          'x-api-key': 'test-api-key',
+          'x-tenant-id': 'testtenant', // lowercase
+        },
+      };
+
+      tenantService.findByApiKey.mockResolvedValue(mockTenant as any);
+      tenantService.findByName.mockResolvedValue(mockTenant as any);
+
+      const context = {
+        switchToHttp: () => ({
+          getRequest: () => mockRequest,
         }),
-      }),
-    } as ExecutionContext;
+      } as ExecutionContext;
 
-    await expect(guard.canActivate(mockContext)).rejects.toThrow(
-      UnauthorizedException,
-    );
-  });
+      const result = await guard.canActivate(context);
 
-  it('should return true and set user if valid API key and tenant ID', async () => {
-    jest
-      .spyOn(usersService, 'findByApiKey')
-      .mockResolvedValue(mockUser as any);
+      expect(result).toBe(true);
+      expect(mockRequest.tenant).toEqual(mockTenant);
+    });
 
-    const request = {
-      headers: { authorization: 'Bearer test-api-key', 'x-tenant-id': 'tenant-123' },
-      query: {},
-      user: null,
-    };
+    it('should throw UnauthorizedException when API key is missing', async () => {
+      const mockRequest: any = {
+        headers: { 'x-tenant-id': 'tenant-123' },
+      };
 
-    const mockContext = {
-      switchToHttp: () => ({
-        getRequest: () => request,
-      }),
-    } as ExecutionContext;
-
-    const result = await guard.canActivate(mockContext);
-
-    expect(result).toBe(true);
-    expect(request.user).toEqual(mockUser);
-  });
-
-  it('should throw UnauthorizedException if user not found', async () => {
-    jest.spyOn(usersService, 'findByApiKey').mockResolvedValue(null);
-
-    const mockContext = {
-      switchToHttp: () => ({
-        getRequest: () => ({
-          headers: { authorization: 'Bearer invalid-key', 'x-tenant-id': 'tenant-123' },
-          query: {},
+      const context = {
+        switchToHttp: () => ({
+          getRequest: () => mockRequest,
         }),
-      }),
-    } as ExecutionContext;
+      } as ExecutionContext;
 
-    await expect(guard.canActivate(mockContext)).rejects.toThrow(
-      UnauthorizedException,
-    );
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('should throw UnauthorizedException when tenant ID is missing', async () => {
+      const mockRequest: any = {
+        headers: { 'x-api-key': 'test-api-key' },
+      };
+
+      const context = {
+        switchToHttp: () => ({
+          getRequest: () => mockRequest,
+        }),
+      } as ExecutionContext;
+
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('should throw UnauthorizedException when API key is invalid', async () => {
+      const mockRequest: any = {
+        headers: {
+          'x-api-key': 'invalid-key',
+          'x-tenant-id': 'tenant-123',
+        },
+      };
+
+      tenantService.findByApiKey.mockResolvedValue(null);
+
+      const context = {
+        switchToHttp: () => ({
+          getRequest: () => mockRequest,
+        }),
+      } as ExecutionContext;
+
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('should throw UnauthorizedException when tenant is inactive', async () => {
+      const inactiveTenant = { ...mockTenant, isActive: false };
+      const mockRequest: any = {
+        headers: {
+          'x-api-key': 'test-api-key',
+          'x-tenant-id': 'tenant-123',
+        },
+      };
+
+      tenantService.findByApiKey.mockResolvedValue(inactiveTenant as any);
+
+      const context = {
+        switchToHttp: () => ({
+          getRequest: () => mockRequest,
+        }),
+      } as ExecutionContext;
+
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('should prevent cross-tenant access (API key mismatch)', async () => {
+      const mockRequest: any = {
+        headers: {
+          'x-api-key': 'tenant-1-key',
+          'x-tenant-id': 'tenant-2', // Different tenant
+        },
+      };
+
+      const tenant1 = { ...mockTenant, id: 'tenant-1', apiKey: 'tenant-1-key' };
+      const tenant2 = { ...mockTenant, id: 'tenant-2', apiKey: 'tenant-2-key' };
+
+      tenantService.findByApiKey.mockResolvedValue(tenant1 as any);
+      tenantService.findByName.mockResolvedValue(tenant2 as any);
+
+      const context = {
+        switchToHttp: () => ({
+          getRequest: () => mockRequest,
+        }),
+      } as ExecutionContext;
+
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
   });
 });

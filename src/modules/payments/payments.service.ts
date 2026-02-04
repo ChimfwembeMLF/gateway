@@ -36,9 +36,13 @@ export class PaymentsService {
       ? createPaymentDto.externalId
       : this.uuidGenerator.generate();
     const momoReferenceId = this.uuidGenerator.generate();
+    
+    this.logger.log(`[CREATE PAYMENT] Tenant: ${createPaymentDto.tenantId}, Provider: ${createPaymentDto.provider}, Amount: ${createPaymentDto.amount}${createPaymentDto.currency}`);
+    
     switch (createPaymentDto.provider) {
       case PaymentProvider.MTN: {
         try {
+          this.logger.log(`[MTN COLLECTION] Starting requestToPay for payer: ${createPaymentDto.payer}`);
           // Transform CreatePaymentDto to RequestToPayDto
           const requestToPayDto = {
             amount: String(createPaymentDto.amount),
@@ -57,7 +61,9 @@ export class PaymentsService {
             user,
             paymentExternalId,
           );
+          this.logger.log(`[MTN COLLECTION] requestToPay succeeded, transactionRef: ${providerResult?.transactionRef}`);
         } catch (error) {
+          this.logger.error(`[MTN COLLECTION] requestToPay failed: ${error.message}`, error.stack);
           // Enhanced error handling for MoMo API
           const errData = error?.response?.data;
           let userMessage = 'MTN requestToPay failed.';

@@ -16,13 +16,16 @@ export class AuditService {
     return this.auditRepository.save(audit);
   }
 
-  async findAll(): Promise<Audit[]> {
-    return this.auditRepository.find({ order: { createdAt: 'DESC' } });
+  async findAll(tenantId: string): Promise<Audit[]> {
+    return this.auditRepository.find({ 
+      where: { tenantId },
+      order: { createdAt: 'DESC' } 
+    });
   }
 
-  async findByEntity(auditableType: string, auditableId: string): Promise<Audit[]> {
+  async findByEntity(auditableType: string, auditableId: string, tenantId: string): Promise<Audit[]> {
     return this.auditRepository.find({
-      where: { auditableType, auditableId },
+      where: { auditableType, auditableId, tenantId },
       order: { createdAt: 'DESC' },
     });
   }

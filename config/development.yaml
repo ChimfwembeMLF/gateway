@@ -1,21 +1,22 @@
+# Development environment - uses environment variables for secrets
 mtn:
-  base: "https://sandbox.momodeveloper.mtn.com"
+  base: "${MTN_BASE_URL}"
   collection:
-    subscription_key: "2551a785e77045b1816e58a9f8f3f5a2"
-    target_environment: "sandbox"
-    x_reference_id: "bf8318a6-2db3-4fe1-98f2-c002cefdd4d6"
-    api_key: "21e3318d9b6a4f64a56a7209ddf83003"
-    test_msisdn: "46733123453" # MTN MoMo Sandbox success test number
+    subscription_key: "${MTN_COLLECTION_SUBSCRIPTION_KEY}"
+    target_environment: "${MTN_COLLECTION_TARGET_ENVIRONMENT}"
+    x_reference_id: "${MTN_COLLECTION_X_REFERENCE_ID}"
+    api_key: "${MTN_COLLECTION_API_KEY}"
+    test_msisdn: "46733123453" # MTN MoMo Sandbox success test number (non-sensitive)
   disbursement:
-    subscription_key: "eb49dfde65824998888a99c0b8a06b55"
-    target_environment: "sandbox"
-    x_reference_id: "d525968f-00df-416f-839f-f838b1fb7a14"
-    api_key: "ef88782b087d4d7d830153174ec5f6bb"
+    subscription_key: "${MTN_DISBURSEMENT_SUBSCRIPTION_KEY}"
+    target_environment: "${MTN_DISBURSEMENT_TARGET_ENVIRONMENT}"
+    x_reference_id: "${MTN_DISBURSEMENT_X_REFERENCE_ID}"
+    api_key: "${MTN_DISBURSEMENT_API_KEY}"
 db:
-  host: 127.0.0.1
-  port: 5432
-  username: postgres
-  password: postgres
-  database: gateway
+  host: "${DATABASE_HOST}"
+  port: "${DATABASE_PORT}"
+  username: "${DATABASE_USERNAME}"
+  password: "${DATABASE_PASSWORD}"
+  database: "${DATABASE_NAME}"
 olympus:
   link: "https://api.olympustech.example.com/mtn/details?"

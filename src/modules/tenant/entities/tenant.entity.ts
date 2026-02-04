@@ -4,6 +4,7 @@ import { Entity, Column, PrimaryGeneratedColumn, Index } from 'typeorm';
 @Entity('tenants')
 @Index(['name'])
 @Index(['slug'])
+@Index(['apiKey'])
 export class Tenant  extends AbstractEntity {
   @Column({ unique: true })
   name: string;
@@ -11,6 +12,8 @@ export class Tenant  extends AbstractEntity {
   @Column({ unique: true })
   slug: string;
 
+  @Column({ unique: true })
+  apiKey: string;
 
   @Column({ nullable: true })
   description?: string;

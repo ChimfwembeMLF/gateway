@@ -32,7 +32,7 @@ export class StalePaymentsCleanupService {
         .andWhere('createdAt < :cutoff', { cutoff: twentyFourHoursAgo })
         .execute();
 
-      if (result.affected > 0) {
+      if ((result.affected ?? 0) > 0) {
         this.logger.log(
           `Marked ${result.affected} stale payment(s) as FAILED (older than 24 hours)`,
         );
