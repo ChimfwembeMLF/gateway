@@ -8,11 +8,31 @@ import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 import { forwardRef } from '@nestjs/common';
 import { MtnModule } from '../mtn.module';
+import { Disbursement, DisbursementTransaction } from './entities';
+import { BalanceValidationService, DisbursementErrorHandler } from './services';
+import { IdempotencyKey } from '../../payments/idempotency/idempotency-key.entity';
+import { IdempotencyService } from '../../payments/idempotency/idempotency.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Payment, Transaction]), ConfigModule, HttpModule, forwardRef(() => MtnModule)],
-  providers: [DisbursementService],
+  imports: [
+    TypeOrmModule.forFeature([
+      Payment,
+      Transaction,
+      Disbursement,
+      DisbursementTransaction,
+      IdempotencyKey,
+    ]),
+    ConfigModule,
+    HttpModule,
+    forwardRef(() => MtnModule),
+  ],
+  providers: [
+    DisbursementService,
+    BalanceValidationService,
+    DisbursementErrorHandler,
+    IdempotencyService,
+  ],
   controllers: [DisbursementController],
-  exports: [DisbursementService],
+  exports: [DisbursementService, BalanceValidationService],
 })
 export class DisbursementModule {}

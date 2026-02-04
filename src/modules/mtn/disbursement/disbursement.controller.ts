@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Param, Req, HttpException, HttpStatus, Query, Patch, Res, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param, Req, HttpException, HttpStatus, Query, Patch, Res, UseGuards, UseInterceptors, Headers, Logger } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiBody, ApiHeader } from '@nestjs/swagger';
 import { Roles } from '../../../common/decorators/roles.decorator';
 import { RoleType } from '../../../common/enums/role-type.enum';
 import { RolesGuard } from '../../../common/guards/roles.guard';
 import { DisbursementService } from './disbursement.service';
 import { Auth } from 'src/common/decorators/auth.decorator';
+import { IdempotencyInterceptor } from '../../payments/idempotency/idempotency.interceptor';
 import { ValidateAccountHolderStatusDto } from './dto/validate-account-holder-status.dto';
 import { BasicUserInfoDto } from './dto/basic-userinfo.dto';
 import { DepositDto } from './dto/deposit.dto';
@@ -15,8 +16,10 @@ import { TransferResultDto } from './dto/transfer-result.dto';
 @ApiBearerAuth()
 // @UseGuards(RolesGuard)
 @Auth() // Enforce authentication for all endpoints
+@UseInterceptors(IdempotencyInterceptor)
 @Controller('api/v1/mtn/disbursement')
 export class DisbursementController {
+  private readonly logger = new Logger(DisbursementController.name);
   constructor(private readonly disbursementService: DisbursementService) {}
 
   @Get('balance')
