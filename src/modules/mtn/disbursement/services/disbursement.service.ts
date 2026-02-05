@@ -1,6 +1,7 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
 import axios, { AxiosError } from 'axios';
 import { randomUUID } from 'crypto';
 import {
@@ -18,6 +19,7 @@ import {
 } from '../dto/disbursement.dto';
 import { BalanceValidationService } from './balance-validation.service';
 import { DisbursementErrorHandler } from './disbursement-error.handler';
+import { MtnService } from '../../mtn.service';
 
 @Injectable()
 export class DisbursementService {
@@ -33,9 +35,40 @@ export class DisbursementService {
     private readonly transactionRepository: Repository<DisbursementTransaction>,
     private readonly balanceValidationService: BalanceValidationService,
     private readonly errorHandler: DisbursementErrorHandler,
+    private readonly configService: ConfigService,
+    private readonly mtnService: MtnService,
   ) {}
 
   /**
+   * Get disbursement account balance from MTN
+   */
+  async getAccountBalance(tenantId: string, user?: any): Promise<any> {
+    const mtn = this.configService.get<any>('mtn');
+    const mtnDisbursement = this.configService.get<any>('mtn.disbursement');
+    const url = `${mtn.base}/disbursement/v1_0/account/balance`;
+
+    try {
+      // Get disbursement-specific bearer token
+      const bearerToken = await this.mtnService.createDisbursementToken();
+
+      // Get balance
+      const response = await axios.get(url, {
+        headers: {
+          'Ocp-Apim-Subscription-Key': mtnDisbursement.subscription_key,
+          'X-Target-Environment': mtnDisbursement.target_environment,
+          Authorization: `Bearer ${bearerToken}`,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      this.logger.error('getAccountBalance (disbursement) error', error);
+      throw new BadRequestException('Failed to get disbursement account balance');
+    }
+  }
+
+  /**
+   * 
    * Create and process a transfer
    */
   async transfer(

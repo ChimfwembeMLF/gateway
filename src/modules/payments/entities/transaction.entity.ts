@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, Index } from 'typeorm';
+import { Entity, Column, ManyToOne, Index, JoinColumn } from 'typeorm';
 import { Payment } from './payment.entity';
 import { AbstractEntity } from '../../../common/entities/abstract.entity';
 
@@ -10,10 +10,19 @@ export enum TransactionType {
 @Entity('transactions')
 @Index(['tenantId'])
 @Index(['type'])
+@Index(['paymentId'])
 export class Transaction extends AbstractEntity {
   @Column({ nullable: false })
   tenantId: string;
-  @ManyToOne(() => Payment, { nullable: false })
+
+  @Column('uuid')
+  paymentId: string;
+
+  @ManyToOne(() => Payment, (payment) => payment.transactions, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'paymentId' })
   payment: Payment;
 
   @Column({ type: 'enum', enum: TransactionType })

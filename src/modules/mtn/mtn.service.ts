@@ -148,17 +148,51 @@ export class MtnService {
           },
         },
       );
-      this.logger.debug('createMtnToken response', response?.data);
+      this.logger.debug('createMtnToken (collection) response', response?.data);
       return response?.data?.access_token;
     } catch (error) {
       const axiosError = error as AxiosError;
-      this.logger.error('createMtnToken error', {
+      this.logger.error('createMtnToken (collection) error', {
         message: axiosError.message,
         status: axiosError.response?.status,
         data: axiosError.response?.data,
         headers: axiosError.response?.headers,
       });
-      throw new BadRequestException(axiosError.message || 'Failed to create MTN token');
+      throw new BadRequestException(axiosError.message || 'Failed to create MTN collection token');
+    }
+  }
+
+  async createDisbursementToken(): Promise<string> {
+    try {
+      const mtnBase = this.configService.get<string>('mtn.base');
+      const mtnDisbursement = this.configService.get<any>('mtn.disbursement');
+      const username = mtnDisbursement.x_reference_id;
+      const apiKey = mtnDisbursement.api_key;
+      const authString = `${username}:${apiKey}`;
+      const url = `${mtnBase}/disbursement/token/`;
+
+      const response = await axios.post(
+        url,
+        {},
+        {
+          headers: {
+            'Ocp-Apim-Subscription-Key': mtnDisbursement.subscription_key,
+            'X-Target-Environment': mtnDisbursement.target_environment,
+            Authorization: `Basic ${Buffer.from(authString).toString('base64')}`,
+          },
+        },
+      );
+      this.logger.debug('createDisbursementToken response', response?.data);
+      return response?.data?.access_token;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      this.logger.error('createDisbursementToken error', {
+        message: axiosError.message,
+        status: axiosError.response?.status,
+        data: axiosError.response?.data,
+        headers: axiosError.response?.headers,
+      });
+      throw new BadRequestException(axiosError.message || 'Failed to create MTN disbursement token');
     }
   }
 

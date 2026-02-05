@@ -1,6 +1,7 @@
 import { AbstractEntity } from 'src/common/entities/abstract.entity';
 import { Entity, Column, PrimaryGeneratedColumn, Index, OneToMany } from 'typeorm';
 import { Disbursement } from '../../mtn/disbursement/entities';
+import { TenantBillingSubscription } from '../../billing/entities';
 
 @Entity('tenants')
 @Index(['name'])
@@ -30,4 +31,11 @@ export class Tenant  extends AbstractEntity {
 
   @OneToMany(() => Disbursement, (disbursement) => disbursement.tenant)
   disbursements: Disbursement[];
+
+  @OneToMany(
+    () => TenantBillingSubscription,
+    (subscription) => subscription.tenant,
+    { cascade: true },
+  )
+  billingSubscriptions: TenantBillingSubscription[];
 }
