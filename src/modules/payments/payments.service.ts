@@ -5,6 +5,7 @@ import { Payment, PaymentStatus } from './entities/payment.entity';
 import { Transaction, TransactionType } from './entities/transaction.entity';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { CollectionService } from '../mtn/collection/collection.service';
+import { AirtelCollectionService } from '../airtel/collection/airtel-collection.service';
 import { DisbursementService } from '../mtn/disbursement/disbursement.service';
 import { MtnPartyIdType } from '../mtn/dto/mtn.enums';
 import { PaymentProvider } from '../../common/enums/provider.enum';
@@ -21,6 +22,7 @@ export class PaymentsService {
     private readonly transactionRepository: Repository<Transaction>,
     private readonly collectionService: CollectionService,
     private readonly disbursementService: DisbursementService,
+    private readonly airtelCollectionService: AirtelCollectionService,
     private readonly uuidGenerator: UuidGeneratorService,
     // Future: inject other provider services here
   ) {}
@@ -118,9 +120,25 @@ export class PaymentsService {
         }
         break;
       }
-      // case 'airtel':
-      //   providerResult = await this.airtelService.requestToPay(createPaymentDto);
-      //   break;
+      case PaymentProvider.AIRTEL: {
+        const msisdn = this.normalizeMsisdn(createPaymentDto.payer, createPaymentDto.currency);
+        const airtelRequest = {
+          reference: paymentExternalId,
+          subscriber: {
+            country: 'ZM',
+            currency: createPaymentDto.currency || 'ZMW',
+            msisdn,
+          },
+          transaction: {
+            amount: createPaymentDto.amount,
+            country: 'ZM',
+            currency: createPaymentDto.currency || 'ZMW',
+            id: paymentExternalId,
+          },
+        };
+        providerResult = await this.airtelCollectionService.requestToPay(airtelRequest);
+        break;
+      }
       // case 'zamtel':
       //   providerResult = await this.zamtelService.requestToPay(createPaymentDto);
       //   break;

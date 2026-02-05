@@ -10,12 +10,13 @@ import { UuidGeneratorService } from './external-id.service';
 import { MtnModule } from '../mtn/mtn.module';
 import { CollectionService } from '../mtn/collection/collection.service';
 import { DisbursementModule } from '../mtn/disbursement/disbursement.module';
+import { AirtelModule } from '../airtel/airtel.module';
 import { UserModule } from '../user/user.module';
 import { TenantModule } from '../tenant/tenant.module';
 import { TransactionModule } from './transaction.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Payment, Transaction]), MtnModule, DisbursementModule, UserModule, TenantModule, TransactionModule],
+    imports: [TypeOrmModule.forFeature([Payment, Transaction]), MtnModule, DisbursementModule, AirtelModule, UserModule, TenantModule, TransactionModule],
     controllers: [PaymentsController],
     providers: [PaymentsService, CollectionService, UuidGeneratorService, PaymentsStatusCronService, StalePaymentsCleanupService],
     exports: [PaymentsService, UuidGeneratorService],

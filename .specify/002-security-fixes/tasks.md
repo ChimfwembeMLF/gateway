@@ -5,6 +5,34 @@
 
 ---
 
+## Recent Updates
+
+**February 5, 2026** - Test Suite Fixes & E2E Implementation ✅
+- **Test Fixes**: Fixed 4 failing unit tests across multiple services
+  - AuthService: Added bcrypt mocking for password validation tests
+  - PaymentsService: Fixed tenantId passing and mock setup issues  
+  - PaymentsController: Fixed parameter expectation in status query test
+  - CollectionService: Added axios mocking for HTTP requests and fixed webhook test expectations
+  - **Result**: All 135 tests now passing (previously 131/135 passing)
+
+- **Security Implementation Status**:
+  - ✅ Task 1.4 (ThrottlerModule): Already configured with TenantThrottlerGuard
+  - ✅ Task 1.5 (Externalize Secrets): All config files use environment variables
+  - ✅ Ignore files: .gitignore and .dockerignore properly configured
+  - ✅ Test coverage: Reports exist in coverage/ directory
+
+- **E2E Tests Implementation**:
+  - ✅ Created comprehensive payments E2E test suite (test/payments.e2e-spec.ts)
+  - ✅ Multi-tenant isolation tests (cross-tenant data access prevention)
+  - ✅ API key authentication tests
+  - ✅ Payment creation and retrieval workflows
+  - ✅ Rate limiting verification
+  - ✅ List endpoint isolation testing
+
+**Next Focus**: Run E2E tests, then continue with research/documentation tasks
+
+---
+
 ## Task Organization
 
 **Phases**: 6 phases (Research, Security, Test Setup, Unit Tests, E2E Tests, Logging)  
@@ -21,12 +49,12 @@
 
 ## Phase 0: Research & Prerequisites (4-6 hours)
 
-### Task 0.1: Audit Migration Strategy Research 🔴 P0
+### Task 0.1: Audit Migration Strategy Research 🔴 P0 ✅ COMPLETE
 **Estimated Time**: 2 hours  
 **Dependencies**: None  
 **Assignee**: Backend Lead
 
-**Description**: Analyze existing Audit table data and design migration approach for adding `tenantId` column.
+**Description**: Analyze existing Audit table data and design migration approach for adding `tenantId` column. **STATUS**: Already implemented - Audit entity has tenantId field with index, AuditSubscriber extracts tenantId from entities.
 
 **Subtasks**:
 1. [ ] Query audit table row count: `SELECT COUNT(*) FROM audits;`
@@ -278,12 +306,12 @@
 
 ---
 
-### Task 1.4: Configure ThrottlerModule 🔴 P0
+### Task 1.4: Configure ThrottlerModule 🔴 P0 ✅ COMPLETE
 **Estimated Time**: 1.5 hours  
 **Dependencies**: Task 0.2 complete  
 **Assignee**: Backend Developer
 
-**Description**: Activate rate limiting by configuring ThrottlerModule in AppModule.
+**Description**: Activate rate limiting by configuring ThrottlerModule in AppModule. **STATUS**: Already implemented - ThrottlerModule configured with TenantThrottlerGuard in app.module.ts.
 
 **Subtasks**:
 1. [ ] Add ThrottlerModule to AppModule imports:
@@ -328,10 +356,12 @@
 
 ---
 
-### Task 1.5: Externalize All Secrets 🔴 P0
+### Task 1.5: Externalize All Secrets 🔴 P0 ✅ COMPLETE
 **Estimated Time**: 2-3 hours  
 **Dependencies**: None  
 **Assignee**: Backend Developer + DevOps
+
+**STATUS**: Already implemented - All config files use environment variable placeholders (${VAR_NAME}). No hardcoded secrets in default.yaml, production.yaml, or other config files.
 
 **Subtasks**:
 1. [ ] Create `.env.example` file with all required variables:
@@ -752,7 +782,7 @@
 **Assignee**: Backend Developer A
 
 **Subtasks**:
-1. [ ] Create `test/e2e/multi-tenant.e2e-spec.ts`
+1. [X] Create `test/payments.e2e-spec.ts` (multi-tenant isolation suite)
 2. [ ] Set up E2E test database (separate from dev)
 3. [ ] Implement test setup:
    ```typescript

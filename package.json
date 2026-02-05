@@ -94,8 +94,16 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "<rootDir>/../test/jest-setup.ts"
+    ],
     "moduleNameMapper": {
-      "^src/(.*)$": "<rootDir>/$1"
-    }
+      "^src/(.*)$": "<rootDir>/$1",
+      "^test/(.*)$": "<rootDir>/../test/$1",
+      "^uuid$": "<rootDir>/../node_modules/uuid/dist/index.js"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(uuid)/)"
+    ]
   }
 }
