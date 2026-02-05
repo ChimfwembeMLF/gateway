@@ -12,6 +12,17 @@ mtn:
     target_environment: "${MTN_DISBURSEMENT_TARGET_ENVIRONMENT}"
     x_reference_id: "${MTN_DISBURSEMENT_X_REFERENCE_ID}"
     api_key: "${MTN_DISBURSEMENT_API_KEY}"
+
+airtel:
+  base: "${AIRTEL_BASE_URL:-https://openapi.airtel.co.zm}"  # Production: https://openapi.airtel.co.zm
+  client_id: "${AIRTEL_CLIENT_ID}"
+  client_secret: "${AIRTEL_CLIENT_SECRET}"
+  signing_secret: "${AIRTEL_SIGNING_SECRET}"
+  encryption_public_key: "${AIRTEL_ENCRYPTION_PUBLIC_KEY}"
+  collection:
+    country: "${AIRTEL_COLLECTION_COUNTRY:-ZM}"
+    currency: "${AIRTEL_COLLECTION_CURRENCY:-ZMW}"
+    
 db:
   host: "${DATABASE_HOST}"
   port: "${DATABASE_PORT}"

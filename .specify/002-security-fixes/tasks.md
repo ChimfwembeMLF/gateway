@@ -29,6 +29,12 @@
   - ✅ Rate limiting verification
   - ✅ List endpoint isolation testing
 
+- **Airtel Integration Kickoff**:
+  - ✅ Added Airtel collection module and request-to-pay service
+  - ✅ Wired Airtel provider into PaymentsService
+  - ✅ Added Airtel config placeholders (default/dev/prod/staging)
+  - ✅ Externalized staging secrets to environment variables
+
 **Next Focus**: Run E2E tests, then continue with research/documentation tasks
 
 ---

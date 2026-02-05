@@ -13,6 +13,15 @@ mtn:
     target_environment: "${MTN_DISBURSEMENT_TARGET_ENVIRONMENT}"
     x_reference_id: "${MTN_DISBURSEMENT_X_REFERENCE_ID}"
     api_key: "${MTN_DISBURSEMENT_API_KEY}"
+airtel:
+  base: "${AIRTEL_BASE_URL}"  # Staging: https://openapiuat.airtel.co.zm | Production: https://openapi.airtel.co.zm
+  client_id: "${AIRTEL_CLIENT_ID}"  # OAuth2 Client ID from developer portal
+  client_secret: "${AIRTEL_CLIENT_SECRET}"  # OAuth2 Client Secret from developer portal
+  signing_secret: "${AIRTEL_SIGNING_SECRET}"  # Secret for HMAC-SHA256 signature generation
+  encryption_public_key: "${AIRTEL_ENCRYPTION_PUBLIC_KEY}"  # RSA public key for AES key encryption
+  collection:
+    country: "${AIRTEL_COLLECTION_COUNTRY}"  # e.g., ZM
+    currency: "${AIRTEL_COLLECTION_CURRENCY}"  # e.g., ZMW
 db:
   host: "${DATABASE_HOST}"
   port: "${DATABASE_PORT}"

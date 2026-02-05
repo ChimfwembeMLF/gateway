@@ -1,0 +1,4 @@
+ERROR: Multiple spec directories found with prefix '001': 001-airtel-integration 001-production-security-fixes
+Please ensure only one spec directory exists per numeric prefix.
+Copied plan template to /home/kangwa/Documents/Personal/gateway/specs/001-airtel-integration/plan.md
+{"FEATURE_SPEC":"/home/kangwa/Documents/Personal/gateway/specs/001-airtel-integration/spec.md","IMPL_PLAN":"/home/kangwa/Documents/Personal/gateway/specs/001-airtel-integration/plan.md","SPECS_DIR":"/home/kangwa/Documents/Personal/gateway/specs/001-airtel-integration","BRANCH":"001-airtel-integration","HAS_GIT":"true"}

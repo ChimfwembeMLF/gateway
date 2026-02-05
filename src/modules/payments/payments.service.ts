@@ -121,7 +121,7 @@ export class PaymentsService {
         break;
       }
       case PaymentProvider.AIRTEL: {
-        const msisdn = this.normalizeMsisdn(createPaymentDto.payer, createPaymentDto.currency);
+        const msisdn = this.normalizeMsisdn(createPaymentDto.payer, '260');
         const airtelRequest = {
           reference: paymentExternalId,
           subscriber: {
@@ -179,6 +179,15 @@ export class PaymentsService {
     const payment = await this.findOne(id, tenantId);
     payment.status = status;
     return this.paymentRepository.save(payment);
+  }
+
+  private normalizeMsisdn(msisdn: string, countryCode: string = '260'): string {
+    if (!msisdn) return msisdn;
+    const trimmed = msisdn.replace(/\s+/g, '').replace(/^\+/, '');
+    if (trimmed.startsWith(countryCode)) {
+      return trimmed.slice(countryCode.length);
+    }
+    return trimmed;
   }
 
   async getPaymentStatus(

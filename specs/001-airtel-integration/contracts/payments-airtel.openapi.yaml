@@ -1,0 +1,65 @@
+openapi: 3.0.3
+info:
+  title: Payment Gateway - Airtel Collection
+  version: 1.0.0
+paths:
+  /api/v1/payments:
+    post:
+      summary: Create a payment (Airtel provider)
+      description: Initiate a collection payment via Airtel Money.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider, amount, currency, payer, payerMessage, payeeNote]
+              properties:
+                provider:
+                  type: string
+                  enum: [AIRTEL]
+                amount:
+                  type: number
+                currency:
+                  type: string
+                  example: ZMW
+                payer:
+                  type: string
+                  description: MSISDN (without country code)
+                payerMessage:
+                  type: string
+                payeeNote:
+                  type: string
+                externalId:
+                  type: string
+                  description: Client-provided idempotency key
+      responses:
+        '201':
+          description: Payment created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: string }
+                  tenantId: { type: string }
+                  provider: { type: string }
+                  status: { type: string }
+                  externalId: { type: string }
+        '400':
+          description: Validation or provider error
+        '401':
+          description: Unauthorized
+  /api/v1/payments/{id}:
+    get:
+      summary: Get payment by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Payment found
+        '404':
+          description: Not found
