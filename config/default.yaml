@@ -22,6 +22,22 @@ airtel:
   collection:
     country: "${AIRTEL_COLLECTION_COUNTRY}"  # e.g., ZM
     currency: "${AIRTEL_COLLECTION_CURRENCY}"  # e.g., ZMW
+email:
+  provider: "${EMAIL_PROVIDER}"  # Options: 'sendgrid' | 'nodemailer' | 'mock' | 'console'
+  sendgrid:
+    api_key: "${SENDGRID_API_KEY}"  # SendGrid API key for production email sending
+    from_email: "${SENDGRID_FROM_EMAIL}"
+    from_name: "${SENDGRID_FROM_NAME}"
+  nodemailer:
+    host: "${NODEMAILER_HOST}"  # SMTP server host (e.g., smtp.gmail.com)
+    port: "${NODEMAILER_PORT}"  # SMTP server port (usually 587 for TLS, 465 for SSL)
+    secure: "${NODEMAILER_SECURE}"  # true for port 465, false for other ports
+    user: "${NODEMAILER_USER}"  # SMTP username
+    pass: "${NODEMAILER_PASS}"  # SMTP password or app-specific password
+    from_email: "${NODEMAILER_FROM_EMAIL}"
+    from_name: "${NODEMAILER_FROM_NAME}"
+  default_from: "${EMAIL_FROM}"  # Default from email address
+  reply_to: "${EMAIL_REPLY_TO}"  # Default reply-to address
 db:
   host: "${DATABASE_HOST}"
   port: "${DATABASE_PORT}"

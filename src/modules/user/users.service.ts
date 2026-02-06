@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { randomBytes } from 'crypto';
 import { RoleType } from 'src/common/enums/role-type.enum';
 @Injectable()
 export class UsersService {
@@ -22,10 +21,6 @@ export class UsersService {
 
 
   async createUser(data: Partial<User> & { tenantId: string }): Promise<User> {
-    // Generate API key if not present
-    if (!data.apiKey) {
-      data.apiKey = randomBytes(32).toString('hex');
-    }
     // Ensure username is unique per tenant
     if (!data.tenantId) {
       throw new Error('tenantId is required');
@@ -39,13 +34,6 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
-  async generateApiKeyForUser(userId: string, tenantId: string): Promise<string> {
-    const apiKey = randomBytes(32).toString('hex');
-    await this.userRepository.update({ id: userId, tenantId }, { apiKey });
-    return apiKey;
-  }
-
-
   async findAll(tenantId: string): Promise<User[]> {
     return this.userRepository.find({ where: { tenantId } });
   }
@@ -58,10 +46,6 @@ export class UsersService {
 
   async findByEmail(email: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { email } });
-  }
-
-  async findByApiKey(apiKey: string, tenantId: string): Promise<User | null> {
-    return this.userRepository.findOne({ where: { apiKey, tenantId } });
   }
 
   async findByUsernameOrEmail(username: string, email: string): Promise<User | null> {

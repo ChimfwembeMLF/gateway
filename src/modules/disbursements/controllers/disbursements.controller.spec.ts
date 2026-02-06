@@ -7,6 +7,7 @@ import { DisbursementStatus } from 'src/common/enums/disbursement-status.enum';
 import { WalletType } from 'src/common/enums/wallet-type.enum';
 import { TransactionType } from 'src/common/enums/transaction-type.enum';
 import { PaymentProvider } from '../dto/create-disbursement.dto';
+import { TenantService } from '../../tenant/tenant.service';
 
 describe('DisbursementsController', () => {
   let app: INestApplication;
@@ -59,6 +60,14 @@ describe('DisbursementsController', () => {
             countByStatus: jest.fn(),
           },
         },
+        {
+          provide: TenantService,
+          useValue: {
+            findOne: jest.fn(),
+            findAll: jest.fn(),
+            createTenantWithAdmin: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -89,7 +98,7 @@ describe('DisbursementsController', () => {
       jest.spyOn(service, 'createDisbursement').mockResolvedValue(mockResponseDto as any);
 
       const response = await request(app.getHttpServer())
-        .post('/disbursements')
+        .post('/api/v1/disbursements')
         .send(mockCreateDto)
         .expect(201);
 
@@ -101,7 +110,7 @@ describe('DisbursementsController', () => {
       const { externalId, ...invalidDto } = mockCreateDto;
 
       await request(app.getHttpServer())
-        .post('/disbursements')
+        .post('/api/v1/disbursements')
         .send(invalidDto)
         .expect(400);
 
@@ -112,7 +121,7 @@ describe('DisbursementsController', () => {
       const invalidDto = { ...mockCreateDto, amount: 0 };
 
       await request(app.getHttpServer())
-        .post('/disbursements')
+        .post('/api/v1/disbursements')
         .send(invalidDto)
         .expect(400);
 
@@ -123,7 +132,7 @@ describe('DisbursementsController', () => {
       const invalidDto = { ...mockCreateDto, pin: '123' };
 
       await request(app.getHttpServer())
-        .post('/disbursements')
+        .post('/api/v1/disbursements')
         .send(invalidDto)
         .expect(400);
 
@@ -134,7 +143,7 @@ describe('DisbursementsController', () => {
       const invalidDto = { ...mockCreateDto, unknownField: 'test' };
 
       await request(app.getHttpServer())
-        .post('/disbursements')
+        .post('/api/v1/disbursements')
         .send(invalidDto)
         .expect(400);
 
@@ -147,7 +156,7 @@ describe('DisbursementsController', () => {
         .mockRejectedValue(new Error('Duplicate externalId'));
 
       await request(app.getHttpServer())
-        .post('/disbursements')
+        .post('/api/v1/disbursements')
         .send(mockCreateDto)
         .expect(500); // or 409 if proper error handling
     });
@@ -156,7 +165,7 @@ describe('DisbursementsController', () => {
       const invalidDto = { ...mockCreateDto, walletType: 'INVALID_TYPE' };
 
       await request(app.getHttpServer())
-        .post('/disbursements')
+        .post('/api/v1/disbursements')
         .send(invalidDto)
         .expect(400);
     });
@@ -165,7 +174,7 @@ describe('DisbursementsController', () => {
       const invalidDto = { ...mockCreateDto, transactionType: 'INVALID_TYPE' };
 
       await request(app.getHttpServer())
-        .post('/disbursements')
+        .post('/api/v1/disbursements')
         .send(invalidDto)
         .expect(400);
     });
@@ -176,7 +185,7 @@ describe('DisbursementsController', () => {
       jest.spyOn(service, 'getDisbursement').mockResolvedValue(mockResponseDto as any);
 
       const response = await request(app.getHttpServer())
-        .get('/disbursements/disb-001')
+        .get('/api/v1/disbursements/disb-001')
         .expect(200);
 
       expect(response.body).toEqual(mockResponseDto);
@@ -189,7 +198,7 @@ describe('DisbursementsController', () => {
         .mockRejectedValue(new Error('Disbursement not found'));
 
       await request(app.getHttpServer())
-        .get('/disbursements/invalid-id')
+        .get('/api/v1/disbursements/invalid-id')
         .expect(500); // or 400 if proper error handling
     });
 
@@ -197,7 +206,7 @@ describe('DisbursementsController', () => {
       jest.spyOn(service, 'getDisbursement').mockResolvedValue(mockResponseDto as any);
 
       await request(app.getHttpServer())
-        .get('/disbursements/disb-001')
+        .get('/api/v1/disbursements/disb-001')
         .expect(200);
 
       expect(service.getDisbursement).toHaveBeenCalledWith('disb-001', tenantId);
@@ -217,7 +226,7 @@ describe('DisbursementsController', () => {
       jest.spyOn(service, 'listDisbursements').mockResolvedValue(mockListResponse as any);
 
       const response = await request(app.getHttpServer())
-        .get('/disbursements')
+        .get('/api/v1/disbursements')
         .expect(200);
 
       expect(response.body).toEqual(mockListResponse);
@@ -236,7 +245,7 @@ describe('DisbursementsController', () => {
       jest.spyOn(service, 'listDisbursements').mockResolvedValue(mockListResponse as any);
 
       const response = await request(app.getHttpServer())
-        .get('/disbursements?page=2&limit=50')
+        .get('/api/v1/disbursements?page=2&limit=50')
         .expect(200);
 
       expect(response.body).toEqual(mockListResponse);
@@ -261,7 +270,7 @@ describe('DisbursementsController', () => {
       jest.spyOn(service, 'listDisbursements').mockResolvedValue(mockListResponse as any);
 
       const response = await request(app.getHttpServer())
-        .get(`/disbursements?status=${DisbursementStatus.SUCCESS}`)
+        .get(`/api/v1/disbursements?status=${DisbursementStatus.SUCCESS}`)
         .expect(200);
 
       expect(response.body).toEqual(mockListResponse);
@@ -288,7 +297,7 @@ describe('DisbursementsController', () => {
       const endDate = '2024-02-06T23:59:59Z';
 
       const response = await request(app.getHttpServer())
-        .get(`/disbursements?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`)
+        .get(`/api/v1/disbursements?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`)
         .expect(200);
 
       expect(response.body).toEqual(mockListResponse);
@@ -313,7 +322,7 @@ describe('DisbursementsController', () => {
       jest.spyOn(service, 'listDisbursements').mockResolvedValue(mockListResponse as any);
 
       await request(app.getHttpServer())
-        .get('/disbursements')
+        .get('/api/v1/disbursements')
         .expect(200);
 
       // Verify tenantId was passed (should come from CurrentTenant decorator)
@@ -322,13 +331,13 @@ describe('DisbursementsController', () => {
 
     it('should validate invalid page number', async () => {
       await request(app.getHttpServer())
-        .get('/disbursements?page=0')
+        .get('/api/v1/disbursements?page=0')
         .expect(400); // or accept and let service handle
     });
 
     it('should validate invalid limit', async () => {
       await request(app.getHttpServer())
-        .get('/disbursements?limit=0')
+        .get('/api/v1/disbursements?limit=0')
         .expect(400); // or accept and let service handle
     });
 
@@ -348,7 +357,7 @@ describe('DisbursementsController', () => {
 
       await request(app.getHttpServer())
         .get(
-          `/disbursements?page=1&limit=20&status=${DisbursementStatus.SUCCESS}&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`,
+          `/api/v1/disbursements?page=1&limit=20&status=${DisbursementStatus.SUCCESS}&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`,
         )
         .expect(200);
 

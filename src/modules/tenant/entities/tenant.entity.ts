@@ -1,6 +1,6 @@
 import { AbstractEntity } from 'src/common/entities/abstract.entity';
 import { Entity, Column, PrimaryGeneratedColumn, Index, OneToMany } from 'typeorm';
-import { Disbursement } from '../../mtn/disbursement/entities';
+import { Disbursement } from '../../disbursements/entities/disbursement.entity';
 import { TenantBillingSubscription } from '../../billing/entities';
 
 @Entity('tenants')

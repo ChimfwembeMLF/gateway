@@ -71,24 +71,5 @@ export class UserController {
     await this.userService.remove(id, tenantId);
   }
 
-  @Post(':id/generate-api-key')
-  @Auth([RoleType.ADMIN])
-  @ApiOperation({ summary: 'Generate new API key for user' })
-  @ApiParam({ name: 'id', type: String })
-  @ApiResponse({ status: 200, description: 'API key generated', schema: { type: 'object', properties: { apiKey: { type: 'string' } } } })
-  async generateApiKey(@Param('id') id: string, @Req() req: any): Promise<{ apiKey: string }> {
-    const tenantId = req.user.tenantId;
-    const apiKey = await this.userService.generateApiKeyForUser(id, tenantId);
-    return { apiKey };
-  }
-
-    @Get(':id/credentials')
-    @Auth([RoleType.ADMIN])
-    @ApiOperation({ summary: 'Get user API key and tenantId (admin only)' })
-    @ApiResponse({ status: 200, schema: { type: 'object', properties: { apiKey: { type: 'string' }, tenantId: { type: 'string' } } } })
-    async getCredentials(@Param('id') id: string, @Req() req: any): Promise<{ apiKey: string, tenantId: string }> {
-      const user = await this.userService.findById(id, req.user.tenantId);
-      if (!user) throw new ForbiddenException('User not found');
-      return { apiKey: user.apiKey ?? '', tenantId: user.tenantId };
-    }
 }
+

@@ -5,10 +5,13 @@ import {
   Index,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { DisbursementStatus } from 'src/common/enums/disbursement-status.enum';
 import { WalletType } from 'src/common/enums/wallet-type.enum';
 import { TransactionType } from 'src/common/enums/transaction-type.enum';
+import { Tenant } from '../../tenant/entities/tenant.entity';
 
 /**
  * Payment provider enum
@@ -51,6 +54,13 @@ export class Disbursement {
    */
   @Column({ nullable: false })
   tenantId: string;
+
+  /**
+   * Relationship to Tenant
+   */
+  @ManyToOne(() => Tenant, (tenant) => tenant.disbursements)
+  @JoinColumn({ name: 'tenantId' })
+  tenant: Tenant;
 
   /**
    * Client-provided idempotency key/transaction reference

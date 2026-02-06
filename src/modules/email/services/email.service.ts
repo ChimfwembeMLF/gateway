@@ -1,14 +1,63 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Invoice } from '../../billing/entities';
+import { EmailProvider } from '../interfaces/email-provider.interface';
+import { NodemailerProvider } from '../providers/nodemailer.provider';
+import { MockEmailProvider } from '../providers/mock.provider';
+import { ConsoleEmailProvider } from '../providers/console.provider';
 
 /**
  * EmailService
  * Handles email notifications for billing events
- * Note: Integrate with actual email provider (SendGrid, Mailgun, AWS SES, etc.)
+ * Supports multiple email providers: SendGrid, Nodemailer, Mock, Console
  */
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
+  private provider: EmailProvider;
+
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly nodemailerProvider: NodemailerProvider,
+    private readonly mockProvider: MockEmailProvider,
+    private readonly consoleProvider: ConsoleEmailProvider,
+  ) {
+    this.provider = this.initializeProvider();
+  }
+
+  /**
+   * Initialize email provider based on configuration
+   */
+  private initializeProvider(): EmailProvider {
+    const emailProvider = this.configService.get<string>('email.provider', 'console');
+    
+    switch (emailProvider) {
+      case 'nodemailer':
+        this.logger.log('Using Nodemailer email provider');
+        return this.nodemailerProvider;
+      case 'mock':
+        this.logger.log('Using Mock email provider (for testing)');
+        return this.mockProvider;
+      case 'console':
+      default:
+        this.logger.log('Using Console email provider (development)');
+        return this.consoleProvider;
+    }
+  }
+
+  /**
+   * Get current email provider (for testing)
+   */
+  getProvider(): EmailProvider {
+    return this.provider;
+  }
+
+  /**
+   * Set email provider (for testing)
+   */
+  setProvider(provider: EmailProvider): void {
+    this.provider = provider;
+  }
 
   /**
    * Send invoice notification email
@@ -21,16 +70,13 @@ export class EmailService {
     try {
       this.logger.log(`Sending invoice notification to ${toEmail} for invoice ${invoice.invoiceNumber}`);
 
-      // TODO: Integrate with actual email provider
-      // Example template:
       const emailContent = this.generateInvoiceEmailContent(tenantName, invoice);
-
-      // Example implementation (replace with actual email provider):
-      // await this.emailProvider.send({
-      //   to: toEmail,
-      //   subject: `Invoice ${invoice.invoiceNumber} from Payment Gateway`,
-      //   html: emailContent,
-      // });
+      
+      await this.provider.send({
+        to: toEmail,
+        subject: `Invoice ${invoice.invoiceNumber} from Payment Gateway`,
+        html: emailContent,
+      });
 
       this.logger.log(`Invoice notification sent to ${toEmail}`);
     } catch (error) {
@@ -52,12 +98,11 @@ export class EmailService {
 
       const emailContent = this.generateReminderEmailContent(tenantName, invoice);
 
-      // TODO: Integrate with actual email provider
-      // await this.emailProvider.send({
-      //   to: toEmail,
-      //   subject: `Payment Reminder: Invoice ${invoice.invoiceNumber} Due Soon`,
-      //   html: emailContent,
-      // });
+      await this.provider.send({
+        to: toEmail,
+        subject: `Payment Reminder: Invoice ${invoice.invoiceNumber} Due Soon`,
+        html: emailContent,
+      });
 
       this.logger.log(`Invoice reminder sent to ${toEmail}`);
     } catch (error) {
@@ -79,12 +124,11 @@ export class EmailService {
 
       const emailContent = this.generateOverdueEmailContent(tenantName, invoice);
 
-      // TODO: Integrate with actual email provider
-      // await this.emailProvider.send({
-      //   to: toEmail,
-      //   subject: `URGENT: Invoice ${invoice.invoiceNumber} is Overdue`,
-      //   html: emailContent,
-      // });
+      await this.provider.send({
+        to: toEmail,
+        subject: `URGENT: Invoice ${invoice.invoiceNumber} is Overdue`,
+        html: emailContent,
+      });
 
       this.logger.log(`Overdue notification sent to ${toEmail}`);
     } catch (error) {

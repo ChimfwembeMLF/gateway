@@ -12,7 +12,6 @@ describe('UsersService', () => {
     username: 'testuser',
     email: 'test@example.com',
     tenantId: 'tenant-123',
-    apiKey: 'api-key-123',
   };
 
   beforeEach(async () => {
@@ -40,27 +39,6 @@ describe('UsersService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
-  });
-
-  describe('findByApiKey', () => {
-    it('should return user by API key and tenant ID', async () => {
-      mockRepository.findOne.mockResolvedValue(mockUser);
-
-      const result = await service.findByApiKey('api-key-123', 'tenant-123');
-
-      expect(result).toEqual(mockUser);
-      expect(mockRepository.findOne).toHaveBeenCalledWith({
-        where: { apiKey: 'api-key-123', tenantId: 'tenant-123' },
-      });
-    });
-
-    it('should return null if user not found', async () => {
-      mockRepository.findOne.mockResolvedValue(null);
-
-      const result = await service.findByApiKey('invalid-key', 'tenant-123');
-
-      expect(result).toBeNull();
-    });
   });
 
   describe('findById', () => {
