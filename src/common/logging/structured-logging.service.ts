@@ -108,6 +108,7 @@ export class StructuredLoggingService {
       tenantId: string;
       amount: number;
       currency: string;
+      provider?: string;
       payer?: string;
       payee?: string;
       status?: string;

@@ -1,0 +1,420 @@
+openapi: 3.0.3
+info:
+  title: Airtel Money Disbursements API
+  description: |
+    Send payouts to customer Airtel Money wallets. Supports salary payments, refunds, and B2C/B2B transactions.
+    
+    **Multi-Tenancy**: All endpoints require `Authorization: Bearer <API_KEY>` and implicit tenant resolution via API key.
+    
+    **Idempotency**: POST requests use `externalId` as idempotency key. Duplicate `externalId` returns original result.
+  version: 1.0.0
+  contact:
+    name: Payment Gateway Support
+    email: support@example.com
+
+servers:
+  - url: https://api.example.com/api/v1
+    description: Production
+  - url: https://staging-api.example.com/api/v1
+    description: Staging
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /disbursements:
+    post:
+      summary: Create disbursement
+      description: |
+        Initiate a payout to an Airtel Money wallet. Returns immediately with transaction ID.
+        Status may be PENDING initially; query status endpoint for updates.
+        
+        **Idempotency**: Requests with duplicate `externalId` return existing disbursement without creating duplicate.
+      operationId: createDisbursement
+      tags:
+        - Disbursements
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDisbursementRequest'
+            examples:
+              salary:
+                summary: Salary payment to employee
+                value:
+                  externalId: "PAY-2024-001"
+                  payeeMsisdn: "975123456"
+                  walletType: "SALARY"
+                  amount: 5000.00
+                  currency: "ZMW"
+                  reference: "January 2024 Salary"
+                  pin: "1234"
+                  transactionType: "B2B"
+              refund:
+                summary: Customer refund
+                value:
+                  externalId: "REF-ORD-54321"
+                  payeeMsisdn: "977654321"
+                  amount: 250.50
+                  currency: "ZMW"
+                  reference: "Order #54321 refund"
+                  pin: "1234"
+      responses:
+        '201':
+          description: Disbursement created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisbursementResponse'
+              example:
+                id: "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                externalId: "PAY-2024-001"
+                status: "PENDING"
+                amount: 5000.00
+                currency: "ZMW"
+                payeeMsisdn: "975123456"
+                walletType: "SALARY"
+                transactionType: "B2B"
+                reference: "January 2024 Salary"
+                airtelReferenceId: "APC1234567"
+                createdAt: "2026-02-05T10:30:00Z"
+        '200':
+          description: Idempotent request - existing disbursement returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisbursementResponse'
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidMsisdn:
+                  summary: MSISDN includes country code
+                  value:
+                    statusCode: 400
+                    message: "MSISDN should not include country code"
+                    error: "Bad Request"
+                invalidAmount:
+                  summary: Amount must be positive
+                  value:
+                    statusCode: 400
+                    message: "amount must be a positive number"
+                    error: "Bad Request"
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    get:
+      summary: List disbursements
+      description: |
+        Retrieve paginated list of disbursements for authenticated tenant.
+        Supports filtering by status and date range.
+      operationId: listDisbursements
+      tags:
+        - Disbursements
+      parameters:
+        - name: page
+          in: query
+          description: Page number (1-indexed)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: status
+          in: query
+          description: Filter by disbursement status
+          schema:
+            type: string
+            enum: [PENDING, PROCESSING, SUCCESS, FAILED]
+        - name: fromDate
+          in: query
+          description: Filter disbursements created after this date (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: toDate
+          in: query
+          description: Filter disbursements created before this date (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Disbursements retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisbursementListResponse'
+              example:
+                data:
+                  - id: "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                    externalId: "PAY-2024-001"
+                    status: "SUCCESS"
+                    amount: 5000.00
+                    currency: "ZMW"
+                    payeeMsisdn: "975123456"
+                    createdAt: "2026-02-05T10:30:00Z"
+                  - id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                    externalId: "PAY-2024-002"
+                    status: "PENDING"
+                    amount: 2500.00
+                    currency: "ZMW"
+                    payeeMsisdn: "977654321"
+                    createdAt: "2026-02-05T11:00:00Z"
+                pagination:
+                  page: 1
+                  limit: 20
+                  total: 45
+                  pages: 3
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /disbursements/{id}:
+    get:
+      summary: Get disbursement status
+      description: |
+        Retrieve detailed information about a specific disbursement.
+        If status is PENDING, may query Airtel for latest update.
+      operationId: getDisbursement
+      tags:
+        - Disbursements
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Disbursement ID (UUID)
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Disbursement details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisbursementResponse'
+              example:
+                id: "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                externalId: "PAY-2024-001"
+                status: "SUCCESS"
+                amount: 5000.00
+                currency: "ZMW"
+                payeeMsisdn: "975123456"
+                walletType: "SALARY"
+                transactionType: "B2B"
+                reference: "January 2024 Salary"
+                airtelReferenceId: "APC1234567"
+                airtelMoneyId: "AM-987654321"
+                createdAt: "2026-02-05T10:30:00Z"
+                updatedAt: "2026-02-05T10:30:45Z"
+        '404':
+          description: Disbursement not found or belongs to different tenant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API_KEY
+      description: |
+        API key for tenant authentication. Obtain from gateway dashboard.
+        Include in Authorization header: `Authorization: Bearer YOUR_API_KEY`
+
+  schemas:
+    CreateDisbursementRequest:
+      type: object
+      required:
+        - externalId
+        - payeeMsisdn
+        - amount
+        - currency
+        - reference
+        - pin
+      properties:
+        externalId:
+          type: string
+          description: Client-provided idempotency key (unique per tenant)
+          example: "PAY-2024-001"
+          maxLength: 255
+        payeeMsisdn:
+          type: string
+          description: Recipient mobile number WITHOUT country code
+          example: "975123456"
+          pattern: '^[0-9]{9,15}$'
+        walletType:
+          type: string
+          description: Recipient wallet type
+          enum: [NORMAL, SALARY]
+          default: NORMAL
+        amount:
+          type: number
+          format: decimal
+          description: Disbursement amount (must be positive)
+          example: 5000.00
+          minimum: 0.01
+        currency:
+          type: string
+          description: Currency code (ISO 4217)
+          example: "ZMW"
+          default: "ZMW"
+          pattern: '^[A-Z]{3}$'
+        reference:
+          type: string
+          description: Business reference for this disbursement
+          example: "January 2024 Salary"
+          maxLength: 255
+        pin:
+          type: string
+          description: 4-digit numeric PIN (will be encrypted before transmission)
+          example: "1234"
+          pattern: '^[0-9]{4}$'
+        transactionType:
+          type: string
+          description: Transaction classification
+          enum: [B2C, B2B]
+          default: B2C
+
+    DisbursementResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Gateway-generated disbursement ID
+          example: "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+        externalId:
+          type: string
+          description: Client-provided idempotency key
+          example: "PAY-2024-001"
+        status:
+          type: string
+          enum: [PENDING, PROCESSING, SUCCESS, FAILED]
+          description: Current disbursement status
+        amount:
+          type: number
+          format: decimal
+          example: 5000.00
+        currency:
+          type: string
+          example: "ZMW"
+        payeeMsisdn:
+          type: string
+          example: "975123456"
+        walletType:
+          type: string
+          enum: [NORMAL, SALARY]
+          example: "SALARY"
+        transactionType:
+          type: string
+          enum: [B2C, B2B]
+          example: "B2B"
+        reference:
+          type: string
+          example: "January 2024 Salary"
+        airtelReferenceId:
+          type: string
+          nullable: true
+          description: Airtel-generated reference ID
+          example: "APC1234567"
+        airtelMoneyId:
+          type: string
+          nullable: true
+          description: Airtel Money transaction ID
+          example: "AM-987654321"
+        errorCode:
+          type: string
+          nullable: true
+          description: Error code if status is FAILED
+          example: "WALLET_SUSPENDED"
+        errorMessage:
+          type: string
+          nullable: true
+          description: Human-readable error message
+          example: "Recipient wallet is suspended"
+        createdAt:
+          type: string
+          format: date-time
+          description: Disbursement creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+
+    DisbursementListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/DisbursementResponse'
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+              example: 1
+            limit:
+              type: integer
+              example: 20
+            total:
+              type: integer
+              description: Total number of disbursements matching filter
+              example: 45
+            pages:
+              type: integer
+              description: Total number of pages
+              example: 3
+
+    ErrorResponse:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: "Invalid request parameters"
+        error:
+          type: string
+          example: "Bad Request"

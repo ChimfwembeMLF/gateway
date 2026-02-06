@@ -22,6 +22,7 @@ import { TenantThrottlerGuard } from './common/guards/tenant-throttler.guard';
 import { UsageTrackingInterceptor } from './modules/billing/interceptors/usage-tracking.interceptor';
 import { UsageMetricsService, BillingPlanSeedingService } from './modules/billing/services';
 import { EmailModule } from './modules/email/email.module';
+import { DisbursementsModule } from './modules/disbursements/disbursements.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { EmailModule } from './modules/email/email.module';
     MtnModule,
     BillingModule,
     EmailModule,
+    DisbursementsModule,
   ],
   providers: [
     StructuredLoggingService,

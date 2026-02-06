@@ -105,4 +105,50 @@ export class AirtelSigningService {
       return false;
     }
   }
+
+  /**
+   * Encrypt PIN for disbursement requests
+   * Uses RSA-OAEP encryption with Airtel's public key
+   * @param pin 4-digit PIN in plain text
+   * @returns Base64-encoded encrypted PIN
+   */
+  encryptPin(pin: string): string {
+    const publicKey = this.configService.get<string>('airtel.encryption_public_key');
+
+    if (!publicKey) {
+      throw new Error('Airtel encryption public key not configured');
+    }
+
+    try {
+      // Validate PIN format (should be 4 digits)
+      if (!/^\d{4}$/.test(pin)) {
+        throw new Error('PIN must be exactly 4 digits');
+      }
+
+      // Convert PIN to buffer
+      const pinBuffer = Buffer.from(pin, 'utf-8');
+
+      // Encrypt with RSA public key using OAEP padding
+      const encrypted = crypto.publicEncrypt(
+        {
+          key: publicKey,
+          padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+          oaepHash: 'sha256',
+        },
+        pinBuffer,
+      );
+
+      // Return as base64-encoded string
+      const encryptedPin = encrypted.toString('base64');
+
+      this.logger.debug('[AirtelSigning] PIN encrypted successfully');
+
+      return encryptedPin;
+    } catch (error) {
+      this.logger.error('[AirtelSigning] Failed to encrypt PIN', {
+        error: error?.message,
+      });
+      throw new Error('Failed to encrypt PIN');
+    }
+  }
 }
