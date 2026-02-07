@@ -20,21 +20,24 @@ RUN yarn build
 FROM node:20-alpine
 WORKDIR /app
 
+# Support custom environment file selection
+ARG ENV_FILE=.env.production
+
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
+  adduser -S nodejs -u 1001
 
 # Copy only production deps
 COPY package.json yarn.lock ./
 RUN yarn install --production --frozen-lockfile && \
-    yarn cache clean
+  yarn cache clean
 
 # Copy built app + configs from builder
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/config ./config
 
-# Copy .env.example to .env for runtime environment variables
-COPY .env.example .env
+# Copy selected env file to .env
+COPY ${ENV_FILE} .env
 
 # Change ownership to nodejs user
 RUN chown -R nodejs:nodejs /app
