@@ -3,6 +3,16 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 export class AddApiKeyToTenants1770237000000 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+        const tableExists = await queryRunner.hasTable('tenants');
+        if (!tableExists) {
+            return; // Skip if table doesn't exist yet
+        }
+
+        const columnExists = await queryRunner.hasColumn('tenants', 'apiKey');
+        if (columnExists) {
+            return; // Skip if column already exists
+        }
+
         // Add apiKey column (nullable initially)
         await queryRunner.query(`
             ALTER TABLE "tenants" 
@@ -27,11 +37,15 @@ export class AddApiKeyToTenants1770237000000 implements MigrationInterface {
             ADD CONSTRAINT "UQ_tenants_apiKey" UNIQUE ("apiKey")
         `);
 
-        // Create index for performance
-        await queryRunner.query(`
-            CREATE INDEX "IDX_tenants_apiKey" 
-            ON "tenants" ("apiKey")
-        `);
+        // Create index for performance (skip if already exists)
+        try {
+            await queryRunner.query(`
+                CREATE INDEX "IDX_tenants_apiKey" 
+                ON "tenants" ("apiKey")
+            `);
+        } catch (error) {
+            // Index already exists, skip
+        }
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

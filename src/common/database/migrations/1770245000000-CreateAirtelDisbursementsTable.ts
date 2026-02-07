@@ -2,6 +2,12 @@ import { MigrationInterface, QueryRunner, Table, TableIndex, TableUnique } from 
 
 export class CreateAirtelDisbursementsTable1770245000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
+    // This migration is superseded by AddDisbursementTables migration (1770240000000)
+    // which creates the disbursements table with the correct schema.
+    // This migration was created for Airtel-specific fields but those are now
+    // handled via the 'provider' column in the unified disbursements table.
+    return; // Skip entirely - table is created by AddDisbursementTables
+    
     await queryRunner.createTable(
       new Table({
         name: 'disbursements',

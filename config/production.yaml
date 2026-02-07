@@ -29,3 +29,4 @@ db:
   username: "${DATABASE_USERNAME}"
   password: "${DATABASE_PASSWORD}"
   database: "${DATABASE_NAME}"
+  synchronise: "${DATABASE_SYNCHRONIZE}"

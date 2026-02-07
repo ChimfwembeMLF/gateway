@@ -20,16 +20,17 @@ export class BillingPlanSeedingService {
    * Seed default billing plans
    */
   async seedBillingPlans(): Promise<void> {
-    this.logger.log('Checking if billing plans need to be seeded...');
+    try {
+      this.logger.log('Checking if billing plans need to be seeded...');
 
-    const existingPlans = await this.billingPlanRepository.count();
+      const existingPlans = await this.billingPlanRepository.count();
 
-    if (existingPlans > 0) {
-      this.logger.log(`Billing plans already exist (${existingPlans} plans found). Skipping seeding.`);
-      return;
-    }
+      if (existingPlans > 0) {
+        this.logger.log(`Billing plans already exist (${existingPlans} plans found). Skipping seeding.`);
+        return;
+      }
 
-    this.logger.log('Seeding default billing plans...');
+      this.logger.log('Seeding default billing plans...');
 
     const defaultPlans = [
       {
@@ -133,6 +134,15 @@ export class BillingPlanSeedingService {
     } catch (error) {
       this.logger.error(`Error seeding billing plans: ${error.message}`, error);
       throw error;
+    }
+    } catch (error) {
+      // If table doesn't exist yet (synchronize: true hasn't created it), skip seeding
+      if (error.code === '42P01') {
+        this.logger.warn('Billing plans table does not exist yet. Skipping seeding. Will retry on next startup.');
+        return;
+      }
+      this.logger.error(`Error checking or seeding billing plans: ${error.message}`, error);
+      // Don't throw - allow app to start even if seeding fails
     }
   }
 }

@@ -2,6 +2,11 @@ import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class AddWebhookLogsTable1770241000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
+    const tableExists = await queryRunner.hasTable('webhook_logs');
+    if (tableExists) {
+      return; // Skip if table already exists
+    }
+
     await queryRunner.createTable(
       new Table({
         name: 'webhook_logs',

@@ -1110,6 +1110,13 @@
   dependencies:
     undici-types "~6.21.0"
 
+"@types/nodemailer@^6.4.18":
+  version "6.4.22"
+  resolved "https://registry.yarnpkg.com/@types/nodemailer/-/nodemailer-6.4.22.tgz#8d1b8415b30a9ddc6d2866923017159f64de0859"
+  integrity sha512-HV16KRsW7UyZBITE07B62k8PRAKFqRSFXn1T7vslurVjN761tMDBhk5Lbt17ehyTzK6XcyJnAgUpevrvkcVOzw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/passport-jwt@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@types/passport-jwt/-/passport-jwt-4.0.1.tgz#080fbe934fb9f6954fb88ec4cdf4bb2cc7c4d435"
@@ -4103,6 +4110,11 @@ node-releases@^2.0.27:
   version "2.0.27"
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.27.tgz#eedca519205cf20f650f61d56b070db111231e4e"
   integrity sha512-nmh3lCkYZ3grZvqcCH+fjmQ7X+H0OeZgP40OierEaAptX4XofMh5kwNbWh7lBduUzCcV/8kZ+NDLCwm2iorIlA==
+
+nodemailer@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-8.0.0.tgz#2197b7e988ac26d6d30de7e64e209fc0b306f9b2"
+  integrity sha512-xvVJf/f0bzmNpnRIbhCp/IKxaHgJ6QynvUbLXzzMRPG3LDQr5oXkYuw4uDFyFYs8cge8agwwrJAXZsd4hhMquw==
 
 normalize-path@^3.0.0, normalize-path@~3.0.0:
   version "3.0.0"

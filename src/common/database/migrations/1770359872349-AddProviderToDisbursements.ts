@@ -3,6 +3,16 @@ import { MigrationInterface, QueryRunner, TableColumn } from "typeorm"
 export class AddProviderToDisbursements1770359872349 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+        const tableExists = await queryRunner.hasTable('disbursements');
+        if (!tableExists) {
+            return; // Skip if table doesn't exist yet
+        }
+
+        const columnExists = await queryRunner.hasColumn('disbursements', 'provider');
+        if (columnExists) {
+            return; // Skip if column already exists
+        }
+
         // Add provider enum type if it doesn't exist
         await queryRunner.query(`
             DO $$ BEGIN

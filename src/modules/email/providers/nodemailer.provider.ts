@@ -13,6 +13,7 @@ export class NodemailerProvider implements EmailProvider {
   private readonly transporter: any;
   private readonly fromEmail: string;
   private readonly fromName: string;
+  private readonly isEnabled: boolean;
 
   constructor(private readonly configService: ConfigService) {
     const host = configService.get<string>('email.nodemailer.host');
@@ -23,14 +24,15 @@ export class NodemailerProvider implements EmailProvider {
     const fromEmail = configService.get<string>('email.nodemailer.fromEmail');
     const fromName = configService.get<string>('email.nodemailer.fromName', 'Payment Gateway');
 
-    if (!host) {
-      throw new Error('NODEMAILER_HOST environment variable is required');
-    }
-    if (!port) {
-      throw new Error('NODEMAILER_PORT environment variable is required');
-    }
-    if (!fromEmail) {
-      throw new Error('NODEMAILER_FROM_EMAIL environment variable is required');
+    if (!host || !port || !fromEmail) {
+      this.isEnabled = false;
+      this.transporter = null;
+      this.fromEmail = fromEmail || '';
+      this.fromName = fromName;
+      this.logger.warn(
+        'Nodemailer is disabled. Configure NODEMAILER_HOST, NODEMAILER_PORT, and NODEMAILER_FROM_EMAIL to enable email sending.',
+      );
+      return;
     }
 
     // Configure SMTP transporter
@@ -51,6 +53,7 @@ export class NodemailerProvider implements EmailProvider {
     this.transporter = nodemailer.createTransport(config);
     this.fromEmail = fromEmail;
     this.fromName = fromName;
+    this.isEnabled = true;
 
     this.logger.log(`Nodemailer configured for ${host}:${port}`);
   }
@@ -59,8 +62,12 @@ export class NodemailerProvider implements EmailProvider {
    * Send a single email via Nodemailer
    */
   async send(options: EmailOptions): Promise<void> {
+    if (!this.isEnabled) {
+      this.logger.warn('Email send skipped because Nodemailer is not configured.');
+      return;
+    }
     try {
-      const mailOptions = {
+      const mailOptions: nodemailer.SendMailOptions = {
         from: `${this.fromName} <${this.fromEmail}>`,
         to: options.to,
         subject: options.subject,
@@ -71,12 +78,11 @@ export class NodemailerProvider implements EmailProvider {
         bcc: options.bcc,
       };
 
-      // Remove undefined values
-      Object.keys(mailOptions).forEach(
-        (key) => mailOptions[key] === undefined && delete mailOptions[key],
-      );
+      const cleanedOptions = Object.fromEntries(
+        Object.entries(mailOptions).filter(([, value]) => value !== undefined),
+      ) as nodemailer.SendMailOptions;
 
-      const result = await this.transporter.sendMail(mailOptions);
+      const result = await this.transporter.sendMail(cleanedOptions);
       this.logger.log(
         `Email sent successfully to ${Array.isArray(options.to) ? options.to.join(', ') : options.to} (Message ID: ${result.messageId})`,
       );

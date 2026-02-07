@@ -16,6 +16,7 @@ import { IdempotencyKey } from 'src/modules/payments/idempotency/idempotency-key
 import { Disbursement } from 'src/modules/disbursements/entities/disbursement.entity';
 import { WebhookLog } from 'src/modules/mtn/collection/entities/webhook-log.entity';
 import { BillingPlan, TenantBillingSubscription, UsageMetrics, Invoice, InvoiceLineItem } from 'src/modules/billing/entities';
+import { MerchantConfiguration } from 'src/modules/merchant/entities/merchant-configuration.entity';
 import * as dotenv from 'dotenv';
 
 // Load environment variables for CLI commands
@@ -34,12 +35,12 @@ export function typeOrmConfigFactory(
 
     // This is the important part
     // entities: [join(__dirname, '/../**/*.entity.{js,ts}')],
-    entities: [Tenant, User, Payment, Transaction, Audit, IdempotencyKey, Disbursement, WebhookLog, BillingPlan, TenantBillingSubscription, UsageMetrics, Invoice, InvoiceLineItem],
+    entities: [Tenant, User, Payment, Transaction, Audit, IdempotencyKey, Disbursement, WebhookLog, BillingPlan, TenantBillingSubscription, UsageMetrics, Invoice, InvoiceLineItem, MerchantConfiguration],
     subscribers: [UserSubscriber, TenantSubscriber, AuditSubscriber],
 
     migrations: [join(__dirname, '/migrations/*.{js,ts}')],
 
-    synchronize: false,
+    synchronize: true,
     logging: configService.get('NODE_ENV') === 'development',
   };
 }
@@ -52,10 +53,10 @@ const dataSourceOptions: DataSourceOptions = {
   username: process.env.DATABASE_USERNAME || 'postgres',
   password: process.env.DATABASE_PASSWORD || 'postgres',
   database: process.env.DATABASE_NAME || 'gateway',
-  entities: [Tenant, User, Payment, Transaction, Audit, IdempotencyKey, Disbursement, WebhookLog, BillingPlan, TenantBillingSubscription, UsageMetrics, Invoice, InvoiceLineItem],
+  entities: [Tenant, User, Payment, Transaction, Audit, IdempotencyKey, Disbursement, WebhookLog, BillingPlan, TenantBillingSubscription, UsageMetrics, Invoice, InvoiceLineItem, MerchantConfiguration],
   subscribers: [UserSubscriber, TenantSubscriber, AuditSubscriber],
   migrations: [join(__dirname, '/migrations/*.{js,ts}')],
-  synchronize: false,
+  synchronize: true,
   logging: process.env.NODE_ENV === 'development',
 };
 

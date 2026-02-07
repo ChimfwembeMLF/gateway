@@ -23,6 +23,7 @@ import { UsageTrackingInterceptor } from './modules/billing/interceptors/usage-t
 import { UsageMetricsService, BillingPlanSeedingService } from './modules/billing/services';
 import { EmailModule } from './modules/email/email.module';
 import { DisbursementsModule } from './modules/disbursements/disbursements.module';
+import { MerchantConfigurationModule } from './modules/merchant/merchant.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { DisbursementsModule } from './modules/disbursements/disbursements.modul
     BillingModule,
     EmailModule,
     DisbursementsModule,
+    MerchantConfigurationModule,
   ],
   providers: [
     StructuredLoggingService,

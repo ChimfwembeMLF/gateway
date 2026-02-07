@@ -1,0 +1,4479 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "AuthController_getMe",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/tenants/suggest-name/{name}": {
+      "get": {
+        "operationId": "TenantController_suggestTenantName",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Tenants"
+        ]
+      }
+    },
+    "/api/v1/tenants/onboard": {
+      "post": {
+        "operationId": "TenantController_createTenantWithAdmin",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTenantWithAdminDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tenant and admin user created"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Tenants"
+        ]
+      }
+    },
+    "/api/v1/tenants": {
+      "get": {
+        "operationId": "TenantController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Tenants"
+        ]
+      }
+    },
+    "/api/v1/tenants/{id}": {
+      "get": {
+        "operationId": "TenantController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Tenants"
+        ]
+      },
+      "patch": {
+        "operationId": "TenantController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTenantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Tenants"
+        ]
+      },
+      "delete": {
+        "operationId": "TenantController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Tenants"
+        ]
+      }
+    },
+    "/api/v1/tenants/{id}/deactivate": {
+      "patch": {
+        "operationId": "TenantController_deactivate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Tenants"
+        ]
+      }
+    },
+    "/api/v1/tenants/api-key/view": {
+      "get": {
+        "operationId": "TenantController_viewApiKey",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "Tenant API key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the tenant API key"
+          }
+        },
+        "tags": [
+          "Tenants"
+        ]
+      }
+    },
+    "/api/v1/tenants/api-key/regenerate": {
+      "post": {
+        "operationId": "TenantController_regenerateApiKey",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "Current tenant API key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Generates new API key for the tenant"
+          }
+        },
+        "tags": [
+          "Tenants"
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "operationId": "UserController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all users",
+        "tags": [
+          "Users"
+        ]
+      },
+      "post": {
+        "operationId": "UserController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new user",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/v1/users/{id}": {
+      "get": {
+        "operationId": "UserController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get user by ID",
+        "tags": [
+          "Users"
+        ]
+      },
+      "put": {
+        "operationId": "UserController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update user",
+        "tags": [
+          "Users"
+        ]
+      },
+      "delete": {
+        "operationId": "UserController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete user",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/v1/payments": {
+      "get": {
+        "operationId": "PaymentsController_findAll",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Payment"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
+      },
+      "post": {
+        "operationId": "PaymentsController_create",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "UUID for idempotent request deduplication (recommended)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Payment"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/api/v1/payments/status/{id}": {
+      "get": {
+        "operationId": "PaymentsController_getStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Payment ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "provider",
+            "required": false,
+            "in": "query",
+            "description": "Payment provider (mtn, airtel, etc). Defaults to mtn",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment status from provider"
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/api/v1/payments/{id}": {
+      "get": {
+        "operationId": "PaymentsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Payment ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Payment"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/api/v1/payments/balance/available": {
+      "get": {
+        "operationId": "PaymentsController_getBalance",
+        "parameters": [
+          {
+            "name": "provider",
+            "required": false,
+            "in": "query",
+            "description": "Payment provider (mtn, airtel, etc). Defaults to mtn",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wallet balance for the tenant"
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/api/v1/mtn/apiuser": {
+      "post": {
+        "operationId": "MtnController_createApiUser",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "MTN"
+        ]
+      }
+    },
+    "/api/v1/mtn/apikey/{referenceId}": {
+      "post": {
+        "operationId": "MtnController_createApiKey",
+        "parameters": [
+          {
+            "name": "referenceId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "MTN"
+        ]
+      }
+    },
+    "/api/v1/mtn/token": {
+      "post": {
+        "operationId": "MtnController_createBearerToken",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "MTN"
+        ]
+      }
+    },
+    "/api/v1/mtn/getClientDetails/{phone}": {
+      "get": {
+        "operationId": "MtnController_getClientDetails",
+        "parameters": [
+          {
+            "name": "phone",
+            "required": true,
+            "in": "path",
+            "description": "Zambian MTN mobile number",
+            "schema": {
+              "example": "0961234567",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MTNInfoResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "MTN"
+        ]
+      }
+    },
+    "/api/v1/mtn/balance": {
+      "get": {
+        "operationId": "MtnController_getBalance",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Account balance information"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get account balance for the tenant",
+        "tags": [
+          "MTN"
+        ]
+      }
+    },
+    "/api/v1/mtn/collection/requests": {
+      "get": {
+        "operationId": "CollectionController_listRequests",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "MTN Collection"
+        ]
+      }
+    },
+    "/api/v1/mtn/collection/request/{externalId}": {
+      "get": {
+        "operationId": "CollectionController_getRequestByExternalId",
+        "parameters": [
+          {
+            "name": "externalId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "MTN Collection"
+        ]
+      }
+    },
+    "/api/v1/mtn/collection/request/{externalId}/cancel": {
+      "patch": {
+        "operationId": "CollectionController_cancelRequest",
+        "parameters": [
+          {
+            "name": "externalId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "MTN Collection"
+        ]
+      }
+    },
+    "/api/v1/mtn/collection/webhook": {
+      "post": {
+        "description": "Webhook endpoint for MTN to send collection status updates. Validates signature and prevents duplicates.",
+        "operationId": "CollectionController_webhook",
+        "parameters": [
+          {
+            "name": "X-Signature-256",
+            "in": "header",
+            "description": "HMAC-SHA256 signature of request body",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Webhook processed successfully"
+          },
+          "400": {
+            "description": "Invalid webhook signature or structure"
+          },
+          "409": {
+            "description": "Duplicate webhook (already processed)"
+          }
+        },
+        "summary": "Handle MTN Webhook",
+        "tags": [
+          "MTN Collection"
+        ]
+      }
+    },
+    "/api/v1/mtn/collection/requesttopay": {
+      "post": {
+        "description": "Request a payment from a consumer (payer).",
+        "operationId": "CollectionController_requestToPay",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestToPayDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestToPayResultDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReasonDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReasonDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReasonDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Request to Pay",
+        "tags": [
+          "MTN Collection"
+        ]
+      }
+    },
+    "/api/v1/mtn/collection/requesttopay/{transactionId}/status": {
+      "get": {
+        "description": "Get the status of a request to pay by referenceId.",
+        "operationId": "CollectionController_getRequestToPayStatus",
+        "parameters": [
+          {
+            "name": "transactionId",
+            "required": true,
+            "in": "path",
+            "description": "UUID of transaction to get result.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestToPayResultDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReasonDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorReasonDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get Request to Pay Status",
+        "tags": [
+          "MTN Collection"
+        ]
+      }
+    },
+    "/api/v1/mtn/disbursement/balance": {
+      "get": {
+        "description": "Get the balance of the disbursement account.",
+        "operationId": "DisbursementController_getAccountBalance",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Account Balance",
+        "tags": [
+          "MTN Disbursement"
+        ]
+      }
+    },
+    "/api/v1/mtn/disbursement/transfer": {
+      "post": {
+        "description": "Transfer funds to a payee account.",
+        "operationId": "DisbursementController_transfer",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "example": {
+                  "amount": "1000",
+                  "currency": "UGX",
+                  "externalId": "123456789",
+                  "payee": {
+                    "partyIdType": "MSISDN",
+                    "partyId": "256772123456"
+                  },
+                  "payerMessage": "Payment for services",
+                  "payeeNote": "Thank you"
+                },
+                "$ref": "#/components/schemas/Object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Transfer Funds",
+        "tags": [
+          "MTN Disbursement"
+        ]
+      }
+    },
+    "/api/v1/mtn/disbursement/transfer/{referenceId}/status": {
+      "get": {
+        "description": "Get the status of a transfer by referenceId.",
+        "operationId": "DisbursementController_getTransferStatus",
+        "parameters": [
+          {
+            "name": "referenceId",
+            "required": true,
+            "in": "path",
+            "description": "UUID of transfer to get result.",
+            "schema": {
+              "example": "b7e6c8e2-1234-4c8a-9b2e-abcdef123456",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Transfer Status",
+        "tags": [
+          "MTN Disbursement"
+        ]
+      }
+    },
+    "/api/v1/mtn/disbursement/token": {
+      "post": {
+        "description": "Create an access token for disbursement API.",
+        "operationId": "DisbursementController_createAccessToken",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Access token created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "access_token": "string",
+                    "token_type": "string",
+                    "expires_in": 3600
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create Access Token",
+        "tags": [
+          "MTN Disbursement"
+        ]
+      }
+    },
+    "/api/v1/mtn/disbursement/accountholder/{accountHolderIdType}/{accountHolderId}/active": {
+      "get": {
+        "description": "Check if an account holder is registered and active.",
+        "operationId": "DisbursementController_validateAccountHolderStatus",
+        "parameters": [
+          {
+            "name": "accountHolderIdType",
+            "required": true,
+            "in": "path",
+            "description": "Type of account holder identity (msisdn, email)",
+            "schema": {
+              "example": "msisdn",
+              "type": "string"
+            }
+          },
+          {
+            "name": "accountHolderId",
+            "required": true,
+            "in": "path",
+            "description": "Account holder identifier",
+            "schema": {
+              "example": "256772123456",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "example": {
+                "result": true
+              }
+            },
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidateAccountHolderStatusDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Validate Account Holder Status",
+        "tags": [
+          "MTN Disbursement"
+        ]
+      }
+    },
+    "/api/v1/mtn/disbursement/accountholder/{accountHolderIdType}/{accountHolderId}/basicuserinfo": {
+      "get": {
+        "description": "Returns personal information of the account holder.",
+        "operationId": "DisbursementController_getBasicUserInfo",
+        "parameters": [
+          {
+            "name": "accountHolderIdType",
+            "required": true,
+            "in": "path",
+            "description": "Type of account holder identity",
+            "schema": {
+              "example": "msisdn",
+              "type": "string"
+            }
+          },
+          {
+            "name": "accountHolderId",
+            "required": true,
+            "in": "path",
+            "description": "Account holder identifier",
+            "schema": {
+              "example": "256772123456",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "example": {
+                "given_name": "John",
+                "family_name": "Doe",
+                "birthdate": "1990-01-01",
+                "locale": "en",
+                "gender": "male",
+                "status": "active"
+              }
+            },
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BasicUserInfoDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Basic User Info",
+        "tags": [
+          "MTN Disbursement"
+        ]
+      }
+    },
+    "/api/v1/mtn/disbursement/deposit": {
+      "post": {
+        "description": "Deposit funds to a payee account.",
+        "operationId": "DisbursementController_depositV1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepositDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "amount": "1000",
+                    "currency": "UGX",
+                    "externalId": "123456789",
+                    "payee": {
+                      "partyIdType": "MSISDN",
+                      "partyId": "256772123456"
+                    },
+                    "payerMessage": "Deposit for services",
+                    "payeeNote": "Thank you"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Deposit V1",
+        "tags": [
+          "MTN Disbursement"
+        ]
+      }
+    },
+    "/api/v1/mtn/disbursement/deposit/v2": {
+      "post": {
+        "description": "Deposit funds to a payee account (v2).",
+        "operationId": "DisbursementController_depositV2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepositDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "amount": "1000",
+                    "currency": "UGX",
+                    "externalId": "123456789",
+                    "payee": {
+                      "partyIdType": "MSISDN",
+                      "partyId": "256772123456"
+                    },
+                    "payerMessage": "Deposit for services",
+                    "payeeNote": "Thank you"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Deposit V2",
+        "tags": [
+          "MTN Disbursement"
+        ]
+      }
+    },
+    "/api/v1/mtn/disbursement/deposit/{referenceId}": {
+      "get": {
+        "description": "Get the status of a deposit.",
+        "operationId": "DisbursementController_getDepositStatus",
+        "parameters": [
+          {
+            "name": "referenceId",
+            "required": true,
+            "in": "path",
+            "description": "UUID of transaction to get result.",
+            "schema": {
+              "example": "b7e6c8e2-1234-4c8a-9b2e-abcdef123456",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "example": {
+                "amount": "1000",
+                "currency": "UGX",
+                "financialTransactionId": "987654321",
+                "externalId": "123456789",
+                "payee": {
+                  "partyIdType": "MSISDN",
+                  "partyId": "256772123456"
+                },
+                "payerMessage": "Deposit for services",
+                "payeeNote": "Thank you",
+                "status": "SUCCESSFUL",
+                "reason": {
+                  "code": "00",
+                  "message": "Success"
+                }
+              }
+            },
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferResultDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Deposit Status",
+        "tags": [
+          "MTN Disbursement"
+        ]
+      }
+    },
+    "/api/v1/mtn/disbursement/refund": {
+      "post": {
+        "description": "Refund an amount to a payee account.",
+        "operationId": "DisbursementController_refundV1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefundDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "amount": "1000",
+                    "currency": "UGX",
+                    "externalId": "123456789",
+                    "payerMessage": "Refund for failed transaction",
+                    "payeeNote": "Sorry for the inconvenience",
+                    "referenceIdToRefund": "b7e6c8e2-1234-4c8a-9b2e-abcdef123456"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Refund V1",
+        "tags": [
+          "MTN Disbursement"
+        ]
+      }
+    },
+    "/api/v1/mtn/disbursement/refund/v2": {
+      "post": {
+        "description": "Refund an amount to a payee account (v2).",
+        "operationId": "DisbursementController_refundV2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefundDto"
+              },
+              "examples": {
+                "default": {
+                  "value": {
+                    "amount": "1000",
+                    "currency": "UGX",
+                    "externalId": "123456789",
+                    "payerMessage": "Refund for failed transaction",
+                    "payeeNote": "Sorry for the inconvenience",
+                    "referenceIdToRefund": "b7e6c8e2-1234-4c8a-9b2e-abcdef123456"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Refund V2",
+        "tags": [
+          "MTN Disbursement"
+        ]
+      }
+    },
+    "/api/v1/mtn/disbursement/refund/{referenceId}": {
+      "get": {
+        "description": "Get the status of a refund.",
+        "operationId": "DisbursementController_getRefundStatus",
+        "parameters": [
+          {
+            "name": "referenceId",
+            "required": true,
+            "in": "path",
+            "description": "UUID of refund transaction.",
+            "schema": {
+              "example": "b7e6c8e2-1234-4c8a-9b2e-abcdef123456",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "example": {
+                "amount": "1000",
+                "currency": "UGX",
+                "financialTransactionId": "987654321",
+                "externalId": "123456789",
+                "payee": {
+                  "partyIdType": "MSISDN",
+                  "partyId": "256772123456"
+                },
+                "payerMessage": "Refund for failed transaction",
+                "payeeNote": "Sorry for the inconvenience",
+                "status": "SUCCESSFUL",
+                "reason": {
+                  "code": "00",
+                  "message": "Success"
+                }
+              }
+            },
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferResultDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Refund Status",
+        "tags": [
+          "MTN Disbursement"
+        ]
+      }
+    },
+    "/api/v1/mtn/disbursement/balance/{currency}": {
+      "get": {
+        "description": "Get the balance of own account in a specific currency.",
+        "operationId": "DisbursementController_getAccountBalanceInCurrency",
+        "parameters": [
+          {
+            "name": "currency",
+            "required": true,
+            "in": "path",
+            "description": "Currency code (ISO4217)",
+            "schema": {
+              "example": "UGX",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "balance": "50000",
+                    "currency": "UGX"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get Account Balance in Specific Currency",
+        "tags": [
+          "MTN Disbursement"
+        ]
+      }
+    },
+    "/api/v1/mtn/disbursement/oauth2/token": {
+      "post": {
+        "description": "Create an OAuth2 token for consented scopes.",
+        "operationId": "DisbursementController_createOauth2Token",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "example": {
+                  "grant_type": "client_credentials",
+                  "scope": "disbursement",
+                  "client_id": "your-client-id",
+                  "client_secret": "your-client-secret"
+                },
+                "$ref": "#/components/schemas/Object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OAuth2 token created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "access_token": "string",
+                    "token_type": "Bearer",
+                    "expires_in": 3600
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create OAuth2 Token",
+        "tags": [
+          "MTN Disbursement"
+        ]
+      }
+    },
+    "/api/v1/mtn/disbursement/oauth2/userinfo": {
+      "get": {
+        "description": "Get user info with consented scopes.",
+        "operationId": "DisbursementController_getUserInfoWithConsent",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User info returned"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get User Info With Consent",
+        "tags": [
+          "MTN Disbursement"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Application is healthy"
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "HealthController_ready",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Application is ready for traffic"
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/health/status": {
+      "get": {
+        "operationId": "HealthController_getDetailedHealth",
+        "parameters": [
+          {
+            "name": "refresh",
+            "required": false,
+            "in": "query",
+            "description": "Force refresh health check (skip 10s cache)",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detailed health status of all components"
+          },
+          "503": {
+            "description": "System degraded or down"
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/health/deep": {
+      "get": {
+        "operationId": "HealthController_getDeepHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Full health status with all component details"
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/billing/plans": {
+      "get": {
+        "operationId": "BillingController_getPlans",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/billing/plans/{type}": {
+      "get": {
+        "operationId": "BillingController_getPlanByType",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/billing/subscriptions": {
+      "post": {
+        "operationId": "BillingController_createSubscription",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSubscriptionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/billing/subscriptions/tenant/{tenantId}": {
+      "get": {
+        "operationId": "BillingController_getTenantSubscription",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/billing/subscriptions/{id}": {
+      "get": {
+        "operationId": "BillingController_getSubscriptionById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Billing"
+        ]
+      },
+      "put": {
+        "operationId": "BillingController_updateSubscription",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSubscriptionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Billing"
+        ]
+      },
+      "delete": {
+        "operationId": "BillingController_cancelSubscription",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelSubscriptionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/billing/usage/tenant/{tenantId}": {
+      "get": {
+        "operationId": "BillingController_getTenantUsageAnalytics",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "startDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/billing/usage/tenant/{tenantId}/daily": {
+      "get": {
+        "operationId": "BillingController_getTenantDailyUsage",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "startDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/billing/usage/tenant/{tenantId}/current-month": {
+      "get": {
+        "operationId": "BillingController_getTenantCurrentMonthUsage",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/billing/usage/all": {
+      "get": {
+        "operationId": "BillingController_getAllTenantsUsage",
+        "parameters": [
+          {
+            "name": "startDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/billing/invoices/generate": {
+      "post": {
+        "operationId": "BillingController_generateInvoice",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateInvoiceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/billing/invoices/{id}": {
+      "get": {
+        "operationId": "BillingController_getInvoice",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Billing"
+        ]
+      },
+      "put": {
+        "operationId": "BillingController_updateInvoice",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateInvoiceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/billing/invoices": {
+      "get": {
+        "operationId": "BillingController_getInvoices",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/billing/invoices/{id}/mark-paid": {
+      "post": {
+        "operationId": "BillingController_markInvoiceAsPaid",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/billing/invoices/{id}/cancel": {
+      "post": {
+        "operationId": "BillingController_cancelInvoice",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/billing/invoices/{id}/generate-pdf": {
+      "post": {
+        "operationId": "BillingController_generateInvoicePdf",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Billing"
+        ]
+      }
+    },
+    "/api/v1/disbursements": {
+      "post": {
+        "description": "Send money to a customer Airtel Money wallet",
+        "operationId": "DisbursementsController_createDisbursement",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Disbursement request details",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDisbursementDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Disbursement created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisbursementResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input (MSISDN format, amount, PIN format, etc.)"
+          },
+          "401": {
+            "description": "Missing or invalid API key"
+          },
+          "409": {
+            "description": "Duplicate externalId (returns existing disbursement)"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ],
+        "summary": "Create a new disbursement",
+        "tags": [
+          "Disbursements"
+        ]
+      },
+      "get": {
+        "description": "Retrieve paginated list of disbursements with optional filtering",
+        "operationId": "DisbursementsController_listDisbursements",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (1-indexed)",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (max: 100)",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by disbursement status",
+            "schema": {
+              "enum": [
+                "PENDING",
+                "PROCESSING",
+                "SUCCESS",
+                "FAILED",
+                "TIMEOUT",
+                "BOUNCED",
+                "REFUNDED"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "startDate",
+            "required": false,
+            "in": "query",
+            "description": "Filter by creation date (ISO 8601, inclusive)",
+            "schema": {
+              "example": "2024-02-01T00:00:00Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": false,
+            "in": "query",
+            "description": "Filter by creation date (ISO 8601, inclusive)",
+            "schema": {
+              "example": "2024-02-28T23:59:59Z",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DisbursementResponseDto"
+                      }
+                    },
+                    "total": {
+                      "type": "number"
+                    },
+                    "page": {
+                      "type": "number"
+                    },
+                    "limit": {
+                      "type": "number"
+                    },
+                    "totalPages": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters or validation failed"
+          },
+          "401": {
+            "description": "Missing or invalid API key"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ],
+        "summary": "List disbursements",
+        "tags": [
+          "Disbursements"
+        ]
+      }
+    },
+    "/api/v1/disbursements/{id}": {
+      "get": {
+        "description": "Retrieve details of a specific disbursement",
+        "operationId": "DisbursementsController_getDisbursement",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Disbursement UUID",
+            "schema": {
+              "example": "550e8400-e29b-41d4-a716-446655440000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Disbursement found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisbursementResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters or validation failed"
+          },
+          "401": {
+            "description": "Missing or invalid API key"
+          },
+          "404": {
+            "description": "Disbursement not found"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ],
+        "summary": "Get disbursement by ID",
+        "tags": [
+          "Disbursements"
+        ]
+      }
+    },
+    "/api/v1/merchant/configuration": {
+      "post": {
+        "operationId": "MerchantConfigurationController_create",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "Current tenant API key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMerchantConfigurationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Merchant configuration created successfully",
+            "headers": {
+              "x-tenant-id": {
+                "description": "Tenant identifier",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "x-api-key": {
+                "description": "Current tenant API key",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantConfigurationResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create merchant configuration",
+        "tags": [
+          "Merchant Configuration"
+        ]
+      },
+      "get": {
+        "operationId": "MerchantConfigurationController_get",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "Current tenant API key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Merchant configuration retrieved successfully",
+            "headers": {
+              "x-tenant-id": {
+                "description": "Tenant identifier",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "x-api-key": {
+                "description": "Current tenant API key",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantConfigurationResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get merchant configuration",
+        "tags": [
+          "Merchant Configuration"
+        ]
+      },
+      "patch": {
+        "operationId": "MerchantConfigurationController_update",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "Current tenant API key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMerchantConfigurationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Merchant configuration updated successfully",
+            "headers": {
+              "x-tenant-id": {
+                "description": "Tenant identifier",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "x-api-key": {
+                "description": "Current tenant API key",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantConfigurationResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update merchant configuration",
+        "tags": [
+          "Merchant Configuration"
+        ]
+      }
+    },
+    "/api/v1/merchant/configuration/verify/mtn": {
+      "post": {
+        "operationId": "MerchantConfigurationController_verifyMtn",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "Current tenant API key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "MTN credentials verified successfully",
+            "headers": {
+              "x-tenant-id": {
+                "description": "Tenant identifier",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "x-api-key": {
+                "description": "Current tenant API key",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Verify MTN credentials",
+        "tags": [
+          "Merchant Configuration"
+        ]
+      }
+    },
+    "/api/v1/merchant/configuration/verify/airtel": {
+      "post": {
+        "operationId": "MerchantConfigurationController_verifyAirtel",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "Current tenant API key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Airtel credentials verified successfully",
+            "headers": {
+              "x-tenant-id": {
+                "description": "Tenant identifier",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "x-api-key": {
+                "description": "Current tenant API key",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Verify Airtel credentials",
+        "tags": [
+          "Merchant Configuration"
+        ]
+      }
+    },
+    "/api/v1/merchant/configuration/verify/bank": {
+      "post": {
+        "operationId": "MerchantConfigurationController_verifyBank",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "Current tenant API key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bank account verified successfully",
+            "headers": {
+              "x-tenant-id": {
+                "description": "Tenant identifier",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "x-api-key": {
+                "description": "Current tenant API key",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Verify bank account",
+        "tags": [
+          "Merchant Configuration"
+        ]
+      }
+    },
+    "/api/v1/merchant/configuration/webhook/test": {
+      "post": {
+        "operationId": "MerchantConfigurationController_testWebhook",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "Current tenant API key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant identifier",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestWebhookDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook test completed",
+            "headers": {
+              "x-tenant-id": {
+                "description": "Tenant identifier",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "x-api-key": {
+                "description": "Current tenant API key",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookTestResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Test webhook endpoint",
+        "tags": [
+          "Merchant Configuration"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Payment Gateway",
+    "description": "API documentation for Payment Gateway",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      },
+      "x-api-key": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      },
+      "x-tenant-id": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-tenant-id"
+      }
+    },
+    "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "tenantName": {
+            "type": "string",
+            "description": "Tenant name"
+          },
+          "username": {
+            "type": "string",
+            "description": "Admin username"
+          },
+          "email": {
+            "type": "string",
+            "description": "Admin email"
+          },
+          "password": {
+            "type": "string",
+            "description": "Admin password"
+          }
+        },
+        "required": [
+          "tenantName",
+          "username",
+          "email",
+          "password"
+        ]
+      },
+      "CreateTenantWithAdminDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "adminUsername": {
+            "type": "string"
+          },
+          "adminPassword": {
+            "type": "string"
+          },
+          "adminEmail": {
+            "type": "string"
+          },
+          "webhookUrl": {
+            "type": "string"
+          },
+          "webhookKey": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "adminUsername",
+          "adminPassword"
+        ]
+      },
+      "UpdateTenantDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "webhook_url": {
+            "type": "string"
+          },
+          "webhook_key": {
+            "type": "string"
+          }
+        }
+      },
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "profileImage": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "createdAt",
+          "updatedAt",
+          "username",
+          "role"
+        ]
+      },
+      "Payment": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreatePaymentDto": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "MTN",
+              "AIRTEL",
+              "ZAMTEL"
+            ],
+            "example": "MTN",
+            "description": "Payment provider (e.g., MTN, AIRTEL, ZAMTEL)"
+          },
+          "amount": {
+            "type": "number",
+            "example": 100
+          },
+          "currency": {
+            "type": "string",
+            "example": "EUR",
+            "default": "EUR"
+          },
+          "externalId": {
+            "type": "string",
+            "example": "INV-20260105-001"
+          },
+          "payer": {
+            "type": "string",
+            "example": "260765725317"
+          },
+          "payerMessage": {
+            "type": "string",
+            "example": "Payment for invoice"
+          },
+          "payeeNote": {
+            "type": "string",
+            "example": "Thank you"
+          }
+        },
+        "required": [
+          "provider",
+          "amount",
+          "currency",
+          "externalId",
+          "payer",
+          "payerMessage",
+          "payeeNote"
+        ]
+      },
+      "MTNInfoResponseDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "status",
+          "message"
+        ]
+      },
+      "PartyDto": {
+        "type": "object",
+        "properties": {
+          "partyIdType": {
+            "type": "string",
+            "enum": [
+              "MSISDN",
+              "EMAIL",
+              "PARTY_CODE"
+            ]
+          },
+          "partyId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "partyIdType",
+          "partyId"
+        ]
+      },
+      "RequestToPayDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO4217 Currency"
+          },
+          "externalId": {
+            "type": "string"
+          },
+          "payer": {
+            "$ref": "#/components/schemas/PartyDto"
+          },
+          "payerMessage": {
+            "type": "string"
+          },
+          "payeeNote": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "currency",
+          "externalId",
+          "payer"
+        ]
+      },
+      "ErrorReasonDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "PAYEE_NOT_FOUND",
+              "PAYER_NOT_FOUND",
+              "NOT_ALLOWED",
+              "NOT_ALLOWED_TARGET_ENVIRONMENT",
+              "INVALID_CALLBACK_URL_HOST",
+              "INVALID_CURRENCY",
+              "SERVICE_UNAVAILABLE",
+              "INTERNAL_PROCESSING_ERROR",
+              "NOT_ENOUGH_FUNDS",
+              "PAYER_LIMIT_REACHED",
+              "PAYEE_NOT_ALLOWED_TO_RECEIVE",
+              "PAYMENT_NOT_APPROVED",
+              "RESOURCE_NOT_FOUND",
+              "APPROVAL_REJECTED",
+              "EXPIRED",
+              "TRANSACTION_CANCELED",
+              "RESOURCE_ALREADY_EXIST"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ]
+      },
+      "RequestToPayResultDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "financialTransactionId": {
+            "type": "string"
+          },
+          "externalId": {
+            "type": "string"
+          },
+          "payer": {
+            "$ref": "#/components/schemas/PartyDto"
+          },
+          "payerMessage": {
+            "type": "string"
+          },
+          "payeeNote": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "SUCCESSFUL",
+              "FAILED"
+            ]
+          },
+          "reason": {
+            "$ref": "#/components/schemas/ErrorReasonDto"
+          }
+        },
+        "required": [
+          "amount",
+          "currency",
+          "externalId",
+          "payer",
+          "status"
+        ]
+      },
+      "Object": {
+        "type": "object",
+        "properties": {}
+      },
+      "ValidateAccountHolderStatusDto": {
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "boolean",
+            "example": true,
+            "description": "True if account holder is active, false otherwise."
+          }
+        },
+        "required": [
+          "result"
+        ]
+      },
+      "BasicUserInfoDto": {
+        "type": "object",
+        "properties": {
+          "given_name": {
+            "type": "string",
+            "example": "John"
+          },
+          "family_name": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "birthdate": {
+            "type": "string",
+            "example": "1990-01-01"
+          },
+          "locale": {
+            "type": "string",
+            "example": "en"
+          },
+          "gender": {
+            "type": "string",
+            "example": "male"
+          },
+          "status": {
+            "type": "string",
+            "example": "active"
+          }
+        },
+        "required": [
+          "given_name",
+          "family_name",
+          "birthdate",
+          "locale",
+          "gender",
+          "status"
+        ]
+      },
+      "PayeeDto": {
+        "type": "object",
+        "properties": {
+          "partyIdType": {
+            "type": "string",
+            "enum": [
+              "MSISDN",
+              "EMAIL",
+              "PARTY_CODE"
+            ],
+            "example": "MSISDN"
+          },
+          "partyId": {
+            "type": "string",
+            "example": "256772123456"
+          }
+        },
+        "required": [
+          "partyIdType",
+          "partyId"
+        ]
+      },
+      "DepositDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "string",
+            "example": "1000"
+          },
+          "currency": {
+            "type": "string",
+            "example": "UGX"
+          },
+          "externalId": {
+            "type": "string",
+            "example": "123456789"
+          },
+          "payee": {
+            "example": {
+              "partyIdType": "MSISDN",
+              "partyId": "256772123456"
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PayeeDto"
+              }
+            ]
+          },
+          "payerMessage": {
+            "type": "string",
+            "example": "Deposit for services"
+          },
+          "payeeNote": {
+            "type": "string",
+            "example": "Thank you"
+          }
+        },
+        "required": [
+          "amount",
+          "currency",
+          "externalId",
+          "payee",
+          "payerMessage",
+          "payeeNote"
+        ]
+      },
+      "ReasonDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "00"
+          },
+          "message": {
+            "type": "string",
+            "example": "Success"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ]
+      },
+      "TransferResultDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "string",
+            "example": "1000"
+          },
+          "currency": {
+            "type": "string",
+            "example": "UGX"
+          },
+          "financialTransactionId": {
+            "type": "string",
+            "example": "987654321"
+          },
+          "externalId": {
+            "type": "string",
+            "example": "123456789"
+          },
+          "payee": {
+            "example": {
+              "partyIdType": "MSISDN",
+              "partyId": "256772123456"
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PayeeDto"
+              }
+            ]
+          },
+          "payerMessage": {
+            "type": "string",
+            "example": "Deposit for services"
+          },
+          "payeeNote": {
+            "type": "string",
+            "example": "Thank you"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "SUCCESSFUL",
+              "FAILED"
+            ],
+            "example": "SUCCESSFUL"
+          },
+          "reason": {
+            "example": {
+              "code": "00",
+              "message": "Success"
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReasonDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "amount",
+          "currency",
+          "financialTransactionId",
+          "externalId",
+          "payee",
+          "payerMessage",
+          "payeeNote",
+          "status"
+        ]
+      },
+      "RefundDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "string",
+            "example": "1000"
+          },
+          "currency": {
+            "type": "string",
+            "example": "UGX"
+          },
+          "externalId": {
+            "type": "string",
+            "example": "123456789"
+          },
+          "payerMessage": {
+            "type": "string",
+            "example": "Refund for failed transaction"
+          },
+          "payeeNote": {
+            "type": "string",
+            "example": "Sorry for the inconvenience"
+          },
+          "referenceIdToRefund": {
+            "type": "string",
+            "description": "UUID of the transaction to refund",
+            "example": "b7e6c8e2-1234-4c8a-9b2e-abcdef123456"
+          }
+        },
+        "required": [
+          "amount",
+          "currency",
+          "externalId",
+          "payerMessage",
+          "payeeNote",
+          "referenceIdToRefund"
+        ]
+      },
+      "CreateSubscriptionDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateSubscriptionDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CancelSubscriptionDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "GenerateInvoiceDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateInvoiceDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateDisbursementDto": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "description": "Payment provider (AIRTEL or MTN)",
+            "enum": [
+              "AIRTEL",
+              "MTN"
+            ],
+            "example": "AIRTEL"
+          },
+          "externalId": {
+            "type": "string",
+            "description": "Client-provided idempotency key for duplicate prevention",
+            "example": "order-2024-001-disbursement",
+            "maxLength": 255
+          },
+          "payeeMsisdn": {
+            "type": "string",
+            "description": "Recipient mobile number without country code (e.g., 0977123456)",
+            "example": "0977123456",
+            "minLength": 9,
+            "maxLength": 15
+          },
+          "amount": {
+            "type": "number",
+            "description": "Disbursement amount in specified currency",
+            "example": 500.5,
+            "minimum": 0.01
+          },
+          "currency": {
+            "type": "string",
+            "description": "ISO 4217 currency code",
+            "example": "ZMW",
+            "default": "ZMW",
+            "minLength": 3,
+            "maxLength": 3
+          },
+          "reference": {
+            "type": "string",
+            "description": "Business reference for reconciliation",
+            "example": "INV-2024-001",
+            "maxLength": 255
+          },
+          "pin": {
+            "type": "string",
+            "description": "4-digit PIN for wallet authorization (will be encrypted)",
+            "example": "1234",
+            "minLength": 4,
+            "maxLength": 4
+          },
+          "walletType": {
+            "type": "string",
+            "description": "Recipient wallet type",
+            "enum": [
+              "NORMAL",
+              "SALARY",
+              "MERCHANT",
+              "DISBURSEMENT"
+            ],
+            "default": "NORMAL"
+          },
+          "transactionType": {
+            "type": "string",
+            "description": "Transaction type classification",
+            "enum": [
+              "B2C",
+              "B2B",
+              "G2C",
+              "B2G",
+              "SALARY",
+              "LOAN",
+              "DIVIDEND",
+              "COMMISSION",
+              "REFUND",
+              "OTHER"
+            ],
+            "default": "B2C"
+          }
+        },
+        "required": [
+          "provider",
+          "externalId",
+          "payeeMsisdn",
+          "amount",
+          "reference",
+          "pin"
+        ]
+      },
+      "DisbursementResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique disbursement identifier",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "provider": {
+            "type": "string",
+            "description": "Payment provider that handled the transaction",
+            "enum": [
+              "AIRTEL",
+              "MTN"
+            ],
+            "example": "AIRTEL"
+          },
+          "tenantId": {
+            "type": "string",
+            "description": "Tenant owning this disbursement",
+            "example": "tenant-001"
+          },
+          "externalId": {
+            "type": "string",
+            "description": "Client-provided idempotency key",
+            "example": "order-2024-001-disbursement"
+          },
+          "payeeMsisdn": {
+            "type": "string",
+            "description": "Recipient mobile number",
+            "example": "0977123456"
+          },
+          "walletType": {
+            "type": "string",
+            "description": "Recipient wallet type",
+            "enum": [
+              "NORMAL",
+              "SALARY",
+              "MERCHANT",
+              "DISBURSEMENT"
+            ],
+            "example": "NORMAL"
+          },
+          "amount": {
+            "type": "string",
+            "description": "Disbursement amount",
+            "example": "500.50"
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency code",
+            "example": "ZMW"
+          },
+          "reference": {
+            "type": "string",
+            "description": "Business reference for reconciliation",
+            "example": "INV-2024-001"
+          },
+          "transactionType": {
+            "type": "string",
+            "description": "Transaction type classification",
+            "enum": [
+              "B2C",
+              "B2B",
+              "G2C",
+              "B2G",
+              "SALARY",
+              "LOAN",
+              "DIVIDEND",
+              "COMMISSION",
+              "REFUND",
+              "OTHER"
+            ],
+            "example": "B2C"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current disbursement status",
+            "enum": [
+              "PENDING",
+              "PROCESSING",
+              "SUCCESS",
+              "FAILED",
+              "TIMEOUT",
+              "BOUNCED",
+              "REFUNDED",
+              "REFUND_PROCESSING",
+              "REFUND_FAILED"
+            ],
+            "example": "SUCCESS"
+          },
+          "airtelReferenceId": {
+            "type": "string",
+            "description": "Airtel-generated reference ID",
+            "example": "AIRTEL-REF-12345",
+            "nullable": true
+          },
+          "airtelMoneyId": {
+            "type": "string",
+            "description": "Airtel Money transaction ID",
+            "example": "MONEY-12345-67890",
+            "nullable": true
+          },
+          "errorCode": {
+            "type": "string",
+            "description": "Error code if disbursement failed",
+            "example": "INVALID_MSISDN",
+            "nullable": true
+          },
+          "errorMessage": {
+            "type": "string",
+            "description": "Human-readable error message",
+            "example": "The provided MSISDN is invalid or inactive",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Creation timestamp",
+            "example": "2024-02-06T10:30:00Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Last update timestamp",
+            "example": "2024-02-06T10:31:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "provider",
+          "tenantId",
+          "externalId",
+          "payeeMsisdn",
+          "walletType",
+          "amount",
+          "currency",
+          "reference",
+          "transactionType",
+          "status",
+          "airtelReferenceId",
+          "airtelMoneyId",
+          "errorCode",
+          "errorMessage",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateMerchantConfigurationDto": {
+        "type": "object",
+        "properties": {
+          "businessName": {
+            "type": "string",
+            "description": "Legal business name",
+            "example": "Acme Corporation Ltd"
+          },
+          "businessRegistrationNumber": {
+            "type": "string",
+            "description": "Business registration number",
+            "example": "BRN-123456"
+          },
+          "taxId": {
+            "type": "string",
+            "description": "Tax ID / VAT number",
+            "example": "TAX-ZM-123456"
+          },
+          "businessCategory": {
+            "type": "string",
+            "description": "Business category/industry",
+            "example": "E-Commerce"
+          },
+          "websiteUrl": {
+            "type": "string",
+            "description": "Business website URL",
+            "example": "https://acme.com"
+          },
+          "businessAddress": {
+            "type": "string",
+            "description": "Physical business address (will be encrypted)",
+            "example": "123 Business Street, Lusaka, ZM"
+          },
+          "contactPersonName": {
+            "type": "string",
+            "description": "Primary contact person name",
+            "example": "John Doe"
+          },
+          "contactPersonPhone": {
+            "type": "string",
+            "description": "Primary contact phone",
+            "example": "+260965123456"
+          },
+          "contactPersonEmail": {
+            "type": "string",
+            "description": "Primary contact email",
+            "example": "contact@acme.com"
+          },
+          "mtnCollectionSubscriptionKey": {
+            "type": "string",
+            "description": "MTN collection API subscription key (will be encrypted)",
+            "example": "mtncoll_abc123xyz789"
+          },
+          "mtnCollectionApiKey": {
+            "type": "string",
+            "description": "MTN collection API key (will be encrypted)",
+            "example": "mtnkey_abc123xyz789"
+          },
+          "mtnCollectionXReferenceId": {
+            "type": "string",
+            "description": "MTN collection X-Reference-ID",
+            "example": "acme-mtn-ref-001"
+          },
+          "mtnCollectionTargetEnvironment": {
+            "type": "string",
+            "description": "MTN collection target environment",
+            "enum": [
+              "sandbox",
+              "production"
+            ],
+            "default": "sandbox"
+          },
+          "mtnDisbursementSubscriptionKey": {
+            "type": "string",
+            "description": "MTN disbursement API subscription key (will be encrypted)"
+          },
+          "mtnDisbursementApiKey": {
+            "type": "string",
+            "description": "MTN disbursement API key (will be encrypted)"
+          },
+          "mtnDisbursementXReferenceId": {
+            "type": "string",
+            "description": "MTN disbursement X-Reference-ID"
+          },
+          "mtnDisbursementTargetEnvironment": {
+            "type": "string",
+            "description": "MTN disbursement target environment",
+            "enum": [
+              "sandbox",
+              "production"
+            ],
+            "default": "sandbox"
+          },
+          "mtnAccountHolder": {
+            "type": "string",
+            "description": "MTN account holder name"
+          },
+          "mtnAccountActive": {
+            "type": "boolean",
+            "description": "MTN account is active"
+          },
+          "airtelClientId": {
+            "type": "string",
+            "description": "Airtel OAuth2 Client ID (will be encrypted)",
+            "example": "airtel_client_123"
+          },
+          "airtelClientSecret": {
+            "type": "string",
+            "description": "Airtel OAuth2 Client Secret (will be encrypted)"
+          },
+          "airtelSigningSecret": {
+            "type": "string",
+            "description": "Airtel Signing Secret (will be encrypted)"
+          },
+          "airtelEncryptionPublicKey": {
+            "type": "string",
+            "description": "Airtel RSA Public Key (will be encrypted)"
+          },
+          "airtelEnvironment": {
+            "type": "string",
+            "description": "Airtel environment",
+            "enum": [
+              "staging",
+              "production"
+            ],
+            "default": "staging"
+          },
+          "airtelCountry": {
+            "type": "string",
+            "description": "Airtel country code",
+            "example": "ZM",
+            "default": "ZM"
+          },
+          "airtelCurrency": {
+            "type": "string",
+            "description": "Airtel default currency",
+            "example": "ZMW",
+            "default": "ZMW"
+          },
+          "airtelMerchantId": {
+            "type": "string",
+            "description": "Airtel merchant account ID"
+          },
+          "airtelAccountActive": {
+            "type": "boolean",
+            "description": "Airtel account is active"
+          },
+          "bankAccountHolder": {
+            "type": "string",
+            "description": "Bank account holder name",
+            "example": "Acme Corporation"
+          },
+          "bankAccountNumber": {
+            "type": "string",
+            "description": "Bank account number (will be encrypted)",
+            "example": "1234567890"
+          },
+          "bankAccountType": {
+            "type": "string",
+            "description": "Bank account type",
+            "enum": [
+              "checking",
+              "savings",
+              "business"
+            ]
+          },
+          "bankName": {
+            "type": "string",
+            "description": "Bank name",
+            "example": "Zambia National Bank"
+          },
+          "bankBranchCode": {
+            "type": "string",
+            "description": "Bank branch code",
+            "example": "ZNBK-LSKX"
+          },
+          "bankSwiftCode": {
+            "type": "string",
+            "description": "SWIFT/BIC code",
+            "example": "ZNBKZMLU"
+          },
+          "bankAccountCurrency": {
+            "type": "string",
+            "description": "Bank account currency",
+            "example": "ZMW",
+            "default": "ZMW"
+          },
+          "kycStatus": {
+            "type": "string",
+            "description": "KYC verification status",
+            "enum": [
+              "PENDING",
+              "VERIFIED",
+              "REJECTED",
+              "NEEDS_UPDATE"
+            ]
+          },
+          "directorName": {
+            "type": "string",
+            "description": "Director/Owner name"
+          },
+          "directorIdNumber": {
+            "type": "string",
+            "description": "Director/Owner ID number (will be encrypted)"
+          },
+          "directorIdType": {
+            "type": "string",
+            "description": "Director/Owner ID type",
+            "enum": [
+              "passport",
+              "national_id",
+              "driver_license"
+            ]
+          },
+          "beneficialOwnerInfo": {
+            "type": "string",
+            "description": "Beneficial owner information (will be encrypted)"
+          },
+          "complianceNotes": {
+            "type": "string",
+            "description": "Compliance notes"
+          },
+          "webhookUrl": {
+            "type": "string",
+            "description": "Webhook URL for payment notifications",
+            "example": "https://acme.com/webhooks/payments"
+          },
+          "webhookSecret": {
+            "type": "string",
+            "description": "Webhook signature key (will be encrypted)"
+          },
+          "webhookEvents": {
+            "description": "Webhook events to subscribe to",
+            "example": [
+              "payment.success",
+              "payment.failed",
+              "disbursement.complete"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "webhookEnabled": {
+            "type": "boolean",
+            "description": "Enable/disable webhook",
+            "default": true
+          },
+          "maxDailyCollections": {
+            "type": "number",
+            "description": "Maximum daily collection requests",
+            "example": 10000,
+            "default": 10000
+          },
+          "maxDailyDisbursementAmount": {
+            "type": "number",
+            "description": "Maximum daily disbursement amount",
+            "example": "100000.00"
+          },
+          "maxTransactionAmount": {
+            "type": "number",
+            "description": "Single transaction maximum amount",
+            "example": "50000.00"
+          },
+          "approvalThresholdAmount": {
+            "type": "number",
+            "description": "Require approval for transactions above this amount",
+            "example": "10000.00"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes about merchant configuration"
+          }
+        },
+        "required": [
+          "businessName"
+        ]
+      },
+      "MerchantConfigurationResponseDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateMerchantConfigurationDto": {
+        "type": "object",
+        "properties": {
+          "businessName": {
+            "type": "string",
+            "description": "Legal business name",
+            "example": "Acme Corporation Ltd"
+          },
+          "businessRegistrationNumber": {
+            "type": "string",
+            "description": "Business registration number",
+            "example": "BRN-123456"
+          },
+          "taxId": {
+            "type": "string",
+            "description": "Tax ID / VAT number",
+            "example": "TAX-ZM-123456"
+          },
+          "businessCategory": {
+            "type": "string",
+            "description": "Business category/industry",
+            "example": "E-Commerce"
+          },
+          "websiteUrl": {
+            "type": "string",
+            "description": "Business website URL",
+            "example": "https://acme.com"
+          },
+          "businessAddress": {
+            "type": "string",
+            "description": "Physical business address (will be encrypted)",
+            "example": "123 Business Street, Lusaka, ZM"
+          },
+          "contactPersonName": {
+            "type": "string",
+            "description": "Primary contact person name",
+            "example": "John Doe"
+          },
+          "contactPersonPhone": {
+            "type": "string",
+            "description": "Primary contact phone",
+            "example": "+260965123456"
+          },
+          "contactPersonEmail": {
+            "type": "string",
+            "description": "Primary contact email",
+            "example": "contact@acme.com"
+          },
+          "mtnCollectionSubscriptionKey": {
+            "type": "string",
+            "description": "MTN collection API subscription key (will be encrypted)",
+            "example": "mtncoll_abc123xyz789"
+          },
+          "mtnCollectionApiKey": {
+            "type": "string",
+            "description": "MTN collection API key (will be encrypted)",
+            "example": "mtnkey_abc123xyz789"
+          },
+          "mtnCollectionXReferenceId": {
+            "type": "string",
+            "description": "MTN collection X-Reference-ID",
+            "example": "acme-mtn-ref-001"
+          },
+          "mtnCollectionTargetEnvironment": {
+            "type": "string",
+            "description": "MTN collection target environment",
+            "enum": [
+              "sandbox",
+              "production"
+            ],
+            "default": "sandbox"
+          },
+          "mtnDisbursementSubscriptionKey": {
+            "type": "string",
+            "description": "MTN disbursement API subscription key (will be encrypted)"
+          },
+          "mtnDisbursementApiKey": {
+            "type": "string",
+            "description": "MTN disbursement API key (will be encrypted)"
+          },
+          "mtnDisbursementXReferenceId": {
+            "type": "string",
+            "description": "MTN disbursement X-Reference-ID"
+          },
+          "mtnDisbursementTargetEnvironment": {
+            "type": "string",
+            "description": "MTN disbursement target environment",
+            "enum": [
+              "sandbox",
+              "production"
+            ],
+            "default": "sandbox"
+          },
+          "mtnAccountHolder": {
+            "type": "string",
+            "description": "MTN account holder name"
+          },
+          "mtnAccountActive": {
+            "type": "boolean",
+            "description": "MTN account is active"
+          },
+          "airtelClientId": {
+            "type": "string",
+            "description": "Airtel OAuth2 Client ID (will be encrypted)",
+            "example": "airtel_client_123"
+          },
+          "airtelClientSecret": {
+            "type": "string",
+            "description": "Airtel OAuth2 Client Secret (will be encrypted)"
+          },
+          "airtelSigningSecret": {
+            "type": "string",
+            "description": "Airtel Signing Secret (will be encrypted)"
+          },
+          "airtelEncryptionPublicKey": {
+            "type": "string",
+            "description": "Airtel RSA Public Key (will be encrypted)"
+          },
+          "airtelEnvironment": {
+            "type": "string",
+            "description": "Airtel environment",
+            "enum": [
+              "staging",
+              "production"
+            ],
+            "default": "staging"
+          },
+          "airtelCountry": {
+            "type": "string",
+            "description": "Airtel country code",
+            "example": "ZM",
+            "default": "ZM"
+          },
+          "airtelCurrency": {
+            "type": "string",
+            "description": "Airtel default currency",
+            "example": "ZMW",
+            "default": "ZMW"
+          },
+          "airtelMerchantId": {
+            "type": "string",
+            "description": "Airtel merchant account ID"
+          },
+          "airtelAccountActive": {
+            "type": "boolean",
+            "description": "Airtel account is active"
+          },
+          "bankAccountHolder": {
+            "type": "string",
+            "description": "Bank account holder name",
+            "example": "Acme Corporation"
+          },
+          "bankAccountNumber": {
+            "type": "string",
+            "description": "Bank account number (will be encrypted)",
+            "example": "1234567890"
+          },
+          "bankAccountType": {
+            "type": "string",
+            "description": "Bank account type",
+            "enum": [
+              "checking",
+              "savings",
+              "business"
+            ]
+          },
+          "bankName": {
+            "type": "string",
+            "description": "Bank name",
+            "example": "Zambia National Bank"
+          },
+          "bankBranchCode": {
+            "type": "string",
+            "description": "Bank branch code",
+            "example": "ZNBK-LSKX"
+          },
+          "bankSwiftCode": {
+            "type": "string",
+            "description": "SWIFT/BIC code",
+            "example": "ZNBKZMLU"
+          },
+          "bankAccountCurrency": {
+            "type": "string",
+            "description": "Bank account currency",
+            "example": "ZMW",
+            "default": "ZMW"
+          },
+          "kycStatus": {
+            "type": "string",
+            "description": "KYC verification status",
+            "enum": [
+              "PENDING",
+              "VERIFIED",
+              "REJECTED",
+              "NEEDS_UPDATE"
+            ]
+          },
+          "directorName": {
+            "type": "string",
+            "description": "Director/Owner name"
+          },
+          "directorIdNumber": {
+            "type": "string",
+            "description": "Director/Owner ID number (will be encrypted)"
+          },
+          "directorIdType": {
+            "type": "string",
+            "description": "Director/Owner ID type",
+            "enum": [
+              "passport",
+              "national_id",
+              "driver_license"
+            ]
+          },
+          "beneficialOwnerInfo": {
+            "type": "string",
+            "description": "Beneficial owner information (will be encrypted)"
+          },
+          "complianceNotes": {
+            "type": "string",
+            "description": "Compliance notes"
+          },
+          "webhookUrl": {
+            "type": "string",
+            "description": "Webhook URL for payment notifications",
+            "example": "https://acme.com/webhooks/payments"
+          },
+          "webhookSecret": {
+            "type": "string",
+            "description": "Webhook signature key (will be encrypted)"
+          },
+          "webhookEvents": {
+            "description": "Webhook events to subscribe to",
+            "example": [
+              "payment.success",
+              "payment.failed",
+              "disbursement.complete"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "webhookEnabled": {
+            "type": "boolean",
+            "description": "Enable/disable webhook",
+            "default": true
+          },
+          "maxDailyCollections": {
+            "type": "number",
+            "description": "Maximum daily collection requests",
+            "example": 10000,
+            "default": 10000
+          },
+          "maxDailyDisbursementAmount": {
+            "type": "number",
+            "description": "Maximum daily disbursement amount",
+            "example": "100000.00"
+          },
+          "maxTransactionAmount": {
+            "type": "number",
+            "description": "Single transaction maximum amount",
+            "example": "50000.00"
+          },
+          "approvalThresholdAmount": {
+            "type": "number",
+            "description": "Require approval for transactions above this amount",
+            "example": "10000.00"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes about merchant configuration"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Activate/deactivate merchant configuration"
+          }
+        },
+        "required": [
+          "businessName"
+        ]
+      },
+      "VerificationResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether verification was successful",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "description": "Verification result message",
+            "example": "MTN credentials verified successfully"
+          }
+        },
+        "required": [
+          "success",
+          "message"
+        ]
+      },
+      "TestWebhookDto": {
+        "type": "object",
+        "properties": {
+          "eventType": {
+            "type": "string",
+            "description": "Webhook event type to test",
+            "example": "payment.success"
+          },
+          "payload": {
+            "type": "object",
+            "description": "Test payload to send"
+          }
+        },
+        "required": [
+          "eventType"
+        ]
+      },
+      "WebhookTestResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether webhook test was successful",
+            "example": true
+          },
+          "statusCode": {
+            "type": "number",
+            "description": "HTTP status code from webhook endpoint",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "Test result message",
+            "example": "Webhook test successful"
+          }
+        },
+        "required": [
+          "success",
+          "statusCode",
+          "message"
+        ]
+      }
+    }
+  },
+  "security": [
+    {
+      "bearer": []
+    },
+    {
+      "x-api-key": []
+    },
+    {
+      "x-tenant-id": []
+    }
+  ]
+}

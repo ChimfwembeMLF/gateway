@@ -13,6 +13,8 @@ mtn:
     target_environment: "${MTN_DISBURSEMENT_TARGET_ENVIRONMENT}"
     x_reference_id: "${MTN_DISBURSEMENT_X_REFERENCE_ID}"
     api_key: "${MTN_DISBURSEMENT_API_KEY}"
+
+
 airtel:
   base: "${AIRTEL_BASE_URL}"  # Staging: https://openapiuat.airtel.co.zm | Production: https://openapi.airtel.co.zm
   client_id: "${AIRTEL_CLIENT_ID}"  # OAuth2 Client ID from developer portal
@@ -22,6 +24,8 @@ airtel:
   collection:
     country: "${AIRTEL_COLLECTION_COUNTRY}"  # e.g., ZM
     currency: "${AIRTEL_COLLECTION_CURRENCY}"  # e.g., ZMW
+
+
 email:
   provider: "${EMAIL_PROVIDER}"  # Options: 'sendgrid' | 'nodemailer' | 'mock' | 'console'
   sendgrid:
@@ -38,9 +42,12 @@ email:
     from_name: "${NODEMAILER_FROM_NAME}"
   default_from: "${EMAIL_FROM}"  # Default from email address
   reply_to: "${EMAIL_REPLY_TO}"  # Default reply-to address
+
+
 db:
   host: "${DATABASE_HOST}"
   port: "${DATABASE_PORT}"
   username: "${DATABASE_USERNAME}"
   password: "${DATABASE_PASSWORD}"
   database: "${DATABASE_NAME}"
+  synchronise: "${DATABASE_SYNCHRONIZE}"

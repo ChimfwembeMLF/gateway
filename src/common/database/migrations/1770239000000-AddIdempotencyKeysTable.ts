@@ -2,6 +2,11 @@ import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class AddIdempotencyKeysTable1770239000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
+    const tableExists = await queryRunner.hasTable('idempotency_keys');
+    if (tableExists) {
+      return; // Skip if table already exists
+    }
+
     await queryRunner.createTable(
       new Table({
         name: 'idempotency_keys',

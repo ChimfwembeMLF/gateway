@@ -2,6 +2,11 @@ import { MigrationInterface, QueryRunner, Table, TableIndex, TableForeignKey } f
 
 export class AddDisbursementTables1770240000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
+    const tableExists = await queryRunner.hasTable('disbursements');
+    if (tableExists) {
+      return; // Skip if table already exists
+    }
+
     // Create disbursements table
     await queryRunner.createTable(
       new Table({

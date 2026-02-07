@@ -1,0 +1,1196 @@
+openapi: 3.0.0
+info:
+  title: Payment Gateway Mobile App API
+  description: |
+    Complete API specification for mobile app integration with the Payment Gateway.
+    Supports MTN and Airtel payment collections and disbursements.
+  version: 1.0.0
+  contact:
+    name: Payment Gateway Support
+    email: support@paymentgateway.local
+  license:
+    name: Proprietary
+    url: https://paymentgateway.local/license
+
+servers:
+  - url: https://api.paymentgateway.local/api/v1
+    description: Production environment
+  - url: https://staging-api.paymentgateway.local/api/v1
+    description: Staging environment
+  - url: http://localhost:3000/api/v1
+    description: Local development environment
+
+tags:
+  - name: Authentication
+    description: User authentication and token management
+  - name: Payments
+    description: Payment collection operations
+  - name: Disbursements
+    description: Payment disbursement/payout operations
+  - name: Merchant Configuration
+    description: Merchant setup and configuration
+  - name: Health
+    description: System health checks
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from login endpoint
+
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for service-to-service authentication
+
+  parameters:
+    TenantIdHeader:
+      name: X-Tenant-Id
+      in: header
+      required: true
+      description: Merchant/Tenant identifier
+      schema:
+        type: string
+        example: "merchant-123"
+
+    ProviderQuery:
+      name: provider
+      in: query
+      required: false
+      description: Payment provider (mtn, airtel)
+      schema:
+        type: string
+        enum: [mtn, airtel]
+        default: mtn
+
+    IdempotencyKeyHeader:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: UUID for idempotent request deduplication
+      schema:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440000"
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Invalid request parameters
+        statusCode:
+          type: integer
+          example: 400
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+
+    BaseResponse:
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+
+    LoginDto:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: SecurePass123!
+
+    RegisterDto:
+      type: object
+      required:
+        - email
+        - password
+        - firstName
+        - lastName
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
+        firstName:
+          type: string
+        lastName:
+          type: string
+        tenantId:
+          type: string
+          description: Optional tenant ID. If not provided, new tenant will be created
+
+    AuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            accessToken:
+              type: string
+              description: JWT access token
+            refreshToken:
+              type: string
+              description: JWT refresh token
+            user:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                email:
+                  type: string
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                tenantId:
+                  type: string
+                createdAt:
+                  type: string
+                  format: date-time
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        tenantId:
+          type: string
+        role:
+          type: string
+          enum: [ADMIN, USER, MERCHANT]
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreatePaymentDto:
+      type: object
+      required:
+        - amount
+        - currency
+        - phoneNumber
+        - externalId
+      properties:
+        amount:
+          type: number
+          format: decimal
+          minimum: 0.01
+          example: 100.50
+        currency:
+          type: string
+          enum: [ZMW, USD]
+          example: ZMW
+        phoneNumber:
+          type: string
+          pattern: '^[+]?[0-9]{7,15}$'
+          example: "+260971234567"
+        externalId:
+          type: string
+          description: Unique reference from merchant system
+          example: "INV-2024-001"
+        description:
+          type: string
+          description: Payment description/memo
+          example: "Service payment for invoice INV-2024-001"
+        provider:
+          type: string
+          enum: [mtn, airtel]
+          default: mtn
+          example: mtn
+        customerName:
+          type: string
+          example: "John Doe"
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Custom metadata object
+          example:
+            orderId: "ORD-123"
+            invoiceNumber: "INV-2024-001"
+
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenantId:
+          type: string
+        externalId:
+          type: string
+        amount:
+          type: number
+          format: decimal
+        currency:
+          type: string
+        phoneNumber:
+          type: string
+        description:
+          type: string
+        provider:
+          type: string
+          enum: [mtn, airtel]
+        status:
+          type: string
+          enum: [PENDING, COMPLETED, FAILED, EXPIRED]
+        transactionId:
+          type: string
+          description: Provider's transaction reference
+        errorCode:
+          type: string
+        errorMessage:
+          type: string
+        metadata:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+
+    PaymentStatus:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [PENDING, COMPLETED, FAILED, EXPIRED]
+        transactionId:
+          type: string
+        provider:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        errorCode:
+          type: string
+        errorMessage:
+          type: string
+
+    BalanceResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            balance:
+              type: number
+              format: decimal
+              example: 5000.00
+            currency:
+              type: string
+              example: ZMW
+            provider:
+              type: string
+              enum: [mtn, airtel]
+            lastUpdated:
+              type: string
+              format: date-time
+
+    CreateDisbursementDto:
+      type: object
+      required:
+        - amount
+        - currency
+        - phoneNumber
+        - externalId
+      properties:
+        amount:
+          type: number
+          format: decimal
+          minimum: 0.01
+          example: 500.00
+        currency:
+          type: string
+          enum: [ZMW, USD]
+          example: ZMW
+        phoneNumber:
+          type: string
+          pattern: '^[+]?[0-9]{7,15}$'
+          example: "+260971234567"
+        externalId:
+          type: string
+          description: Unique reference from merchant system
+          example: "PAYOUT-2024-001"
+        description:
+          type: string
+          example: "Salary payment"
+        provider:
+          type: string
+          enum: [mtn, airtel]
+          default: mtn
+        recipientName:
+          type: string
+          example: "Jane Smith"
+        metadata:
+          type: object
+          additionalProperties: true
+          example:
+            employeeId: "EMP-123"
+            payrollPeriod: "2024-02"
+
+    Disbursement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenantId:
+          type: string
+        externalId:
+          type: string
+        amount:
+          type: number
+          format: decimal
+        currency:
+          type: string
+        phoneNumber:
+          type: string
+        description:
+          type: string
+        provider:
+          type: string
+          enum: [mtn, airtel]
+        status:
+          type: string
+          enum: [PENDING, COMPLETED, FAILED]
+        transactionId:
+          type: string
+        errorCode:
+          type: string
+        errorMessage:
+          type: string
+        metadata:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+
+    MerchantConfiguration:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenantId:
+          type: string
+        businessName:
+          type: string
+        businessRegistrationNumber:
+          type: string
+        businessCategory:
+          type: string
+        contactPersonName:
+          type: string
+        contactPersonEmail:
+          type: string
+        contactPersonPhone:
+          type: string
+        websiteUrl:
+          type: string
+          format: url
+        mtnAccountActive:
+          type: boolean
+        mtnLastVerified:
+          type: string
+          format: date-time
+        airtelAccountActive:
+          type: boolean
+        airtelLastVerified:
+          type: string
+          format: date-time
+        bankAccountVerified:
+          type: boolean
+        bankName:
+          type: string
+        bankAccountType:
+          type: string
+        kycStatus:
+          type: string
+          enum: [PENDING, VERIFIED, REJECTED, NEEDS_UPDATE]
+        maxDailyCollections:
+          type: integer
+        maxDailyDisbursementAmount:
+          type: number
+          format: decimal
+        maxTransactionAmount:
+          type: number
+          format: decimal
+        webhookEnabled:
+          type: boolean
+        webhookUrl:
+          type: string
+          format: url
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UpdateMerchantConfigurationDto:
+      type: object
+      properties:
+        businessName:
+          type: string
+        businessCategory:
+          type: string
+        contactPersonName:
+          type: string
+        contactPersonEmail:
+          type: string
+        contactPersonPhone:
+          type: string
+        websiteUrl:
+          type: string
+          format: url
+        webhookUrl:
+          type: string
+          format: url
+        webhookEnabled:
+          type: boolean
+        maxDailyCollections:
+          type: integer
+        maxDailyDisbursementAmount:
+          type: number
+          format: decimal
+        maxTransactionAmount:
+          type: number
+          format: decimal
+        notes:
+          type: string
+
+    VerificationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        verified:
+          type: boolean
+        details:
+          type: object
+          additionalProperties: true
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [UP, DOWN, DEGRADED]
+        timestamp:
+          type: string
+          format: date-time
+        services:
+          type: object
+          additionalProperties:
+            type: string
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: User registration
+      description: Register new user and optionally create merchant tenant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterDto'
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Invalid input or user already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/me:
+    get:
+      tags:
+        - Authentication
+      summary: Get current user
+      description: Retrieve authenticated user information
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User information retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /payments:
+    post:
+      tags:
+        - Payments
+      summary: Create payment request
+      description: |
+        Initiate a payment collection request. The customer will receive a prompt
+        on their phone to authorize the payment.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TenantIdHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentDto'
+      responses:
+        '201':
+          description: Payment request created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Payment'
+        '400':
+          description: Invalid payment parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '402':
+          description: Insufficient balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    get:
+      tags:
+        - Payments
+      summary: List payments
+      description: Retrieve all payments for the merchant tenant
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TenantIdHeader'
+        - name: status
+          in: query
+          description: Filter by payment status
+          schema:
+            type: string
+            enum: [PENDING, COMPLETED, FAILED, EXPIRED]
+        - name: provider
+          in: query
+          description: Filter by provider
+          schema:
+            type: string
+            enum: [mtn, airtel]
+        - name: skip
+          in: query
+          description: Number of records to skip
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: Maximum number of records to return
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: Payments list retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Payment'
+                  total:
+                    type: integer
+
+  /payments/{id}:
+    get:
+      tags:
+        - Payments
+      summary: Get payment details
+      description: Retrieve detailed information about a specific payment
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TenantIdHeader'
+        - name: id
+          in: path
+          required: true
+          description: Payment ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Payment details retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Payment'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /payments/status/{id}:
+    get:
+      tags:
+        - Payments
+      summary: Get payment status
+      description: Check real-time payment status from provider
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TenantIdHeader'
+        - $ref: '#/components/parameters/ProviderQuery'
+        - name: id
+          in: path
+          required: true
+          description: Payment ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Payment status retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/PaymentStatus'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /payments/balance/available:
+    get:
+      tags:
+        - Payments
+      summary: Get available balance
+      description: Check available balance in merchant wallet
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TenantIdHeader'
+        - $ref: '#/components/parameters/ProviderQuery'
+      responses:
+        '200':
+          description: Balance retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /disbursements:
+    post:
+      tags:
+        - Disbursements
+      summary: Create disbursement
+      description: |
+        Initiate a payment disbursement/payout to a customer.
+        Funds will be sent to the specified phone number.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TenantIdHeader'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDisbursementDto'
+      responses:
+        '201':
+          description: Disbursement created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Disbursement'
+        '400':
+          description: Invalid disbursement parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '402':
+          description: Insufficient balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    get:
+      tags:
+        - Disbursements
+      summary: List disbursements
+      description: Retrieve all disbursements for the merchant tenant
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TenantIdHeader'
+        - name: status
+          in: query
+          description: Filter by disbursement status
+          schema:
+            type: string
+            enum: [PENDING, COMPLETED, FAILED]
+        - name: provider
+          in: query
+          description: Filter by provider
+          schema:
+            type: string
+            enum: [mtn, airtel]
+        - name: skip
+          in: query
+          description: Number of records to skip
+          schema:
+            type: integer
+            default: 0
+        - name: limit
+          in: query
+          description: Maximum number of records to return
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: Disbursements list retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Disbursement'
+                  total:
+                    type: integer
+
+  /disbursements/{id}:
+    get:
+      tags:
+        - Disbursements
+      summary: Get disbursement details
+      description: Retrieve detailed information about a specific disbursement
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TenantIdHeader'
+        - name: id
+          in: path
+          required: true
+          description: Disbursement ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Disbursement details retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Disbursement'
+        '404':
+          description: Disbursement not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /disbursements/status/{id}:
+    get:
+      tags:
+        - Disbursements
+      summary: Get disbursement status
+      description: Check real-time disbursement status from provider
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TenantIdHeader'
+        - $ref: '#/components/parameters/ProviderQuery'
+        - name: id
+          in: path
+          required: true
+          description: Disbursement ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Disbursement status retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      status:
+                        type: string
+                      transactionId:
+                        type: string
+                      timestamp:
+                        type: string
+                        format: date-time
+        '404':
+          description: Disbursement not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /merchant/configuration:
+    get:
+      tags:
+        - Merchant Configuration
+      summary: Get merchant configuration
+      description: Retrieve merchant's payment configuration and settings
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TenantIdHeader'
+      responses:
+        '200':
+          description: Configuration retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/MerchantConfiguration'
+        '404':
+          description: Configuration not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    patch:
+      tags:
+        - Merchant Configuration
+      summary: Update merchant configuration
+      description: Update merchant configuration and settings
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TenantIdHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMerchantConfigurationDto'
+      responses:
+        '200':
+          description: Configuration updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/MerchantConfiguration'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /merchant/configuration/verify/mtn:
+    post:
+      tags:
+        - Merchant Configuration
+      summary: Verify MTN credentials
+      description: Test and verify MTN payment provider credentials
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TenantIdHeader'
+      responses:
+        '200':
+          description: MTN credentials verified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationResponse'
+        '400':
+          description: Verification failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /merchant/configuration/verify/airtel:
+    post:
+      tags:
+        - Merchant Configuration
+      summary: Verify Airtel credentials
+      description: Test and verify Airtel payment provider credentials
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TenantIdHeader'
+      responses:
+        '200':
+          description: Airtel credentials verified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationResponse'
+        '400':
+          description: Verification failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /merchant/configuration/verify/bank:
+    post:
+      tags:
+        - Merchant Configuration
+      summary: Verify bank account
+      description: Verify bank account information
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/TenantIdHeader'
+      responses:
+        '200':
+          description: Bank account verified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationResponse'
+        '400':
+          description: Verification failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Basic health check endpoint
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /health/ready:
+    get:
+      tags:
+        - Health
+      summary: Readiness probe
+      description: Check if service is ready to accept requests
+      responses:
+        '200':
+          description: Service is ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: Service not ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /health/live:
+    get:
+      tags:
+        - Health
+      summary: Liveness probe
+      description: Check if service is running
+      responses:
+        '200':
+          description: Service is alive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: Service is down
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'

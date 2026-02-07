@@ -4,6 +4,11 @@ export class AddUsageMetricsTable1770243000000 implements MigrationInterface {
   name = 'AddUsageMetricsTable1770243000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    const tableExists = await queryRunner.hasTable('usage_metrics');
+    if (tableExists) {
+      return; // Skip if table already exists
+    }
+
     await queryRunner.createTable(
       new Table({
         name: 'usage_metrics',

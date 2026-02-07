@@ -29,13 +29,21 @@ export class AuditSubscriber implements EntitySubscriberInterface {
   async afterUpdate(event: UpdateEvent<any>) {
     if (event.entity && event.metadata.name !== 'Audit') {
       const context = event.queryRunner?.data || {};
+      // Get the ID from entity or from the update criteria
+      const auditableId = event.entity.id || event.databaseEntity?.id;
+      
+      // Skip audit if we can't determine the entity ID
+      if (!auditableId) {
+        return;
+      }
+      
       const audit = event.manager.create(Audit, {
         event: 'updated',
         auditableType: event.metadata.name,
-        auditableId: event.entity.id,
+        auditableId: auditableId,
         oldValues: event.databaseEntity,
         newValues: event.entity,
-        tenantId: event.entity.tenantId || context.tenantId || '00000000-0000-0000-0000-000000000000',
+        tenantId: event.entity.tenantId || event.databaseEntity?.tenantId || context.tenantId || '00000000-0000-0000-0000-000000000000',
         userId: context.userId,
         url: context.url,
         ipAddress: context.ipAddress,

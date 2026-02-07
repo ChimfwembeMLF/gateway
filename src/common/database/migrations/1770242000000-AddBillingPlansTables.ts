@@ -4,6 +4,11 @@ export class AddBillingPlansTables1770242000000 implements MigrationInterface {
   name = 'AddBillingPlansTables1770242000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    const tableExists = await queryRunner.hasTable('billing_plans');
+    if (tableExists) {
+      return; // Skip if tables already exist
+    }
+
     // Create billing_plans table
     await queryRunner.createTable(
       new Table({

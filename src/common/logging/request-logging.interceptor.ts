@@ -38,6 +38,10 @@ export class RequestLoggingInterceptor implements NestInterceptor {
     const path = request.path;
     const tenantId = request.headers['x-tenant-id'];
     const userId = request.user?.id;
+    
+    // Extract bearer token from Authorization header
+    const authHeader = request.headers['authorization'] || '';
+    const bearerToken = authHeader.replace('Bearer ', '').trim() || undefined;
 
     const startTime = Date.now();
 
@@ -64,6 +68,7 @@ export class RequestLoggingInterceptor implements NestInterceptor {
           {
             tenantId,
             userId,
+            bearerToken,
           },
         );
 
@@ -84,6 +89,7 @@ export class RequestLoggingInterceptor implements NestInterceptor {
           {
             tenantId,
             userId,
+            bearerToken,
           },
         );
 

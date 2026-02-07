@@ -4,6 +4,11 @@ export class AddInvoiceTables1770244000000 implements MigrationInterface {
   name = 'AddInvoiceTables1770244000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    const tableExists = await queryRunner.hasTable('invoices');
+    if (tableExists) {
+      return; // Skip if tables already exist
+    }
+
     // Create invoices table
     await queryRunner.createTable(
       new Table({

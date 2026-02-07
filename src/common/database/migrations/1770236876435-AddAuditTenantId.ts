@@ -3,6 +3,17 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 export class AddAuditTenantId1770236876435 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+
+        const tableExists = await queryRunner.hasTable('audits');
+        if (!tableExists) {
+            return; // Skip if table doesn't exist yet
+        }
+
+        const columnExists = await queryRunner.hasColumn('audits', 'tenantId');
+        if (columnExists) {
+            return; // Skip if column already exists
+        }
+
         // Add tenantId column (nullable initially)
         await queryRunner.query(`
             ALTER TABLE "audits" 

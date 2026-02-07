@@ -1,5 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { writeFileSync } from 'fs';
+import { join } from 'path';
 
 export function setupSwagger(app: INestApplication): void {
   const config = new DocumentBuilder()
@@ -14,6 +16,8 @@ export function setupSwagger(app: INestApplication): void {
     .addSecurityRequirements('x-tenant-id')
     .build();
   const document = SwaggerModule.createDocument(app, config);
+  const outputPath = join(process.cwd(), 'swagger.json');
+  writeFileSync(outputPath, JSON.stringify(document, null, 2), { encoding: 'utf-8' });
   SwaggerModule.setup('/documentation', app, document, {
     swaggerOptions: {
       persistAuthorization: true,

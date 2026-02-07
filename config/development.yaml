@@ -12,6 +12,7 @@ mtn:
     target_environment: "${MTN_DISBURSEMENT_TARGET_ENVIRONMENT}"
     x_reference_id: "${MTN_DISBURSEMENT_X_REFERENCE_ID}"
     api_key: "${MTN_DISBURSEMENT_API_KEY}"
+
 airtel:
   base: "${AIRTEL_BASE_URL:-https://openapiuat.airtel.co.zm}"  # Staging/Dev: https://openapiuat.airtel.co.zm
   client_id: "${AIRTEL_CLIENT_ID}"
@@ -21,11 +22,14 @@ airtel:
   collection:
     country: "${AIRTEL_COLLECTION_COUNTRY:-ZM}"
     currency: "${AIRTEL_COLLECTION_CURRENCY:-ZMW}"
+    
 db:
   host: "${DATABASE_HOST}"
   port: "${DATABASE_PORT}"
   username: "${DATABASE_USERNAME}"
   password: "${DATABASE_PASSWORD}"
   database: "${DATABASE_NAME}"
+  synchronise: "${DATABASE_SYNCHRONIZE}"
+
 olympus:
   link: "https://api.olympustech.example.com/mtn/details?"

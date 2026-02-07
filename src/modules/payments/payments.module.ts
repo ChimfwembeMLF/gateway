@@ -18,7 +18,13 @@ import { TransactionModule } from './transaction.module';
 @Module({
     imports: [TypeOrmModule.forFeature([Payment, Transaction]), MtnModule, DisbursementModule, AirtelModule, UserModule, TenantModule, TransactionModule],
     controllers: [PaymentsController],
-    providers: [PaymentsService, CollectionService, UuidGeneratorService, PaymentsStatusCronService, StalePaymentsCleanupService],
+    providers: [
+        PaymentsService,
+        CollectionService,
+        UuidGeneratorService,
+        // PaymentsStatusCronService,
+        StalePaymentsCleanupService
+    ],
     exports: [PaymentsService, UuidGeneratorService],
 })
-export class PaymentsModule {}
+export class PaymentsModule { }
