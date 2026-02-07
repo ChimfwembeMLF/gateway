@@ -2,8 +2,9 @@ export enum PaymentFlow {
   COLLECTION = 'collection',
   DISBURSEMENT = 'disbursement',
 }
-import { Entity, Column, Index } from 'typeorm';
+import { Entity, Column, Index, OneToMany } from 'typeorm';
 import { AbstractEntity } from '../../../common/entities/abstract.entity';
+import { Transaction } from './transaction.entity';
 
 export enum PaymentStatus {
   PENDING = 'PENDING',
@@ -42,4 +43,10 @@ export class Payment extends AbstractEntity {
 
   @Column({ nullable: true })
   momoTransactionId: string;
+
+  @OneToMany(() => Transaction, (transaction) => transaction.payment, {
+    cascade: true,
+    eager: false,
+  })
+  transactions: Transaction[];
 }

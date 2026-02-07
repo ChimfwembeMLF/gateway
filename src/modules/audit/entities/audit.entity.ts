@@ -3,9 +3,13 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Index } from 
 @Entity('audits')
 @Index(['auditableType', 'auditableId'])
 @Index(['userId'])
+@Index(['tenantId'])
 export class Audit {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column({ type: 'uuid' })
+  tenantId: string;
 
   @Column({ nullable: true })
   userId: string;

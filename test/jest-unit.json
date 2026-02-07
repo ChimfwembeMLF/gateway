@@ -1,0 +1,38 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": "src",
+  "testRegex": ".*\\.spec\\.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "collectCoverageFrom": [
+    "**/*.(t|j)s",
+    "!**/*.module.ts",
+    "!**/node_modules/**",
+    "!**/*.interface.ts",
+    "!**/index.ts"
+  ],
+  "coverageDirectory": "../coverage/unit",
+  "testEnvironment": "node",
+  "roots": [
+    "<rootDir>",
+    "<rootDir>/../test"
+  ],
+  "moduleNameMapper": {
+    "^src/(.*)$": "<rootDir>/$1"
+  },
+  "setupFilesAfterEnv": [
+    "<rootDir>/../test/unit/jest.setup.ts"
+  ],
+  "testTimeout": 10000,
+  "verbose": true,
+  "maxWorkers": "50%",
+  "coverageThreshold": {
+    "global": {
+      "branches": 60,
+      "functions": 60,
+      "lines": 60,
+      "statements": 60
+    }
+  }
+}

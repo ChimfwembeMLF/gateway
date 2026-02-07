@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { UsersService } from '../../user/users.service';
 import { TenantService } from '../../tenant/tenant.service';
+import { RoleType } from '../../../common/enums/role-type.enum';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -15,8 +16,11 @@ describe('AuthService', () => {
     username: 'testuser',
     email: 'test@example.com',
     password: 'hashed_password',
-    role: 'USER',
+    role: RoleType.USER,
     tenantId: 'tenant-123',
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
   };
 
   beforeEach(async () => {

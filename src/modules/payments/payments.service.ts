@@ -5,6 +5,7 @@ import { Payment, PaymentStatus } from './entities/payment.entity';
 import { Transaction, TransactionType } from './entities/transaction.entity';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { CollectionService } from '../mtn/collection/collection.service';
+import { AirtelCollectionService } from '../airtel/collection/airtel-collection.service';
 import { DisbursementService } from '../mtn/disbursement/disbursement.service';
 import { MtnPartyIdType } from '../mtn/dto/mtn.enums';
 import { PaymentProvider } from '../../common/enums/provider.enum';
@@ -21,6 +22,7 @@ export class PaymentsService {
     private readonly transactionRepository: Repository<Transaction>,
     private readonly collectionService: CollectionService,
     private readonly disbursementService: DisbursementService,
+    private readonly airtelCollectionService: AirtelCollectionService,
     private readonly uuidGenerator: UuidGeneratorService,
     // Future: inject other provider services here
   ) {}
@@ -36,9 +38,13 @@ export class PaymentsService {
       ? createPaymentDto.externalId
       : this.uuidGenerator.generate();
     const momoReferenceId = this.uuidGenerator.generate();
+    
+    this.logger.log(`[CREATE PAYMENT] Tenant: ${createPaymentDto.tenantId}, Provider: ${createPaymentDto.provider}, Amount: ${createPaymentDto.amount}${createPaymentDto.currency}`);
+    
     switch (createPaymentDto.provider) {
       case PaymentProvider.MTN: {
         try {
+          this.logger.log(`[MTN COLLECTION] Starting requestToPay for payer: ${createPaymentDto.payer}`);
           // Transform CreatePaymentDto to RequestToPayDto
           const requestToPayDto = {
             amount: String(createPaymentDto.amount),
@@ -57,7 +63,9 @@ export class PaymentsService {
             user,
             paymentExternalId,
           );
+          this.logger.log(`[MTN COLLECTION] requestToPay succeeded, transactionRef: ${providerResult?.transactionRef}`);
         } catch (error) {
+          this.logger.error(`[MTN COLLECTION] requestToPay failed: ${error.message}`, error.stack);
           // Enhanced error handling for MoMo API
           const errData = error?.response?.data;
           let userMessage = 'MTN requestToPay failed.';
@@ -112,9 +120,25 @@ export class PaymentsService {
         }
         break;
       }
-      // case 'airtel':
-      //   providerResult = await this.airtelService.requestToPay(createPaymentDto);
-      //   break;
+      case PaymentProvider.AIRTEL: {
+        const msisdn = this.normalizeMsisdn(createPaymentDto.payer, '260');
+        const airtelRequest = {
+          reference: paymentExternalId,
+          subscriber: {
+            country: 'ZM',
+            currency: createPaymentDto.currency || 'ZMW',
+            msisdn,
+          },
+          transaction: {
+            amount: createPaymentDto.amount,
+            country: 'ZM',
+            currency: createPaymentDto.currency || 'ZMW',
+            id: paymentExternalId,
+          },
+        };
+        providerResult = await this.airtelCollectionService.requestToPay(airtelRequest);
+        break;
+      }
       // case 'zamtel':
       //   providerResult = await this.zamtelService.requestToPay(createPaymentDto);
       //   break;
@@ -155,6 +179,15 @@ export class PaymentsService {
     const payment = await this.findOne(id, tenantId);
     payment.status = status;
     return this.paymentRepository.save(payment);
+  }
+
+  private normalizeMsisdn(msisdn: string, countryCode: string = '260'): string {
+    if (!msisdn) return msisdn;
+    const trimmed = msisdn.replace(/\s+/g, '').replace(/^\+/, '');
+    if (trimmed.startsWith(countryCode)) {
+      return trimmed.slice(countryCode.length);
+    }
+    return trimmed;
   }
 
   async getPaymentStatus(

@@ -20,7 +20,8 @@ async function bootstrap() {
   // Security middleware
   app.use(helmet());
   app.enableCors({
-    origin: (process.env.ALLOWED_ORIGINS ?? 'http://localhost:3000,http://localhost:3001').split(','),
+    // origin: (process.env.ALLOWED_ORIGINS ?? 'http://localhost:3000,http://localhost:3001').split(','),
+    origin: '*',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key', 'x-tenant-id'],
@@ -40,7 +41,7 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
 
   setupSwagger(app);
-  await app.listen(port);
+  await app.listen('0.0.0.0');
   logger.log(`🚀 Application running on port ${port} (${nodeEnv} mode)`);
   logger.log(`📚 API Documentation: http://localhost:${port}/documentation`);
 }

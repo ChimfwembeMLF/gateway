@@ -6,6 +6,7 @@ import { UsersService } from '../user/users.service';
 import { RoleType } from 'src/common/enums/role-type.enum';
 import { CreateTenantWithAdminDto } from './dto/create-tenant-with-admin.dto';
 import { User } from '../user/entities/user.entity';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class TenantService {
@@ -71,6 +72,22 @@ export class TenantService {
     const allTenants = await this.tenantRepository.find();
     const matched = allTenants.find(t => t.name.toLowerCase() === identifier.toLowerCase());
     return matched || null;
+  }
+
+  async findByApiKey(apiKey: string): Promise<Tenant | null> {
+    return this.tenantRepository.findOne({ where: { apiKey } });
+  }
+
+  async findByName(name: string): Promise<Tenant | null> {
+    const allTenants = await this.tenantRepository.find();
+    const matched = allTenants.find(t => t.name.toLowerCase() === name.toLowerCase());
+    return matched || null;
+  }
+
+  async generateApiKey(id: string): Promise<string> {
+    const apiKey = `tenant_${randomBytes(32).toString('hex')}`;
+    await this.tenantRepository.update(id, { apiKey });
+    return apiKey;
   }
 
   async update(id: string, data: Partial<Tenant>): Promise<Tenant | null> {

@@ -1,12 +1,13 @@
-import { Controller, Post, Body, Get, Param, Patch, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Patch, Delete, UseGuards, Req } from '@nestjs/common';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
+import { ApiKeyGuard } from '../../common/guards/api-key.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { RoleType } from '../../common/enums/role-type.enum';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
 import { TenantService } from './tenant.service';
 import { CreateTenantWithAdminDto } from './dto/create-tenant-with-admin.dto';
-import { ApiTags, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 
 @ApiTags('Tenants')
 @Controller('api/v1/tenants')
@@ -68,5 +69,32 @@ export class TenantController {
   async remove(@Param('id') id: string) {
     await this.tenantService.remove(id);
     return { success: true };
+  }
+
+  // Tenant API Key Management (uses tenant API key auth)
+  @Get('api-key/view')
+  @UseGuards(ApiKeyGuard)
+  @ApiHeader({ name: 'x-api-key', description: 'Tenant API key', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant identifier', required: true })
+  @ApiResponse({ status: 200, description: 'Returns the tenant API key' })
+  async viewApiKey(@Req() req: any) {
+    return { 
+      apiKey: req.tenant.apiKey,
+      tenantId: req.tenant.id,
+      tenantName: req.tenant.name
+    };
+  }
+
+  @Post('api-key/regenerate')
+  @UseGuards(ApiKeyGuard)
+  @ApiHeader({ name: 'x-api-key', description: 'Current tenant API key', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant identifier', required: true })
+  @ApiResponse({ status: 200, description: 'Generates new API key for the tenant' })
+  async regenerateApiKey(@Req() req: any) {
+    const newApiKey = await this.tenantService.generateApiKey(req.tenant.id);
+    return { 
+      apiKey: newApiKey,
+      message: 'API key regenerated successfully. Update your integrations with the new key.'
+    };
   }
 }

@@ -28,9 +28,11 @@ export class CollectionService {
     const mtnCollection = this.configService.get<any>('mtn.collection');
 
     const url = `${mtn.base}/collection/v1_0/requesttopay`;
+    this.logger.log(`[MTN COLLECTION] requestToPay called - URL: ${url}, Tenant: ${tenantId}, Payer: ${dto.payer?.partyId}`);
     try {
       const bearerToken = await this.mtnService.createMtnToken();
       const transactionId = dto.externalId;
+      this.logger.log(`[MTN COLLECTION] Obtained bearer token, calling MTN API with transactionId: ${transactionId}`);
       await axios.post(url, dto, {
         headers: {
           'Ocp-Apim-Subscription-Key': mtnCollection.subscription_key,
@@ -39,6 +41,7 @@ export class CollectionService {
           Authorization: `Bearer ${bearerToken}`,
         },
       });
+      this.logger.log(`[MTN COLLECTION] MTN API call succeeded for transactionId: ${transactionId}`);
       // Log transaction only if payment exists
       const lookupExternalId = paymentExternalId || transactionId;
       const payment = await this.paymentRepository.findOne({ where: { externalId: lookupExternalId, tenantId } });
@@ -53,10 +56,11 @@ export class CollectionService {
           response: JSON.stringify(dto),
           status: PaymentStatus.PENDING,
         });
+        this.logger.log(`[MTN COLLECTION] Payment and transaction saved for externalId: ${lookupExternalId}`);
       }
       return { success: true, transactionId };
     } catch (error) {
-      this.logger.error('requestToPay error', error);
+      this.logger.error(`[MTN COLLECTION] requestToPay error: ${error.message}`, error.stack);
       throw new BadRequestException('Failed to request to pay');
     }
   }

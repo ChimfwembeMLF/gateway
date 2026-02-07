@@ -65,10 +65,28 @@ export class AuthService {
         adminPassword: password,
       });
 
+    // Generate API key for the tenant
+    const apiKey = await this.tenantService.generateApiKey(tenant.id);
+
+    // Generate JWT token for the admin user
+    const payload = {
+      sub: admin.id,
+      username: admin.username,
+      role: admin.role,
+      tenantId: admin.tenantId,
+    };
+    const token = this.jwtService.sign(payload);
+
     return {
       success: true,
       message: 'Tenant and admin user created successfully',
-      data: { tenant, admin },
+      data: { 
+        tenant, 
+        admin,
+        token,
+        tenantId: tenant.name,
+        apiKey,
+      },
     };
   }
 

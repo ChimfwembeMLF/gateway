@@ -1,5 +1,4 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException, Logger } from '@nestjs/common';
-import { UsersService } from 'src/modules/user/users.service';
 import { TenantService } from 'src/modules/tenant/tenant.service';
 
 @Injectable()
@@ -7,49 +6,57 @@ export class ApiKeyGuard implements CanActivate {
   private readonly logger = new Logger(ApiKeyGuard.name);
 
   constructor(
-    private readonly usersService: UsersService,
     private readonly tenantService: TenantService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    // Accept API key from Authorization: Bearer <api_key> or x-api-key header
-    let apiKey = null;
-    const authHeader = request.headers['authorization'];
-    if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
-      apiKey = authHeader.slice(7).trim();
-    } else if (request.headers['x-api-key']) {
-      apiKey = request.headers['x-api-key'];
-    }
+    
+    // Extract API key from x-api-key header
+    const apiKey = request.headers['x-api-key'];
     if (!apiKey) {
-      throw new UnauthorizedException('API key missing');
+      throw new UnauthorizedException('API key is required');
     }
-    // Require tenantId in the request (e.g., from a header or query param)
-    let tenantIdentifier = request.headers['x-tenant-id'] || request.query.tenantId;
+    
+    // Require tenant identifier in x-tenant-id header
+    const tenantIdentifier = request.headers['x-tenant-id'];
     if (!tenantIdentifier) {
-      throw new UnauthorizedException('Tenant ID missing');
+      throw new UnauthorizedException('Tenant identifier is required');
     }
 
-    // Resolve tenant identifier to tenant ID (supports both UUID and tenant name)
-    let tenantId = tenantIdentifier as string;
-    this.logger.debug(`Attempting to resolve tenant identifier: ${tenantIdentifier}`);
-    const tenant = await this.tenantService.findByNameOrId(tenantIdentifier as string);
-    if (tenant) {
-      tenantId = tenant.id;
-      this.logger.debug(`Resolved tenant "${tenantIdentifier}" to ID: ${tenantId}`);
-    } else {
-      this.logger.warn(`Tenant not found with identifier: ${tenantIdentifier}`);
+    this.logger.debug(`Validating API key for tenant: ${tenantIdentifier}`);
+    
+    // Find tenant by API key
+    const tenantByApiKey = await this.tenantService.findByApiKey(apiKey);
+    if (!tenantByApiKey) {
+      this.logger.warn(`Invalid API key: ${apiKey.substring(0, 10)}...`);
+      throw new UnauthorizedException('Invalid API key');
+    }
+
+    // Check if tenant is active
+    if (!tenantByApiKey.isActive) {
+      this.logger.warn(`Tenant ${tenantByApiKey.id} is not active`);
+      throw new UnauthorizedException('Tenant is not active');
+    }
+
+    // Resolve tenant by identifier (UUID or name)
+    const tenantByIdentifier = await this.tenantService.findByNameOrId(tenantIdentifier);
+    if (!tenantByIdentifier) {
+      this.logger.warn(`Tenant not found: ${tenantIdentifier}`);
       throw new UnauthorizedException('Tenant not found');
     }
 
-    this.logger.debug(`Looking up API key: ${apiKey.substring(0, 10)}... with tenantId: ${tenantId}`);
-    const user = await this.usersService.findByApiKey(apiKey, tenantId);
-    if (!user) {
-      this.logger.warn(`User not found for API key and tenantId: ${tenantId}`);
-      throw new UnauthorizedException('Invalid API key or tenant');
+    // Verify API key belongs to the requested tenant (prevent cross-tenant access)
+    if (tenantByApiKey.id !== tenantByIdentifier.id) {
+      this.logger.warn(`API key mismatch: key belongs to ${tenantByApiKey.id} but requested ${tenantByIdentifier.id}`);
+      throw new UnauthorizedException('API key does not match tenant');
     }
-    this.logger.debug(`User found: ${user.username}, setting tenantId to: ${tenantId}`);
-    request.user = user;
+
+    this.logger.debug(`Access granted for tenant: ${tenantByApiKey.name} (${tenantByApiKey.id})`);
+    
+    // Attach tenant to request for downstream use
+    request.tenant = tenantByApiKey;
+    
     return true;
   }
 }

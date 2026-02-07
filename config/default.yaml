@@ -1,19 +1,53 @@
 # Default configuration
+# All sensitive values should come from environment variables
+# This file contains only non-sensitive defaults
 mtn:
-  base: "https://sandbox.momodeveloper.mtn.com"
+  base: "${MTN_BASE_URL}"
   collection:
-    subscription_key: "2551a785e77045b1816e58a9f8f3f5a2"
-    target_environment: "sandbox"
-    x_reference_id: "bf8318a6-2db3-4fe1-98f2-c002cefdd4d6"
-    api_key: "21e3318d9b6a4f64a56a7209ddf83003"
+    subscription_key: "${MTN_COLLECTION_SUBSCRIPTION_KEY}"
+    target_environment: "${MTN_COLLECTION_TARGET_ENVIRONMENT}"
+    x_reference_id: "${MTN_COLLECTION_X_REFERENCE_ID}"
+    api_key: "${MTN_COLLECTION_API_KEY}"
   disbursement:
-    subscription_key: "eb49dfde65824998888a99c0b8a06b55"
-    target_environment: "sandbox"
-    x_reference_id: "d525968f-00df-416f-839f-f838b1fb7a14"
-    api_key: "ef88782b087d4d7d830153174ec5f6bb"
+    subscription_key: "${MTN_DISBURSEMENT_SUBSCRIPTION_KEY}"
+    target_environment: "${MTN_DISBURSEMENT_TARGET_ENVIRONMENT}"
+    x_reference_id: "${MTN_DISBURSEMENT_X_REFERENCE_ID}"
+    api_key: "${MTN_DISBURSEMENT_API_KEY}"
+
+
+airtel:
+  base: "${AIRTEL_BASE_URL}"  # Staging: https://openapiuat.airtel.co.zm | Production: https://openapi.airtel.co.zm
+  client_id: "${AIRTEL_CLIENT_ID}"  # OAuth2 Client ID from developer portal
+  client_secret: "${AIRTEL_CLIENT_SECRET}"  # OAuth2 Client Secret from developer portal
+  signing_secret: "${AIRTEL_SIGNING_SECRET}"  # Secret for HMAC-SHA256 signature generation
+  encryption_public_key: "${AIRTEL_ENCRYPTION_PUBLIC_KEY}"  # RSA public key for AES key encryption
+  collection:
+    country: "${AIRTEL_COLLECTION_COUNTRY}"  # e.g., ZM
+    currency: "${AIRTEL_COLLECTION_CURRENCY}"  # e.g., ZMW
+
+
+email:
+  provider: "${EMAIL_PROVIDER}"  # Options: 'sendgrid' | 'nodemailer' | 'mock' | 'console'
+  sendgrid:
+    api_key: "${SENDGRID_API_KEY}"  # SendGrid API key for production email sending
+    from_email: "${SENDGRID_FROM_EMAIL}"
+    from_name: "${SENDGRID_FROM_NAME}"
+  nodemailer:
+    host: "${NODEMAILER_HOST}"  # SMTP server host (e.g., smtp.gmail.com)
+    port: "${NODEMAILER_PORT}"  # SMTP server port (usually 587 for TLS, 465 for SSL)
+    secure: "${NODEMAILER_SECURE}"  # true for port 465, false for other ports
+    user: "${NODEMAILER_USER}"  # SMTP username
+    pass: "${NODEMAILER_PASS}"  # SMTP password or app-specific password
+    from_email: "${NODEMAILER_FROM_EMAIL}"
+    from_name: "${NODEMAILER_FROM_NAME}"
+  default_from: "${EMAIL_FROM}"  # Default from email address
+  reply_to: "${EMAIL_REPLY_TO}"  # Default reply-to address
+
+
 db:
-  host: localhost
-  port: 5432
-  username: postgres
-  password: postgres
-  database: gateway
+  host: "${DATABASE_HOST}"
+  port: "${DATABASE_PORT}"
+  username: "${DATABASE_USERNAME}"
+  password: "${DATABASE_PASSWORD}"
+  database: "${DATABASE_NAME}"
+  synchronise: "${DATABASE_SYNCHRONIZE}"
