@@ -33,6 +33,9 @@ RUN yarn install --production --frozen-lockfile && \
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/config ./config
 
+# Copy .env.example to .env for runtime environment variables
+COPY .env.example .env
+
 # Change ownership to nodejs user
 RUN chown -R nodejs:nodejs /app
 

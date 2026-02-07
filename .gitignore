@@ -6,7 +6,8 @@ dist/
 
 # Ignore environment files
 .env
-.env.*
+# Allow example env files to be tracked
+!.env.example
 
 # Ignore logs
 *.log
