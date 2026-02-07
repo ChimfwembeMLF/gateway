@@ -41,7 +41,7 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
 
   setupSwagger(app);
-  await app.listen('0.0.0.0');
+  await app.listen(port);
   logger.log(`🚀 Application running on port ${port} (${nodeEnv} mode)`);
   logger.log(`📚 API Documentation: http://localhost:${port}/documentation`);
 }

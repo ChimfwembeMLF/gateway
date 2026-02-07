@@ -13,22 +13,19 @@ services:
       - db_data:/var/lib/postgresql/data
 
   app:
-    image: node:20-alpine
+    build: .
     container_name: rempay-container
     working_dir: /app
     restart: unless-stopped
     depends_on:
       - db
     environment:
-      NODE_ENV: development
+      NODE_ENV: production
       DATABASE_URL: postgres://postgres:postgres@db:5432/gateway
-      CHOKIDAR_USEPOLLING: "true"
     ports:
       - "3001:3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    command: sh -c "yarn global add @nestjs/cli && yarn install && yarn start:dev"
+    # For production, do not mount local code or node_modules
+    # Command is set in Dockerfile
 
 volumes:
   db_data:
