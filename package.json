@@ -57,7 +57,7 @@
     "@nestjs/testing": "^10.0.0",
     "@types/bcryptjs": "^3.0.0",
     "@types/express": "^5.0.0",
-    "@types/helmet": "^7.0.0",
+    "@types/helmet": "^6.0.0",
     "@types/jest": "^29.5.2",
     "@types/js-yaml": "^4.0.9",
     "@types/nodemailer": "^6.4.18",
