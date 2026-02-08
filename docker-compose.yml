@@ -15,16 +15,11 @@ services:
   app:
     build:
       context: .
-    env_file:
-      - .env
     container_name: rempay-container
     working_dir: /app
     restart: unless-stopped
     depends_on:
       - db
-    environment:
-      NODE_ENV: production
-      DATABASE_URL: postgres://postgres:postgres@db:5432/gateway
     ports:
       - "3001:3000"
     # For production, do not mount local code or node_modules
