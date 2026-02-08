@@ -21,7 +21,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Support custom environment file selection
-ARG ENV_FILE=.env.production
+# ARG ENV_FILE=.env.production
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
