@@ -1,3 +1,39 @@
+# How to Run the Gateway App (YAML Config Only)
+
+1. Build the Docker image for the app:
+```
+docker-compose build app
+```
+
+2. Start the database and app containers:
+```
+docker-compose up -d db
+# Wait a few seconds for the database to initialize
+
+docker-compose up -d app
+```
+
+3. Run database migrations (if needed):
+```
+docker-compose exec app yarn db:migrate
+```
+
+4. Check running containers:
+```
+docker ps
+```
+
+5. View app logs:
+```
+docker-compose logs -f app
+```
+
+---
+- The app now uses only YAML config files (no .env required).
+- Edit config files in the `config/` directory for environment changes.
+- Use `docker-compose restart app` to restart the app after config changes.
+
+---
 # Refresh Database (Clean State)
 
 This will delete all data and recreate the database:

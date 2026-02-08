@@ -27,9 +27,9 @@ airtel:
     currency: "ZMW"
 
 db:
-  host: "localhost"
+  host: "db"
   port: 5432
   username: "postgres"
-  password: "pass104"
+  password: "postgres"
   database: "gateway"
   synchronise: true
