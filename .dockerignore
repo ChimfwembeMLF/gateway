@@ -2,7 +2,6 @@ node_modules
 dist
 .env.local
 .git
-# Allow env files for Docker builds
-!.env.production
-!.env.staging
-!.env.development
+# Ignore all env files from Docker build context
+.env
+.env.*

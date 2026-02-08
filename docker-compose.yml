@@ -15,8 +15,8 @@ services:
   app:
     build:
       context: .
-      args:
-        ENV_FILE: .env.example
+    env_file:
+      - .env
     container_name: rempay-container
     working_dir: /app
     restart: unless-stopped
