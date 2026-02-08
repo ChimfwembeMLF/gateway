@@ -17,10 +17,6 @@ import { Disbursement } from 'src/modules/disbursements/entities/disbursement.en
 import { WebhookLog } from 'src/modules/mtn/collection/entities/webhook-log.entity';
 import { BillingPlan, TenantBillingSubscription, UsageMetrics, Invoice, InvoiceLineItem } from 'src/modules/billing/entities';
 import { MerchantConfiguration } from 'src/modules/merchant/entities/merchant-configuration.entity';
-import * as dotenv from 'dotenv';
-
-// Load environment variables for CLI commands
-dotenv.config();
 
 export function typeOrmConfigFactory(
   configService: ConfigService,
@@ -32,32 +28,27 @@ export function typeOrmConfigFactory(
     username: configService.get<string>('db.username'),
     password: configService.get<string>('db.password'),
     database: configService.get<string>('db.database'),
-
-    // This is the important part
-    // entities: [join(__dirname, '/../**/*.entity.{js,ts}')],
     entities: [Tenant, User, Payment, Transaction, Audit, IdempotencyKey, Disbursement, WebhookLog, BillingPlan, TenantBillingSubscription, UsageMetrics, Invoice, InvoiceLineItem, MerchantConfiguration],
     subscribers: [UserSubscriber, TenantSubscriber, AuditSubscriber],
-
     migrations: [join(__dirname, '/migrations/*.{js,ts}')],
-
     synchronize: true,
-    logging: configService.get('NODE_ENV') === 'development',
+    logging: true,
   };
 }
 
 // DataSource for TypeORM CLI (migrations)
 const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
-  host: process.env.DATABASE_HOST || 'localhost',
-  port: parseInt(process.env.DATABASE_PORT || '5432', 10),
-  username: process.env.DATABASE_USERNAME || 'postgres',
-  password: process.env.DATABASE_PASSWORD || 'postgres',
-  database: process.env.DATABASE_NAME || 'gateway',
+  host: 'db',
+  port: 5432,
+  username: 'postgres',
+  password: 'postgres',
+  database: 'gateway',
   entities: [Tenant, User, Payment, Transaction, Audit, IdempotencyKey, Disbursement, WebhookLog, BillingPlan, TenantBillingSubscription, UsageMetrics, Invoice, InvoiceLineItem, MerchantConfiguration],
   subscribers: [UserSubscriber, TenantSubscriber, AuditSubscriber],
   migrations: [join(__dirname, '/migrations/*.{js,ts}')],
   synchronize: true,
-  logging: process.env.NODE_ENV === 'development',
+  logging: true,
 };
 
 export default new DataSource(dataSourceOptions);

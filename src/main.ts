@@ -14,13 +14,13 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('Bootstrap');
-  const port = process.env.PORT ?? 3000;
-  const nodeEnv = process.env.NODE_ENV ?? 'development';
+  // Use config or hardcoded values instead of process.env
+  const port = 3000;
+  const nodeEnv = 'development';
 
   // Security middleware
   app.use(helmet());
   app.enableCors({
-    // origin: (process.env.ALLOWED_ORIGINS ?? 'http://localhost:3000,http://localhost:3001').split(','),
     origin: '*',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
