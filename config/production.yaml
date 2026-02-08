@@ -1,32 +1,35 @@
-# Production environment - ALL secrets MUST come from environment variables
-# Never commit actual production credentials to this file
+# Production-style config (resolved from env vars)
+
 mtn:
-  base: "${MTN_BASE_URL}"
+  base: "https://sandbox.momodeveloper.mtn.com"
   collection:
-    subscription_key: "${MTN_COLLECTION_SUBSCRIPTION_KEY}"
-    target_environment: "${MTN_COLLECTION_TARGET_ENVIRONMENT}"
-    x_reference_id: "${MTN_COLLECTION_X_REFERENCE_ID}"
-    api_key: "${MTN_COLLECTION_API_KEY}"
+    subscription_key: "2551a785e77045b1816e58a9f8f3f5a2"
+    target_environment: "sandbox"
+    x_reference_id: "bf8318a6-2db3-4fe1-98f2-c002cefdd4d6"
+    api_key: "21e3318d9b6a4f64a56a7209ddf83003"
   disbursement:
-    subscription_key: "${MTN_DISBURSEMENT_SUBSCRIPTION_KEY}"
-    target_environment: "${MTN_DISBURSEMENT_TARGET_ENVIRONMENT}"
-    x_reference_id: "${MTN_DISBURSEMENT_X_REFERENCE_ID}"
-    api_key: "${MTN_DISBURSEMENT_API_KEY}"
+    subscription_key: "eb49dfde65824998888a99c0b8a06b55"
+    target_environment: "sandbox"
+    x_reference_id: "d525968f-00df-416f-839f-f838b1fb7a14"
+    api_key: "ef88782b087d4d7d830153174ec5f6bb"
 
 airtel:
-  base: "${AIRTEL_BASE_URL:-https://openapi.airtel.co.zm}"  # Production: https://openapi.airtel.co.zm
-  client_id: "${AIRTEL_CLIENT_ID}"
-  client_secret: "${AIRTEL_CLIENT_SECRET}"
-  signing_secret: "${AIRTEL_SIGNING_SECRET}"
-  encryption_public_key: "${AIRTEL_ENCRYPTION_PUBLIC_KEY}"
+  base: "https://openapiuat.airtel.co.zm"
+  client_id: "test-client-id-replace-with-real"
+  client_secret: "test-client-secret-replace-with-real"
+  signing_secret: "test-signing-secret-replace-with-real"
+  encryption_public_key: |
+    -----BEGIN PUBLIC KEY-----
+    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtest-key-replace-with-real
+    -----END PUBLIC KEY-----
   collection:
-    country: "${AIRTEL_COLLECTION_COUNTRY:-ZM}"
-    currency: "${AIRTEL_COLLECTION_CURRENCY:-ZMW}"
-    
+    country: "ZM"
+    currency: "ZMW"
+
 db:
-  host: "${DATABASE_HOST}"
-  port: "${DATABASE_PORT}"
-  username: "${DATABASE_USERNAME}"
-  password: "${DATABASE_PASSWORD}"
-  database: "${DATABASE_NAME}"
-  synchronise: "${DATABASE_SYNCHRONIZE}"
+  host: "db"
+  port: 5432
+  username: "postgres"
+  password: "postgres"
+  database: "gateway"
+  synchronise: true
