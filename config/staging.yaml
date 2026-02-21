@@ -1,4 +1,6 @@
 # Production-style config (resolved from env vars)
+NODE_ENV: staging
+port: 4000
 
 mtn:
   base: "https://sandbox.momodeveloper.mtn.com"
@@ -27,9 +29,9 @@ airtel:
     currency: "ZMW"
 
 db:
-  host: "db"
+  host: "localhost"
   port: 5432
   username: "postgres"
   password: "postgres"
-  database: "gateway"
+  database: "rempay_staging"
   synchronise: true

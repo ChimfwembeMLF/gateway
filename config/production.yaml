@@ -1,4 +1,6 @@
+port: 5000
 # Production-style config (resolved from env vars)
+NODE_ENV: production
 
 mtn:
   base: "https://sandbox.momodeveloper.mtn.com"
@@ -31,5 +33,5 @@ db:
   port: 5432
   username: "postgres"
   password: "postgres"
-  database: "gateway"
+  database: "rempay_prod"
   synchronise: true

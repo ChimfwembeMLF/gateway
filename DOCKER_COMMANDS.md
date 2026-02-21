@@ -98,5 +98,20 @@ docker-compose config --services
 docker-compose logs -f
 ```
 
+## Build App Only (No Start)
+
+To build the app Docker image without starting it:
+```
+docker-compose build app
+```
+
+To run the build script inside the app container (after starting):
+```
+docker-compose exec app yarn build
+```
+
+- The first command builds the Docker image using your Dockerfile.
+- The second command runs the app's build script (TypeScript compile, etc.) inside the running container.
+
 ---
 Edit as needed for your workflow. For production, always run migrations before starting the app.

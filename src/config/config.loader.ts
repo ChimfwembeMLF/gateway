@@ -5,7 +5,7 @@ import * as fs from 'fs';
 // No environment variable resolution; YAML values are used directly
 
 export function loadYamlConfig() {
-  const env = 'development';
+  const env = process.env.NODE_ENV || 'development';
   // Use process.cwd() to always resolve from project root
   const configDir = path.resolve(process.cwd(), 'config');
   const configPath = path.join(configDir, `${env}.yaml`);

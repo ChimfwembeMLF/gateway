@@ -1,3 +1,4 @@
+  console.log('TEST LOG: main.ts was rebuilt and is running in the container');
 
 import * as crypto from 'crypto';
 if (typeof global.crypto === 'undefined') {
@@ -14,9 +15,9 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('Bootstrap');
-  // Use config or hardcoded values instead of process.env
-  const port = 3000;
-  const nodeEnv = 'development';
+  const configService = app.get(require('@nestjs/config').ConfigService);
+  const port = configService.get('port') || 3000;
+  const nodeEnv = process.env.NODE_ENV || 'development';
 
   // Security middleware
   app.use(helmet());
