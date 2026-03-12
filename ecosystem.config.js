@@ -10,7 +10,7 @@ module.exports = {
 
       env: {
         NODE_ENV: "staging",
-        PORT: 3000
+        PORT: 4000
       },
 
       autorestart: true,
