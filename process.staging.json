@@ -1,0 +1,26 @@
+{
+  "apps": [
+    {
+      "name": "rempay-staging",
+      "script": "dist/src/main.js",
+      "cwd": "/home/api.tekreminnovations.com/public_html",
+
+      "exec_mode": "cluster",
+      "instances": 1,
+      "merge_logs": true,
+
+      "env": {
+        "NODE_ENV": "staging",
+        "PORT": 4000
+      },
+
+      "autorestart": true,
+      "watch": false,
+      "max_memory_restart": "500M",
+
+      "out_file": "/home/api.tekreminnovations.com/logs/rempay-staging-out.log",
+      "error_file": "/home/api.tekreminnovations.com/logs/rempay-staging-error.log",
+      "log_file": "/home/api.tekreminnovations.com/logs/rempay-staging-combined.log"
+    }
+  ]
+}

@@ -34,4 +34,4 @@ db:
   username: "postgres"
   password: "postgres"
   database: "rempay_staging"
-  synchronise: true
+  synchronise: false

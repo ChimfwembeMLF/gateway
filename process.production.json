@@ -1,0 +1,26 @@
+{
+  "apps": [
+    {
+      "name": "rempay-production",
+      "script": "dist/src/main.js",
+      "cwd": "/home/rempay.live.tekreminnovations.com/public_html",
+
+      "exec_mode": "cluster",
+      "instances": 1,
+      "merge_logs": true,
+
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": 5000
+      },
+
+      "autorestart": true,
+      "watch": false,
+      "max_memory_restart": "500M",
+
+      "out_file": "/home/rempay.live.tekreminnovations.com/logs/rempay-production-out.log",
+      "error_file": "/home/rempay.live.tekreminnovations.com/logs/rempay-production-error.log",
+      "log_file": "/home/rempay.live.tekreminnovations.com/logs/rempay-production-combined.log"
+    }
+  ]
+}

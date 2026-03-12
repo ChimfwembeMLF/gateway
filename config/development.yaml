@@ -34,4 +34,4 @@ db:
   username: "postgres"
   password: "pass104"
   database: "gateway"
-  synchronise: true
+  synchronise: false
