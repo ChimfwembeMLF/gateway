@@ -1,3 +1,7 @@
+import { AuthGuard } from '../../../common/guards/auth.guard';
+import { RolesGuard } from '../../../common/guards/roles.guard';
+import { Roles } from '../../../common/decorators/roles.decorator';
+import { RoleType } from '../../../common/enums/role-type.enum';
 import {
   Controller,
   Post,
@@ -8,6 +12,8 @@ import {
   UseGuards,
   UseInterceptors,
   HttpStatus,
+  BadRequestException,
+  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -42,12 +48,9 @@ import { ValidationPipe } from '@nestjs/common';
  * Requires: API Key authentication (X-API-Key header)
  */
 @ApiTags('Disbursements')
-@ApiSecurity('x-api-key')
+@Controller('api/v1/disbursements')
 @ApiBadRequestResponse({
   description: 'Invalid request parameters or validation failed',
-})
-@ApiUnauthorizedResponse({
-  description: 'Missing or invalid API key',
 })
 @ApiTooManyRequestsResponse({
   description: 'Rate limit exceeded',
@@ -55,7 +58,6 @@ import { ValidationPipe } from '@nestjs/common';
 @ApiInternalServerErrorResponse({
   description: 'Internal server error',
 })
-@UseGuards(ApiKeyGuard)
 @Controller('api/v1/disbursements')
 export class DisbursementsController {
   constructor(private readonly disbursementsService: DisbursementsService) {}
@@ -199,6 +201,27 @@ export class DisbursementsController {
     @CurrentTenant() tenantId: string,
   ): Promise<DisbursementResponseDto> {
     return this.disbursementsService.getDisbursement(id, tenantId);
+  }
+
+    // Admin portal endpoint: List disbursements using JWT (no API key required)
+  @Get('portal')
+  @UseGuards(AuthGuard(), RolesGuard)
+  @Roles(RoleType.ADMIN, RoleType.SUPER_ADMIN)
+  @ApiOperation({ summary: 'List disbursements (portal)' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Disbursements fetched from admin portal' })
+  async listDisbursementsFromPortal(
+    @Query(new ValidationPipe({ transform: true })) query: ListDisbursementsQueryDto,
+    @Req() req: any,
+  ): Promise<{
+    items: DisbursementResponseDto[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const tenantId = req.user.tenantId;
+    if (!tenantId) throw new BadRequestException('Missing tenantId in user context.');
+    return this.disbursementsService.listDisbursements(tenantId, query);
   }
 
   /**

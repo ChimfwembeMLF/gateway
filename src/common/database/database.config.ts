@@ -17,6 +17,7 @@ import { Disbursement } from 'src/modules/disbursements/entities/disbursement.en
 import { WebhookLog } from 'src/modules/mtn/collection/entities/webhook-log.entity';
 import { BillingPlan, TenantBillingSubscription, UsageMetrics, Invoice, InvoiceLineItem } from 'src/modules/billing/entities';
 import { MerchantConfiguration } from 'src/modules/merchant/entities/merchant-configuration.entity';
+import { Settings } from 'src/modules/settings/entities/settings.entity';
 
 export function typeOrmConfigFactory(
   configService: ConfigService,
@@ -28,7 +29,7 @@ export function typeOrmConfigFactory(
     username: configService.get<string>('db.username'),
     password: configService.get<string>('db.password'),
     database: configService.get<string>('db.database'),
-    entities: [Tenant, User, Payment, Transaction, Audit, IdempotencyKey, Disbursement, WebhookLog, BillingPlan, TenantBillingSubscription, UsageMetrics, Invoice, InvoiceLineItem, MerchantConfiguration],
+    entities: [Tenant, User, Payment, Transaction, Audit, IdempotencyKey, Disbursement, WebhookLog, BillingPlan, TenantBillingSubscription, UsageMetrics, Invoice, InvoiceLineItem, MerchantConfiguration, Settings],
     subscribers: [UserSubscriber, TenantSubscriber, AuditSubscriber],
     migrations: [join(__dirname, '/migrations/*.{js,ts}')],
     synchronize: true,
@@ -44,7 +45,7 @@ const dataSourceOptions: DataSourceOptions = {
   username: 'postgres',
   password: 'postgres',
   database: 'gateway',
-  entities: [Tenant, User, Payment, Transaction, Audit, IdempotencyKey, Disbursement, WebhookLog, BillingPlan, TenantBillingSubscription, UsageMetrics, Invoice, InvoiceLineItem, MerchantConfiguration],
+  entities: [Tenant, User, Payment, Transaction, Audit, IdempotencyKey, Disbursement, WebhookLog, BillingPlan, TenantBillingSubscription, UsageMetrics, Invoice, InvoiceLineItem, MerchantConfiguration, Settings],
   subscribers: [UserSubscriber, TenantSubscriber, AuditSubscriber],
   migrations: [join(__dirname, '/migrations/*.{js,ts}')],
   synchronize: true,

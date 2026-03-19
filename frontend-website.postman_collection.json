@@ -1,0 +1,305 @@
+{
+  "info": {
+    "_postman_id": "frontend-website-collection",
+    "name": "Frontend Website API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"string\"\n}"
+            },
+            "url": {
+              "raw": "/api/v1/auth/login",
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"string\"\n}"
+            },
+            "url": {
+              "raw": "/api/v1/auth/register",
+              "path": ["api", "v1", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer <token>", "type": "text" }
+            ],
+            "url": {
+              "raw": "/api/v1/auth/me",
+              "path": ["api", "v1", "auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer <token>", "type": "text" }
+            ],
+            "url": {
+              "raw": "/api/v1/users/{{userId}}",
+              "path": ["api", "v1", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer <token>", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"string\"\n}"
+            },
+            "url": {
+              "raw": "/api/v1/users/{{userId}}",
+              "path": ["api", "v1", "users", "{{userId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tenant",
+      "item": [
+        {
+          "name": "Suggest Tenant Name",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer <token>", "type": "text" }
+            ],
+            "url": {
+              "raw": "/api/v1/tenants/suggest-name/{{name}}",
+              "path": ["api", "v1", "tenants", "suggest-name", "{{name}}"]
+            }
+          }
+        },
+        {
+          "name": "Onboard Tenant",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer <token>", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"string\",\n  \"admin\": {\n    \"email\": \"string\",\n    \"password\": \"string\"\n  }\n}"
+            },
+            "url": {
+              "raw": "/api/v1/tenants/onboard",
+              "path": ["api", "v1", "tenants", "onboard"]
+            }
+          }
+        },
+        {
+          "name": "Get Tenant Info",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer <token>", "type": "text" }
+            ],
+            "url": {
+              "raw": "/api/v1/tenants/{{tenantId}}",
+              "path": ["api", "v1", "tenants", "{{tenantId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Initiate Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "x-tenant-id", "value": "{{tenantId}}", "type": "text" },
+              { "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 100,\n  \"recipient\": \"string\"\n}"
+            },
+            "url": {
+              "raw": "/api/v1/payments",
+              "path": ["api", "v1", "payments"]
+            }
+          }
+        },
+        {
+          "name": "Get Payment Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-tenant-id", "value": "{{tenantId}}", "type": "text" },
+              { "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "/api/v1/payments/status/{{paymentId}}",
+              "path": ["api", "v1", "payments", "status", "{{paymentId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Payment Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-tenant-id", "value": "{{tenantId}}", "type": "text" },
+              { "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "/api/v1/payments/{{paymentId}}",
+              "path": ["api", "v1", "payments", "{{paymentId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Wallet Balance",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-tenant-id", "value": "{{tenantId}}", "type": "text" },
+              { "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "/api/v1/payments/balance/available",
+              "path": ["api", "v1", "payments", "balance", "available"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Disbursements",
+      "item": [
+        {
+          "name": "Create Disbursement",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 100,\n  \"recipient\": \"string\"\n}"
+            },
+            "url": {
+              "raw": "/api/v1/disbursements",
+              "path": ["api", "v1", "disbursements"]
+            }
+          }
+        },
+        {
+          "name": "List Disbursements",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "/api/v1/disbursements",
+              "path": ["api", "v1", "disbursements"]
+            }
+          }
+        },
+        {
+          "name": "Get Disbursement Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "x-api-key", "value": "{{apiKey}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "/api/v1/disbursements/{{disbursementId}}",
+              "path": ["api", "v1", "disbursements", "{{disbursementId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Merchant Configuration",
+      "item": [
+        {
+          "name": "Get Merchant Config",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer <token>", "type": "text" }
+            ],
+            "url": {
+              "raw": "/api/v1/merchant/configuration",
+              "path": ["api", "v1", "merchant", "configuration"]
+            }
+          }
+        },
+        {
+          "name": "Create Merchant Config",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer <token>", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"config\": \"string\"\n}"
+            },
+            "url": {
+              "raw": "/api/v1/merchant/configuration",
+              "path": ["api", "v1", "merchant", "configuration"]
+            }
+          }
+        },
+        {
+          "name": "Update Merchant Config",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer <token>", "type": "text" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"config\": \"string\"\n}"
+            },
+            "url": {
+              "raw": "/api/v1/merchant/configuration",
+              "path": ["api", "v1", "merchant", "configuration"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

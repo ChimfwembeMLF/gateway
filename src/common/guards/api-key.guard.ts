@@ -39,16 +39,16 @@ export class ApiKeyGuard implements CanActivate {
       throw new UnauthorizedException('Tenant is not active');
     }
 
-    // Resolve tenant by identifier (UUID or name)
-    const tenantByIdentifier = await this.tenantService.findByNameOrId(tenantIdentifier);
-    if (!tenantByIdentifier) {
-      this.logger.warn(`Tenant not found: ${tenantIdentifier}`);
-      throw new UnauthorizedException('Tenant not found');
+
+    // Only allow UUID as tenant identifier
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(tenantIdentifier)) {
+      this.logger.warn(`Invalid tenant identifier (must be UUID): ${tenantIdentifier}`);
+      throw new UnauthorizedException('Tenant identifier must be a valid UUID');
     }
 
-    // Verify API key belongs to the requested tenant (prevent cross-tenant access)
-    if (tenantByApiKey.id !== tenantByIdentifier.id) {
-      this.logger.warn(`API key mismatch: key belongs to ${tenantByApiKey.id} but requested ${tenantByIdentifier.id}`);
+    if (tenantByApiKey.id !== tenantIdentifier) {
+      this.logger.warn(`API key mismatch: key belongs to ${tenantByApiKey.id} but requested ${tenantIdentifier}`);
       throw new UnauthorizedException('API key does not match tenant');
     }
 

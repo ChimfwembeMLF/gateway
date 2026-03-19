@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { PaginatedResponseDto } from '../../common/dtos/paginated-response.dto';
+import { BaseQueryDto } from '../../common/dtos/base-query.dto';
 import { Audit } from './entities/audit.entity';
 import { CreateAuditDto } from './dto/create-audit.dto';
 
@@ -16,12 +18,42 @@ export class AuditService {
     return this.auditRepository.save(audit);
   }
 
-  async findAll(tenantId: string): Promise<Audit[]> {
-    return this.auditRepository.find({ 
-      where: { tenantId },
+  async findAll(): Promise<Audit[]> {
+    return this.auditRepository.find({
       order: { createdAt: 'DESC' } 
     });
   }
+
+    async findTenantAll(tenantId: string, page = 1, pageSize = 10): Promise<PaginatedResponseDto<Audit>> {
+      const [data, total] = await this.auditRepository.findAndCount({
+        where: { tenantId },
+        order: { createdAt: 'DESC' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      });
+      return {
+        success: true,
+        total,
+        page,
+        pageSize,
+        data,
+      };
+    }
+
+    async findAllPaginated(page = 1, pageSize = 10): Promise<PaginatedResponseDto<Audit>> {
+      const [data, total] = await this.auditRepository.findAndCount({
+        order: { createdAt: 'DESC' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      });
+      return {
+        success: true,
+        total,
+        page,
+        pageSize,
+        data,
+      };
+    }
 
   async findByEntity(auditableType: string, auditableId: string, tenantId: string): Promise<Audit[]> {
     return this.auditRepository.find({

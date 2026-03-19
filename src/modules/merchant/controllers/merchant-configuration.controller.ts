@@ -45,16 +45,6 @@ export class MerchantConfigurationController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create merchant configuration' })
-  @ApiHeader({
-    name: 'x-tenant-id',
-    description: 'Tenant identifier',
-    required: true,
-  })
-  @ApiHeader({
-    name: 'x-api-key',
-    description: 'Current tenant API key',
-    required: true,
-  })
   @ApiResponse({
     status: 201,
     description: 'Merchant configuration created successfully',
@@ -85,16 +75,6 @@ export class MerchantConfigurationController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get merchant configuration' })
-  @ApiHeader({
-    name: 'x-tenant-id',
-    description: 'Tenant identifier',
-    required: true,
-  })
-  @ApiHeader({
-    name: 'x-api-key',
-    description: 'Current tenant API key',
-    required: true,
-  })
   @ApiResponse({
     status: 200,
     description: 'Merchant configuration retrieved successfully',
@@ -121,16 +101,6 @@ export class MerchantConfigurationController {
   @Patch()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update merchant configuration' })
-  @ApiHeader({
-    name: 'x-tenant-id',
-    description: 'Tenant identifier',
-    required: true,
-  })
-  @ApiHeader({
-    name: 'x-api-key',
-    description: 'Current tenant API key',
-    required: true,
-  })
   @ApiResponse({
     status: 200,
     description: 'Merchant configuration updated successfully',
@@ -161,16 +131,6 @@ export class MerchantConfigurationController {
   @Post('verify/mtn')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Verify MTN credentials' })
-  @ApiHeader({
-    name: 'x-tenant-id',
-    description: 'Tenant identifier',
-    required: true,
-  })
-  @ApiHeader({
-    name: 'x-api-key',
-    description: 'Current tenant API key',
-    required: true,
-  })
   @ApiResponse({
     status: 200,
     description: 'MTN credentials verified successfully',
@@ -200,16 +160,6 @@ export class MerchantConfigurationController {
   @Post('verify/airtel')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Verify Airtel credentials' })
-  @ApiHeader({
-    name: 'x-tenant-id',
-    description: 'Tenant identifier',
-    required: true,
-  })
-  @ApiHeader({
-    name: 'x-api-key',
-    description: 'Current tenant API key',
-    required: true,
-  })
   @ApiResponse({
     status: 200,
     description: 'Airtel credentials verified successfully',
@@ -239,16 +189,6 @@ export class MerchantConfigurationController {
   @Post('verify/bank')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Verify bank account' })
-  @ApiHeader({
-    name: 'x-tenant-id',
-    description: 'Tenant identifier',
-    required: true,
-  })
-  @ApiHeader({
-    name: 'x-api-key',
-    description: 'Current tenant API key',
-    required: true,
-  })
   @ApiResponse({
     status: 200,
     description: 'Bank account verified successfully',
@@ -278,16 +218,6 @@ export class MerchantConfigurationController {
   @Post('webhook/test')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Test webhook endpoint' })
-  @ApiHeader({
-    name: 'x-tenant-id',
-    description: 'Tenant identifier',
-    required: true,
-  })
-  @ApiHeader({
-    name: 'x-api-key',
-    description: 'Current tenant API key',
-    required: true,
-  })
   @ApiResponse({
     status: 200,
     description: 'Webhook test completed',

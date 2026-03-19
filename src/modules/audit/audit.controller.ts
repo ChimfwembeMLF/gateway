@@ -1,4 +1,6 @@
 import { Controller, Get, Query, UseGuards, Req } from '@nestjs/common';
+import { BaseQueryDto } from '../../common/dtos/base-query.dto';
+import { PaginatedResponseDto } from '../../common/dtos/paginated-response.dto';
 import { AuditService } from './audit.service';
 import { Audit } from './entities/audit.entity';
 import { ApiKeyGuard } from 'src/common/guards/api-key.guard';
@@ -21,23 +23,34 @@ export class AuditController {
   @Get()
   async findAll(
     @Req() req: RequestWithTenant,
+    @Query() query: BaseQueryDto,
     @Query('auditableType') auditableType?: string,
     @Query('auditableId') auditableId?: string,
     @Query('userId') userId?: string,
-  ): Promise<Audit[]> {
+  ): Promise<PaginatedResponseDto<Audit>> {
     const tenantId = req.tenant?.id;
-    
     if (!tenantId) {
       throw new Error('Tenant not found in request');
     }
-
+    // If filtering by entity
     if (auditableType && auditableId) {
-      return this.auditService.findByEntity(auditableType, auditableId, tenantId);
+      // Not paginated for now
+      const data = await this.auditService.findByEntity(auditableType, auditableId, tenantId);
+      return {
+        success: true,
+        total: data.length,
+        page: query.page || 1,
+        pageSize: query.pageSize || 10,
+        data,
+      };
     }
     // Optionally filter by userId
     if (userId) {
-      return (await this.auditService.findAll(tenantId)).filter(a => a.userId === userId);
+      const all = await this.auditService.findTenantAll(tenantId, query.page, query.pageSize);
+      all.data = (all.data ?? []).filter(a => a.userId === userId);
+      all.total = all.data.length;
+      return all;
     }
-    return this.auditService.findAll(tenantId);
+    return this.auditService.findTenantAll(tenantId, query.page, query.pageSize);
   }
 }

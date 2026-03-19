@@ -84,8 +84,6 @@ export class AuthService {
         tenant, 
         admin,
         token,
-        tenantId: tenant.name,
-        apiKey,
       },
     };
   }

@@ -21,9 +21,13 @@ import { StructuredLoggingService, RequestLoggingInterceptor } from './common/lo
 import { TenantThrottlerGuard } from './common/guards/tenant-throttler.guard';
 import { UsageTrackingInterceptor } from './modules/billing/interceptors/usage-tracking.interceptor';
 import { UsageMetricsService, BillingPlanSeedingService } from './modules/billing/services';
+import { SettingsSeedingService } from './modules/settings/settings-seeding.service';
+import { SettingsModule } from './modules/settings/settings.module';
 import { EmailModule } from './modules/email/email.module';
 import { DisbursementsModule } from './modules/disbursements/disbursements.module';
 import { MerchantConfigurationModule } from './modules/merchant/merchant.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -47,6 +51,9 @@ import { MerchantConfigurationModule } from './modules/merchant/merchant.module'
     }),
     ScheduleModule.forRoot(),
     AuthModule,
+    AdminModule,
+    DashboardModule,
+    SettingsModule,
     UserModule,
     PaymentsModule,
     TransactionModule,
@@ -78,11 +85,16 @@ import { MerchantConfigurationModule } from './modules/merchant/merchant.module'
   ],
 })
 export class AppModule implements NestModule, OnApplicationBootstrap {
-  constructor(private readonly billingPlanSeedingService: BillingPlanSeedingService) {}
+  constructor(
+    private readonly billingPlanSeedingService: BillingPlanSeedingService,
+    private readonly settingsSeedingService: SettingsSeedingService,
+  ) {}
 
   async onApplicationBootstrap(): Promise<void> {
     // Seed billing plans on startup
     await this.billingPlanSeedingService.seedBillingPlans();
+    // Seed system settings on startup
+    await this.settingsSeedingService.seedSettings();
   }
 
   configure(consumer: MiddlewareConsumer) {

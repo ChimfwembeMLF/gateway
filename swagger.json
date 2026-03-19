@@ -265,26 +265,7 @@
     "/api/v1/tenants/api-key/view": {
       "get": {
         "operationId": "TenantController_viewApiKey",
-        "parameters": [
-          {
-            "name": "x-tenant-id",
-            "in": "header",
-            "description": "Tenant identifier",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "description": "Tenant API key",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "Returns the tenant API key"
@@ -298,26 +279,7 @@
     "/api/v1/tenants/api-key/regenerate": {
       "post": {
         "operationId": "TenantController_regenerateApiKey",
-        "parameters": [
-          {
-            "name": "x-tenant-id",
-            "in": "header",
-            "description": "Tenant identifier",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "description": "Current tenant API key",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "Generates new API key for the tenant"
@@ -325,6 +287,228 @@
         },
         "tags": [
           "Tenants"
+        ]
+      }
+    },
+    "/api/v1/admin/users": {
+      "post": {
+        "operationId": "AdminController_createUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new user (admin only)",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/v1/admin/security-settings": {
+      "patch": {
+        "operationId": "AdminController_updateSecuritySettings",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "example": {
+                  "require2FA": true,
+                  "passwordMinLength": 8,
+                  "sessionTimeoutMinutes": 30
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Security settings updated."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Admin"
+        ]
+      },
+      "get": {
+        "operationId": "AdminController_getSecuritySettings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "require2FA": true,
+                    "passwordMinLength": 8,
+                    "sessionTimeoutMinutes": 30
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/v1/admin/general-settings": {
+      "patch": {
+        "operationId": "AdminController_updateGeneralSettings",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "example": {
+                  "siteName": "My App",
+                  "supportEmail": "support@example.com",
+                  "maintenanceMode": false
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "General settings updated."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Admin"
+        ]
+      },
+      "get": {
+        "operationId": "AdminController_getGeneralSettings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "defaultCurrency": "USD",
+                    "standardFeePercent": 2.5,
+                    "notifyAdmins": true,
+                    "notifyUsers": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/api/v1/admin/audit-logs": {
+      "get": {
+        "operationId": "AdminController_getAuditLogs",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "data": [
+                      {
+                        "event": "Admin login",
+                        "user": "admin@example.com",
+                        "date": "2026-03-15T10:23:00Z"
+                      },
+                      {
+                        "event": "Password changed",
+                        "user": "jane@company.com",
+                        "date": "2026-03-14T18:02:00Z"
+                      }
+                    ],
+                    "total": 2,
+                    "page": 1,
+                    "pageSize": 10,
+                    "pageCount": 1,
+                    "success": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Admin"
         ]
       }
     },
@@ -365,7 +549,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterDto"
+                "$ref": "#/components/schemas/CreateUserDto"
               }
             }
           }
@@ -490,6 +674,125 @@
         ]
       }
     },
+    "/api/v1/admin/dashboard": {
+      "get": {
+        "operationId": "DashboardController_getDashboard",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Admin dashboard summary",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "totalTenants": 10,
+                    "totalPayments": 100,
+                    "totalVolume": 50000,
+                    "activeUsers": 25
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Admin Dashboard"
+        ]
+      }
+    },
+    "/api/v1/payments/portal/status/{id}": {
+      "get": {
+        "operationId": "PaymentsController_getStatusFromPortal",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Payment ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "provider",
+            "required": false,
+            "in": "query",
+            "description": "Payment provider (mtn, airtel, etc). Defaults to mtn",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment status from provider (portal)"
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/api/v1/payments/portal/{id}": {
+      "get": {
+        "operationId": "PaymentsController_findOneFromPortal",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Payment ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment fetched from admin portal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Payment"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/api/v1/payments/portal/balance/available": {
+      "get": {
+        "operationId": "PaymentsController_getBalanceFromPortal",
+        "parameters": [
+          {
+            "name": "provider",
+            "required": false,
+            "in": "query",
+            "description": "Payment provider (mtn, airtel, etc). Defaults to mtn",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Wallet balance for the tenant (portal)"
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
     "/api/v1/payments": {
       "get": {
         "operationId": "PaymentsController_findAll",
@@ -576,6 +879,59 @@
         "responses": {
           "201": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Payment"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/api/v1/payments/portal": {
+      "get": {
+        "operationId": "PaymentsController_getFromPortal",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Payments fetched from admin portal",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Payment"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
+      },
+      "post": {
+        "operationId": "PaymentsController_createFromPortal",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Payment created from admin portal",
             "content": {
               "application/json": {
                 "schema": {
@@ -2316,9 +2672,6 @@
           "400": {
             "description": "Invalid input (MSISDN format, amount, PIN format, etc.)"
           },
-          "401": {
-            "description": "Missing or invalid API key"
-          },
           "409": {
             "description": "Duplicate externalId (returns existing disbursement)"
           },
@@ -2329,11 +2682,6 @@
             "description": "Internal server error"
           }
         },
-        "security": [
-          {
-            "x-api-key": []
-          }
-        ],
         "summary": "Create a new disbursement",
         "tags": [
           "Disbursements"
@@ -2441,9 +2789,6 @@
           "400": {
             "description": "Invalid request parameters or validation failed"
           },
-          "401": {
-            "description": "Missing or invalid API key"
-          },
           "429": {
             "description": "Rate limit exceeded"
           },
@@ -2451,11 +2796,6 @@
             "description": "Internal server error"
           }
         },
-        "security": [
-          {
-            "x-api-key": []
-          }
-        ],
         "summary": "List disbursements",
         "tags": [
           "Disbursements"
@@ -2492,9 +2832,6 @@
           "400": {
             "description": "Invalid request parameters or validation failed"
           },
-          "401": {
-            "description": "Missing or invalid API key"
-          },
           "404": {
             "description": "Disbursement not found"
           },
@@ -2505,12 +2842,97 @@
             "description": "Internal server error"
           }
         },
-        "security": [
+        "summary": "Get disbursement by ID",
+        "tags": [
+          "Disbursements"
+        ]
+      }
+    },
+    "/api/v1/disbursements/portal": {
+      "get": {
+        "operationId": "DisbursementsController_listDisbursementsFromPortal",
+        "parameters": [
           {
-            "x-api-key": []
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number for pagination",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by disbursement status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "PROCESSING",
+                "SUCCESS",
+                "FAILED",
+                "TIMEOUT",
+                "BOUNCED",
+                "REFUNDED",
+                "REFUND_PROCESSING",
+                "REFUND_FAILED"
+              ]
+            }
+          },
+          {
+            "name": "startDate",
+            "required": false,
+            "in": "query",
+            "description": "Start date for filtering (ISO 8601)",
+            "schema": {
+              "example": "2024-02-01T00:00:00Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": false,
+            "in": "query",
+            "description": "End date for filtering (ISO 8601)",
+            "schema": {
+              "example": "2024-02-06T23:59:59Z",
+              "type": "string"
+            }
           }
         ],
-        "summary": "Get disbursement by ID",
+        "responses": {
+          "200": {
+            "description": "Disbursements fetched from admin portal"
+          },
+          "400": {
+            "description": "Invalid request parameters or validation failed"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        },
+        "summary": "List disbursements (portal)",
         "tags": [
           "Disbursements"
         ]
@@ -2519,26 +2941,7 @@
     "/api/v1/merchant/configuration": {
       "post": {
         "operationId": "MerchantConfigurationController_create",
-        "parameters": [
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "description": "Current tenant API key",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "x-tenant-id",
-            "in": "header",
-            "description": "Tenant identifier",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -2587,26 +2990,7 @@
       },
       "get": {
         "operationId": "MerchantConfigurationController_get",
-        "parameters": [
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "description": "Current tenant API key",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "x-tenant-id",
-            "in": "header",
-            "description": "Tenant identifier",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "Merchant configuration retrieved successfully",
@@ -2645,26 +3029,7 @@
       },
       "patch": {
         "operationId": "MerchantConfigurationController_update",
-        "parameters": [
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "description": "Current tenant API key",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "x-tenant-id",
-            "in": "header",
-            "description": "Tenant identifier",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -2715,26 +3080,7 @@
     "/api/v1/merchant/configuration/verify/mtn": {
       "post": {
         "operationId": "MerchantConfigurationController_verifyMtn",
-        "parameters": [
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "description": "Current tenant API key",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "x-tenant-id",
-            "in": "header",
-            "description": "Tenant identifier",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "MTN credentials verified successfully",
@@ -2775,26 +3121,7 @@
     "/api/v1/merchant/configuration/verify/airtel": {
       "post": {
         "operationId": "MerchantConfigurationController_verifyAirtel",
-        "parameters": [
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "description": "Current tenant API key",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "x-tenant-id",
-            "in": "header",
-            "description": "Tenant identifier",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "Airtel credentials verified successfully",
@@ -2835,26 +3162,7 @@
     "/api/v1/merchant/configuration/verify/bank": {
       "post": {
         "operationId": "MerchantConfigurationController_verifyBank",
-        "parameters": [
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "description": "Current tenant API key",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "x-tenant-id",
-            "in": "header",
-            "description": "Tenant identifier",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "Bank account verified successfully",
@@ -2895,26 +3203,7 @@
     "/api/v1/merchant/configuration/webhook/test": {
       "post": {
         "operationId": "MerchantConfigurationController_testWebhook",
-        "parameters": [
-          {
-            "name": "x-api-key",
-            "in": "header",
-            "description": "Current tenant API key",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "x-tenant-id",
-            "in": "header",
-            "description": "Tenant identifier",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -3087,6 +3376,10 @@
             "type": "string"
           }
         }
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {}
       },
       "UserDto": {
         "type": "object",

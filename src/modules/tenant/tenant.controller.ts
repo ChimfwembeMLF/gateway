@@ -1,7 +1,6 @@
 import { Controller, Post, Body, Get, Param, Patch, Delete, UseGuards, Req } from '@nestjs/common';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
-import { ApiKeyGuard } from '../../common/guards/api-key.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { RoleType } from '../../common/enums/role-type.enum';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
@@ -71,27 +70,30 @@ export class TenantController {
     return { success: true };
   }
 
-  // Tenant API Key Management (uses tenant API key auth)
+
+  // Tenant API Key Management (admin portal)
   @Get('api-key/view')
-  @UseGuards(ApiKeyGuard)
-  @ApiHeader({ name: 'x-api-key', description: 'Tenant API key', required: true })
-  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant identifier', required: true })
+  @UseGuards(AuthGuard(), RolesGuard)
+  @Roles(RoleType.ADMIN, RoleType.SUPER_ADMIN)
   @ApiResponse({ status: 200, description: 'Returns the tenant API key' })
   async viewApiKey(@Req() req: any) {
+    // tenantId from authenticated user
+    const tenantId = req.user.tenantId;
+    const tenant = await this.tenantService.findOne(tenantId);
     return { 
-      apiKey: req.tenant.apiKey,
-      tenantId: req.tenant.id,
-      tenantName: req.tenant.name
+      apiKey: tenant?.apiKey,
+      tenantId: tenant?.id,
+      tenantName: tenant?.name
     };
   }
 
   @Post('api-key/regenerate')
-  @UseGuards(ApiKeyGuard)
-  @ApiHeader({ name: 'x-api-key', description: 'Current tenant API key', required: true })
-  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant identifier', required: true })
+  @UseGuards(AuthGuard(), RolesGuard)
+  @Roles(RoleType.ADMIN, RoleType.SUPER_ADMIN)
   @ApiResponse({ status: 200, description: 'Generates new API key for the tenant' })
   async regenerateApiKey(@Req() req: any) {
-    const newApiKey = await this.tenantService.generateApiKey(req.tenant.id);
+    const tenantId = req.user.tenantId;
+    const newApiKey = await this.tenantService.generateApiKey(tenantId);
     return { 
       apiKey: newApiKey,
       message: 'API key regenerated successfully. Update your integrations with the new key.'

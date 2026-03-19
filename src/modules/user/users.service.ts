@@ -21,17 +21,43 @@ export class UsersService {
 
 
   async createUser(data: Partial<User> & { tenantId: string }): Promise<User> {
-    // Ensure username is unique per tenant
+    // Ensure tenantId is present
     if (!data.tenantId) {
       throw new Error('tenantId is required');
     }
-    const existing = await this.userRepository.findOne({ where: { username: data.username, tenantId: data.tenantId } });
+    // Auto-fill required fields if missing
+    let username = data.username;
+    if (!username && data.firstName && data.lastName) {
+      username = `${data.firstName}.${data.lastName}`.toLowerCase();
+    }
+    if (!username) {
+      throw new Error('username is required (firstName and lastName must be provided)');
+    }
+    const password = data.password ?? Math.random().toString(36).slice(-10);
+    const role = data.role ?? RoleType.USER;
+
+    // Remove unexpected properties
+    const allowedFields: (keyof User | 'tenantId')[] = ['tenantId', 'username', 'email', 'phone', 'isActive', 'firstName', 'lastName', 'profileImage', 'password', 'role'];
+    const cleanData: any = {};
+    for (const key of allowedFields) {
+      if ((data as any)[key] !== undefined) cleanData[key] = (data as any)[key];
+    }
+    cleanData.username = username;
+    cleanData.password = password;
+    cleanData.role = role;
+
+    // Ensure username is unique per tenant
+    const existing = await this.userRepository.findOne({ where: { username: cleanData.username, tenantId: cleanData.tenantId } });
     if (existing) {
       throw new Error('Username must be unique within tenant');
     }
     // Password hashing is now handled by UserSubscriber
-    const user = this.userRepository.create(data);
-    return this.userRepository.save(user);
+    const user = this.userRepository.create(cleanData);
+    const saved = await this.userRepository.save(user);
+    if (Array.isArray(saved)) {
+      throw new Error('Expected a single user entity to be saved, but got an array.');
+    }
+    return saved;
   }
 
   async findAll(tenantId: string): Promise<User[]> {

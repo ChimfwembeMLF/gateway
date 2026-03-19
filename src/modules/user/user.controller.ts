@@ -3,7 +3,7 @@ import { Controller, Get, Post, Put, Delete, Param, Body, Req, BadRequestExcepti
 import { ApiTags, ApiResponse, ApiOperation, ApiParam } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UserDto } from './dto/user.dto';
-import { RegisterDto } from '../auth/dto/register.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { Auth } from '../../common/decorators/auth.decorator';
 import { RoleType } from '../../common/enums/role-type.enum';
 
@@ -13,7 +13,7 @@ export class UserController {
   constructor(private readonly userService: UsersService) {}
 
   @Get()
-  @Auth([RoleType.ADMIN])
+  @Auth([RoleType.ADMIN, RoleType.SUPER_ADMIN])
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, type: [UserDto] })
   async findAll(@Req() req: any): Promise<UserDto[]> {
@@ -24,7 +24,7 @@ export class UserController {
   }
 
   @Get(':id')
-  @Auth([RoleType.ADMIN])
+  @Auth([RoleType.ADMIN, RoleType.SUPER_ADMIN])
   @ApiOperation({ summary: 'Get user by ID' })
   @ApiParam({ name: 'id', type: String })
   @ApiResponse({ status: 200, type: UserDto })
@@ -37,10 +37,10 @@ export class UserController {
   }
 
   @Post()
-  @Auth([RoleType.ADMIN])
+  @Auth([RoleType.ADMIN, RoleType.SUPER_ADMIN])
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({ status: 201, type: UserDto })
-  async create(@Body() data: RegisterDto, @Req() req: any): Promise<UserDto> {
+  async create(@Body() data: CreateUserDto, @Req() req: any): Promise<UserDto> {
     const tenantId = req.user?.tenantId;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
     const user = await this.userService.createUser({ ...data, tenantId });
@@ -48,11 +48,11 @@ export class UserController {
   }
 
   @Put(':id')
-  @Auth([RoleType.ADMIN])
+  @Auth([RoleType.ADMIN, RoleType.SUPER_ADMIN])
   @ApiOperation({ summary: 'Update user' })
   @ApiParam({ name: 'id', type: String })
   @ApiResponse({ status: 200, type: UserDto })
-  async update(@Param('id') id: string, @Body() data: Partial<RegisterDto>, @Req() req: any): Promise<UserDto | null> {
+  async update(@Param('id') id: string, @Body() data: Partial<CreateUserDto>, @Req() req: any): Promise<UserDto | null> {
     const tenantId = req.user?.tenantId;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
     const user = await this.userService.update(id, data, tenantId);
@@ -61,7 +61,7 @@ export class UserController {
   }
 
   @Delete(':id')
-  @Auth([RoleType.ADMIN])
+  @Auth([RoleType.ADMIN, RoleType.SUPER_ADMIN])
   @ApiOperation({ summary: 'Delete user' })
   @ApiParam({ name: 'id', type: String })
   @ApiResponse({ status: 204 })
