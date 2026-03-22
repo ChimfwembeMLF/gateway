@@ -16,7 +16,7 @@ export class PaymentsStatusCronService {
     private readonly paymentsService: any,
   ) {}
 
-  @Cron(CronExpression.EVERY_30_SECONDS)
+  // @Cron(CronExpression.EVERY_30_SECONDS)
   async pollPendingCollectionPayments(): Promise<void> {
     const pending = await this.paymentRepository.find({
       where: { status: PaymentStatus.PENDING, flow: PaymentFlow.COLLECTION },
