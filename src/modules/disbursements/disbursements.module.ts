@@ -1,34 +1,21 @@
 import { Module, forwardRef } from '@nestjs/common';
+import { DisbursementsController } from './disbursements.controller';
+import { DisbursementsService } from './disbursements.service';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Disbursement } from './entities/disbursement.entity';
-import { DisbursementsService } from './services/disbursements.service';
-import { DisbursementsController } from './controllers/disbursements.controller';
-import { DisbursementRepository } from './repositories/disbursement.repository';
-import { AirtelModule } from '../airtel/airtel.module';
-import { TenantModule } from '../tenant/tenant.module';
-import { MtnModule } from '../mtn/mtn.module';
-import { DisbursementModule as MtnDisbursementModule } from '../mtn/disbursement/disbursement.module';
+import { PawapayModule } from '../pawapay/pawapay.module';
+import { PaymentsModule } from '../payments/payments.module';
 
-/**
- * Disbursements Module
- * Handles disbursement (payout) operations for multiple providers
- * Supports: Airtel Money and MTN Mobile Money
- *
- * Public API:
- * - POST /api/v1/disbursements - Create new disbursement (specify provider)
- * - GET /api/v1/disbursements/{id} - Get disbursement details
- * - GET /api/v1/disbursements - List disbursements for tenant
- */
 @Module({
   imports: [
+    ConfigModule,
     TypeOrmModule.forFeature([Disbursement]),
-    AirtelModule,
-    TenantModule,
-    forwardRef(() => MtnModule),
-    forwardRef(() => MtnDisbursementModule),
+    forwardRef(() => PawapayModule),
+    forwardRef(() => PaymentsModule),
   ],
   controllers: [DisbursementsController],
-  providers: [DisbursementsService, DisbursementRepository],
-  exports: [DisbursementsService, DisbursementRepository],
+  providers: [DisbursementsService],
+  exports: [DisbursementsService],
 })
 export class DisbursementsModule {}

@@ -4,7 +4,7 @@ import { PaymentsController } from './payments.controller';
 import { PaymentsService } from './payments.service';
 import { ApiKeyGuard } from '../../common/guards/api-key.guard';
 import { IdempotencyInterceptor } from './idempotency/idempotency.interceptor';
-import { CreatePaymentDto } from './dto/create-payment.dto';
+import { CreatePaymentDto, ZambiaNetwork } from './dto/create-payment.dto';
 import { Payment, PaymentStatus, PaymentFlow } from './entities/payment.entity';
 import { PaymentProvider } from '../../common/enums/provider.enum';
 import { v4 as uuid } from 'uuid';
@@ -13,11 +13,15 @@ import { v4 as uuid } from 'uuid';
 const generateTestId = (): string => uuid();
 
 const generateTestPaymentDto = (overrides?: Partial<CreatePaymentDto>): CreatePaymentDto => ({
-  provider: PaymentProvider.MTN,
+  provider: PaymentProvider.PAWAPAY,
   externalId: `INV-${generateTestId().substring(0, 8)}`,
   amount: 100,
   currency: 'GHS',
   payer: '256765725317',
+  network: ZambiaNetwork.MTN,
+  status: PaymentStatus.PENDING,
+  providerTransactionId: generateTestId(),
+  metadata: { test: true },
   ...overrides,
 });
 
@@ -32,7 +36,10 @@ const generateTestPayment = (overrides?: Partial<Payment>): Payment => ({
   payer: '256765725317',
   payerMessage: 'Test payment',
   payeeNote: 'Test note',
-  momoTransactionId: null,
+  provider: PaymentProvider.PAWAPAY,
+  network: ZambiaNetwork.MTN,
+  providerTransactionId: generateTestId(),
+  metadata: { test: true },
   transactions: [],
   createdAt: new Date(),
   updatedAt: new Date(),

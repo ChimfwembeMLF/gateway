@@ -20,13 +20,17 @@ export const generateTestId = (): string => uuidv4();
  * Generate Payment DTOs for testing
  */
 export const generateTestPaymentDto = (overrides?: Partial<CreatePaymentDto>): CreatePaymentDto => ({
-  provider: PaymentProvider.MTN,
+  provider: PaymentProvider.PAWAPAY,
   amount: 1000,
   currency: 'ZMW',
   externalId: `INV-${Date.now()}-${generateTestId().slice(0, 8)}`,
   payer: '260765725317',
   payerMessage: 'Test payment',
   payeeNote: 'Thank you for your payment',
+  network: 'MTN',
+  status: PaymentStatus.PENDING,
+  providerTransactionId: generateTestId(),
+  metadata: { test: true },
   ...overrides,
 });
 
@@ -82,8 +86,12 @@ export const createMockPayment = (overrides?: Partial<Payment>): Partial<Payment
   externalId: `INV-${Date.now()}`,
   payer: '260765725317',
   status: PaymentStatus.PENDING,
-  momoTransactionId: generateTestId(),
+  provider: PaymentProvider.PAWAPAY,
+  network: 'MTN',
+  providerTransactionId: generateTestId(),
+  metadata: { test: true },
   createdAt: new Date(),
+  updatedAt: new Date(),
   ...overrides,
 });
 

@@ -15,7 +15,6 @@ import { LoggingMiddleware } from './common/middleware/logging.middleware';
 import { TenantModule } from './modules/tenant/tenant.module';
 import { HealthModule } from './modules/health/health.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { MtnModule } from './modules/mtn/mtn.module';
 import { BillingModule } from './modules/billing/billing.module';
 import { StructuredLoggingService, RequestLoggingInterceptor } from './common/logging';
 import { TenantThrottlerGuard } from './common/guards/tenant-throttler.guard';
@@ -24,10 +23,11 @@ import { UsageMetricsService, BillingPlanSeedingService } from './modules/billin
 import { SettingsSeedingService } from './modules/settings/settings-seeding.service';
 import { SettingsModule } from './modules/settings/settings.module';
 import { EmailModule } from './modules/email/email.module';
-import { DisbursementsModule } from './modules/disbursements/disbursements.module';
 import { MerchantConfigurationModule } from './modules/merchant/merchant.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { DisbursementsModule } from './modules/disbursements/disbursements.module';
+import { PawapayModule } from './modules/pawapay/pawapay.module';
 
 @Module({
   imports: [
@@ -59,11 +59,11 @@ import { AdminModule } from './modules/admin/admin.module';
     TransactionModule,
     TenantModule,
     HealthModule,
-    MtnModule,
     BillingModule,
     EmailModule,
-    DisbursementsModule,
     MerchantConfigurationModule,
+    DisbursementsModule,
+    PawapayModule,
   ],
   providers: [
     StructuredLoggingService,

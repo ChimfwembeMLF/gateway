@@ -1,6 +1,5 @@
 import { AbstractEntity } from 'src/common/entities/abstract.entity';
 import { Entity, Column, PrimaryGeneratedColumn, Index, OneToMany } from 'typeorm';
-import { Disbursement } from '../../disbursements/entities/disbursement.entity';
 import { TenantBillingSubscription } from '../../billing/entities';
 
 @Entity('tenants')
@@ -28,9 +27,6 @@ export class Tenant  extends AbstractEntity {
 
   @Column({ default: true })
   isActive: boolean;
-
-  @OneToMany(() => Disbursement, (disbursement) => disbursement.tenant)
-  disbursements: Disbursement[];
 
   @OneToMany(
     () => TenantBillingSubscription,

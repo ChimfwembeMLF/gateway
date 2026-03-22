@@ -51,3 +51,9 @@ db:
   password: "${DATABASE_PASSWORD}"
   database: "${DATABASE_NAME}"
   synchronise: "${DATABASE_SYNCHRONIZE}"
+
+# pawaPay Integration
+pawapay:
+  base_url: "${PAWAPAY_BASE_URL}"
+  api_key: "${PAWAPAY_API_KEY}"
+  secret: "${PAWAPAY_SECRET}"

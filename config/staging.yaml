@@ -35,3 +35,9 @@ db:
   password: "postgres"
   database: "rempay_staging"
   synchronise: false
+
+# pawaPay Integration
+pawapay:
+  base_url: "${PAWAPAY_BASE_URL}"
+  api_key: "${PAWAPAY_API_KEY}"
+  secret: "${PAWAPAY_SECRET}"

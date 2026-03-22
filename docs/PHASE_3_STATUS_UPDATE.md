@@ -298,17 +298,17 @@ npm test -- src/modules/payments/payments.controller.spec.ts
 
 ### 1. **Create Remaining Controller Tests** (Priority: HIGH)
 ```typescript
-// CollectionController
-- requestToPay() - 8 tests
-- getRequestToPayStatus() - 6 tests
-- handleWebhook() - 6 tests
-Total: 20+ tests for flow
+// CollectionController (pawaPay only)
+// requestToPay() - 8 tests
+// getRequestToPayStatus() - 6 tests
+// handleWebhook() - 6 tests
+// Total: 20+ tests for flow
 
-// DisbursementController
-- transfer() - 8 tests
-- getTransferStatus() - 6 tests
-- getAccountBalance() - 6 tests
-Total: 20+ tests for flow
+// DisbursementController (pawaPay only)
+// transfer() - 8 tests
+// getTransferStatus() - 6 tests
+// getAccountBalance() - 6 tests
+// Total: 20+ tests for flow
 ```
 
 ### 2. **Create Guard Tests** (Priority: HIGH)
