@@ -39,7 +39,7 @@ export function typeOrmConfigFactory(
 // DataSource for TypeORM CLI (migrations)
 const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
-  host: 'db',
+  host: 'localhost',
   port: 5432,
   username: 'postgres',
   password: 'postgres',

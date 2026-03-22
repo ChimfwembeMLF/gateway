@@ -38,6 +38,6 @@ db:
 
 # pawaPay Integration
 pawapay:
-  base_url: "${PAWAPAY_BASE_URL}"
-  api_key: "${PAWAPAY_API_KEY}"
-  secret: "${PAWAPAY_SECRET}"
+  base_url: "https://api.sandbox.pawapay.io/v2"
+  api_key: "eyJraWQiOiIxIiwiYWxnIjoiRVMyNTYifQ.eyJ0dCI6IkFBVCIsInN1YiI6IjE4MTU5IiwibWF2IjoiMSIsImV4cCI6MjA4OTcwMTkyNCwiaWF0IjoxNzc0MDgyNzI0LCJwbSI6IkRBRixQQUYiLCJqdGkiOiI0MDBkZmNkYi00YjY1LTQyNWMtODFiZS1hYzJhY2ZjN2Q5MDMifQ.W6EKUhuDybPMWfYGNzS7ZgUE-YSvNGcM4XQCjPBUkPi0Hr1lUFdVZTiAYAI9PVUrtsmOFLAsSBDDoG4Y4rv5dw"
+  secret: "your-pawapay-secret"
