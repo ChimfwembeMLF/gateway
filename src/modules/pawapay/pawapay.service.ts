@@ -266,13 +266,26 @@ export class PawapayService {
         if (!pawapayUrl || !pawapayApiKey) {
             throw new InternalServerErrorException('pawaPay base URL or API Key not configured');
         }
+        // Convert metadata array to object if needed
+        let payloadToSend = { ...payload };
+        if (Array.isArray(payload.metadata)) {
+            payloadToSend = {
+                ...payload,
+                metadata: Object.assign({}, ...payload.metadata)
+            };
+        }
+        this.logger.log('pawaPay depositViaPaymentPage outgoing payload', JSON.stringify(payloadToSend));
         try {
-            const response = await axios.post(`${pawapayUrl}/payment-page/deposits`, payload, {
+            const response = await axios.post(`${pawapayUrl}/v2/paymentpage`, payloadToSend, {
                 headers: { 'Authorization': `Bearer ${pawapayApiKey}` },
             });
+            this.logger.log('pawaPay depositViaPaymentPage response', JSON.stringify(response.data));
             return response.data;
         } catch (error) {
             this.logger.error('pawaPay depositViaPaymentPage error', error?.response?.data || error.message);
+            if (error?.response) {
+                this.logger.error('pawaPay depositViaPaymentPage error response', JSON.stringify(error.response.data));
+            }
             throw new InternalServerErrorException('Failed to deposit via payment page with pawaPay');
         }
     }

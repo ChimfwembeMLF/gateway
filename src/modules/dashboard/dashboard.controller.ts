@@ -119,7 +119,10 @@ export class DashboardController {
 
   @Post('payments/payment-page')
   @Auth([RoleType.SUPER_ADMIN, RoleType.ADMIN])
-  depositViaPaymentPage(@Body() dto: any) { return this.paymentsService.depositViaPaymentPage(dto); }
+  depositViaPaymentPage(@Body() dto: any) {
+    console.log('[DashboardController] /payments/payment-page incoming payload:', JSON.stringify(dto));
+    return this.paymentsService.depositViaPaymentPage(dto);
+  }
 
   @Post('payments/provider-availability')
   @Auth([RoleType.SUPER_ADMIN, RoleType.ADMIN])
