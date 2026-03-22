@@ -43,7 +43,7 @@ const dataSourceOptions: DataSourceOptions = {
   port: 5432,
   username: 'postgres',
   password: 'postgres',
-  database: 'gateway',
+  database: 'rempay_staging',
   entities: [Tenant, User, Payment, Transaction,Disbursement, Audit, IdempotencyKey, BillingPlan, TenantBillingSubscription, UsageMetrics, Invoice, InvoiceLineItem, MerchantConfiguration, Settings],
   subscribers: [UserSubscriber, TenantSubscriber, AuditSubscriber],
   migrations: [join(__dirname, '/migrations/*.{js,ts}')],
