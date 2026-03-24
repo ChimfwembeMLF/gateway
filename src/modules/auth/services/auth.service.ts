@@ -3,7 +3,9 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { UsersService } from '../../user/users.service';
 import { TenantService } from '../../tenant/tenant.service';
+
 import { RoleType } from 'src/common/enums/role-type.enum';
+import { EmailService } from '../../email/services/email.service';
 
 @Injectable()
 export class AuthService {
@@ -11,7 +13,45 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly tenantService: TenantService,
     private readonly jwtService: JwtService,
+    private readonly emailService: EmailService,
   ) {}
+  /**
+   * Handle forgot password: generate OTP, store, and send to email
+   */
+  async forgotPassword(email: string) {
+    // Find user by email
+    const user = await this.usersService.findByEmail(email);
+    if (!user) {
+      return { success: false, message: 'User with this email does not exist' };
+    }
+
+    // Generate 6-digit OTP
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    // Set expiry (e.g., 10 minutes from now)
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+    // Store OTP and expiry on user
+    await this.usersService.update(user.id, { otpCode, otpExpires }, user.tenantId);
+
+    // Send OTP to user's email
+    const subject = 'Your Password Reset Code';
+    const html = `<p>Hello,</p><p>Your password reset code is: <b>${otpCode}</b></p><p>This code will expire in 10 minutes.</p>`;
+
+    try {
+      if (!user.email) {
+        return { success: false, message: 'User does not have a valid email address' };
+      }
+      await this.emailService.getProvider().send({
+        to: user.email as string,
+        subject,
+        html,
+      });
+    } catch (error) {
+      return { success: false, message: 'Failed to send OTP email', error: error.message };
+    }
+
+    return { success: true, message: 'OTP sent to email' };
+  }
 
   async validateUserByEmail(email: string, pass: string) {
     const user = await this.usersService.findByEmail(email);

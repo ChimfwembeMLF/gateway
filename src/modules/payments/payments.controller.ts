@@ -14,13 +14,13 @@ import { CreatePaymentDto } from './dto/create-payment.dto';
 @UseInterceptors(IdempotencyInterceptor)
 @Controller('api/v1/payments')
 export class PaymentsController {
-  constructor(private readonly paymentsService: PaymentsService) {}
+  constructor(private readonly paymentsService: PaymentsService) { }
 
   @Post()
-    @ApiResponse({ status: 201, type: Payment })
-    @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
-    @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
-    @ApiHeader({ name: 'Idempotency-Key', description: 'UUID for idempotent request deduplication (recommended)', required: false })
+  @ApiResponse({ status: 201, type: Payment })
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
+  @ApiHeader({ name: 'Idempotency-Key', description: 'UUID for idempotent request deduplication (recommended)', required: false })
   async create(@Body() createPaymentDto: CreatePaymentDto, @Req() req: any): Promise<Payment> {
     const tenantId = req.tenant?.id;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
@@ -41,10 +41,10 @@ export class PaymentsController {
   }
 
   @Get(':id')
-    @ApiParam({ name: 'id', description: 'Payment ID' })
-    @ApiResponse({ status: 200, type: Payment })
-    @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
-    @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
+  @ApiParam({ name: 'id', description: 'Payment ID' })
+  @ApiResponse({ status: 200, type: Payment })
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
   async findOne(@Param('id') id: string, @Req() req: any): Promise<Payment> {
     const tenantId = req.tenant?.id;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
@@ -67,9 +67,11 @@ export class PaymentsController {
     const balance = await this.paymentsService.getBalance(tenantId, 'pawaPay', req.user);
     return { success: true, data: balance };
   }
-  // --- pawaPay passthrough endpoints ---
+
 
   @Post('bulk-payouts')
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
   async initiateBulkPayouts(@Body() dto: any, @Req() req: any) {
     const tenantId = req.tenant?.id;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
@@ -77,6 +79,8 @@ export class PaymentsController {
   }
 
   @Post('payout-status')
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
   async checkPayoutStatus(@Body() dto: any, @Req() req: any) {
     const tenantId = req.tenant?.id;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
@@ -84,6 +88,8 @@ export class PaymentsController {
   }
 
   @Post('payout-resend-callback')
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
   async resendPayoutCallback(@Body() dto: any, @Req() req: any) {
     const tenantId = req.tenant?.id;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
@@ -91,6 +97,8 @@ export class PaymentsController {
   }
 
   @Post('payout-cancel')
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
   async cancelEnqueuedPayout(@Body() dto: any, @Req() req: any) {
     const tenantId = req.tenant?.id;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
@@ -98,6 +106,8 @@ export class PaymentsController {
   }
 
   @Post('deposit')
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
   async initiateDeposit(@Body() dto: any, @Req() req: any) {
     const tenantId = req.tenant?.id;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
@@ -105,6 +115,8 @@ export class PaymentsController {
   }
 
   @Post('deposit-status')
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
   async checkDepositStatus(@Body() dto: any, @Req() req: any) {
     const tenantId = req.tenant?.id;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
@@ -112,6 +124,8 @@ export class PaymentsController {
   }
 
   @Post('deposit-resend-callback')
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
   async resendDepositCallback(@Body() dto: any, @Req() req: any) {
     const tenantId = req.tenant?.id;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
@@ -119,6 +133,8 @@ export class PaymentsController {
   }
 
   @Post('refund')
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
   async initiateRefund(@Body() dto: any, @Req() req: any) {
     const tenantId = req.tenant?.id;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
@@ -126,6 +142,8 @@ export class PaymentsController {
   }
 
   @Post('refund-status')
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
   async checkRefundStatus(@Body() dto: any, @Req() req: any) {
     const tenantId = req.tenant?.id;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
@@ -133,6 +151,8 @@ export class PaymentsController {
   }
 
   @Post('refund-resend-callback')
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
   async resendRefundCallback(@Body() dto: any, @Req() req: any) {
     const tenantId = req.tenant?.id;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
@@ -140,6 +160,8 @@ export class PaymentsController {
   }
 
   @Post('payment-page')
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
   async depositViaPaymentPage(@Body() dto: any, @Req() req: any) {
     const tenantId = req.tenant?.id;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
@@ -147,6 +169,8 @@ export class PaymentsController {
   }
 
   @Post('provider-availability')
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
   async providerAvailability(@Body() dto: any, @Req() req: any) {
     const tenantId = req.tenant?.id;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
@@ -154,6 +178,8 @@ export class PaymentsController {
   }
 
   @Post('active-configuration')
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
   async activeConfiguration(@Body() dto: any, @Req() req: any) {
     const tenantId = req.tenant?.id;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
@@ -168,6 +194,8 @@ export class PaymentsController {
   }
 
   @Post('public-keys')
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
   async publicKeys(@Body() dto: any, @Req() req: any) {
     const tenantId = req.tenant?.id;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
@@ -175,6 +203,8 @@ export class PaymentsController {
   }
 
   @Post('wallet-balances')
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
   async walletBalances(@Body() dto: any, @Req() req: any) {
     const tenantId = req.tenant?.id;
     if (!tenantId) throw new BadRequestException('Missing tenantId in request.');

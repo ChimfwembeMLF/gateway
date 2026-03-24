@@ -1,0 +1,32 @@
+{{!< base }}
+{{#*inline "body"}}
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="center">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td style="font-size:22px;font-weight:bold;text-align:center;padding-top:20px;">
+                            New Invoice
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top:20px;color:#555;">
+                            Invoice Number: {{INVOICE_NUMBER}}<br>
+                            Amount: {{AMOUNT}}<br>
+                            Due Date: {{DUE_DATE}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding-top:25px;">
+                            <a href="{{INVOICE_LINK}}"
+                                style="background:#1976d2;color:#fff;padding:12px 20px;text-decoration:none;border-radius:5px;">
+                                View Invoice
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+{{/inline}}
+{{> base title="New Invoice" year=2026 body=(lookup . "body") }}

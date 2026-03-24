@@ -1,4 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
+import { MerchantConfigurationModule } from '../merchant/merchant.module';
+import { CommonModule } from '../../common/common.module';
 import { DisbursementsController } from './disbursements.controller';
 import { DisbursementsService } from './disbursements.service';
 import { ConfigModule } from '@nestjs/config';
@@ -13,6 +15,8 @@ import { PaymentsModule } from '../payments/payments.module';
     TypeOrmModule.forFeature([Disbursement]),
     forwardRef(() => PawapayModule),
     forwardRef(() => PaymentsModule),
+    MerchantConfigurationModule,
+    CommonModule,
   ],
   controllers: [DisbursementsController],
   providers: [DisbursementsService],

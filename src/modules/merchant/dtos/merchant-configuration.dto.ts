@@ -510,6 +510,9 @@ export class MerchantConfigurationResponseDto {
   // Webhook
   webhookEnabled: boolean;
   webhookLastTested?: Date;
+  webhookEvents?: string[];
+  webhookUrl?: string;
+  webhookSecret?: string;
 
   // Encryption
   encryptionStatus: string;

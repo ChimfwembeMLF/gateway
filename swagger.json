@@ -49,6 +49,30 @@
         ]
       }
     },
+    "/api/v1/auth/forgot-password": {
+      "post": {
+        "operationId": "AuthController_forgotPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
     "/api/v1/auth/me": {
       "get": {
         "operationId": "AuthController_getMe",
@@ -674,7 +698,7 @@
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments": {
+    "/api/v1/dashboard/payments": {
       "get": {
         "operationId": "DashboardController_getPayments",
         "parameters": [],
@@ -689,7 +713,7 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       },
       "post": {
@@ -706,11 +730,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/payouts": {
+    "/api/v1/dashboard/payments/payouts": {
       "get": {
         "operationId": "DashboardController_payouts",
         "parameters": [],
@@ -725,11 +749,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/payouts/{id}": {
+    "/api/v1/dashboard/payments/payouts/{id}": {
       "get": {
         "operationId": "DashboardController_getPayoutById",
         "parameters": [
@@ -753,11 +777,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/{id}": {
+    "/api/v1/dashboard/payments/{id}": {
       "get": {
         "operationId": "DashboardController_getPaymentById",
         "parameters": [
@@ -781,11 +805,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/status/{id}": {
+    "/api/v1/dashboard/payments/status/{id}": {
       "get": {
         "operationId": "DashboardController_getPaymentStatus",
         "parameters": [
@@ -809,11 +833,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/balance/available": {
+    "/api/v1/dashboard/payments/balance/available": {
       "get": {
         "operationId": "DashboardController_getBalance",
         "parameters": [],
@@ -828,11 +852,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/payout": {
+    "/api/v1/dashboard/payments/payout": {
       "post": {
         "operationId": "DashboardController_payout",
         "parameters": [],
@@ -847,11 +871,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/bulk-payouts": {
+    "/api/v1/dashboard/payments/bulk-payouts": {
       "post": {
         "operationId": "DashboardController_initiateBulkPayouts",
         "parameters": [],
@@ -866,11 +890,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/payout-status": {
+    "/api/v1/dashboard/payments/payout-status": {
       "post": {
         "operationId": "DashboardController_checkPayoutStatus",
         "parameters": [],
@@ -885,11 +909,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/payout-resend-callback": {
+    "/api/v1/dashboard/payments/payout-resend-callback": {
       "post": {
         "operationId": "DashboardController_resendPayoutCallback",
         "parameters": [],
@@ -904,11 +928,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/payout-cancel": {
+    "/api/v1/dashboard/payments/payout-cancel": {
       "post": {
         "operationId": "DashboardController_cancelEnqueuedPayout",
         "parameters": [],
@@ -923,11 +947,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/deposit": {
+    "/api/v1/dashboard/payments/deposit": {
       "post": {
         "operationId": "DashboardController_initiateDeposit",
         "parameters": [],
@@ -942,11 +966,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/deposit-status": {
+    "/api/v1/dashboard/payments/deposit-status": {
       "post": {
         "operationId": "DashboardController_checkDepositStatus",
         "parameters": [],
@@ -961,11 +985,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/deposit-resend-callback": {
+    "/api/v1/dashboard/payments/deposit-resend-callback": {
       "post": {
         "operationId": "DashboardController_resendDepositCallback",
         "parameters": [],
@@ -980,11 +1004,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/refund": {
+    "/api/v1/dashboard/payments/refund": {
       "post": {
         "operationId": "DashboardController_initiateRefund",
         "parameters": [],
@@ -999,11 +1023,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/refund-status": {
+    "/api/v1/dashboard/payments/refund-status": {
       "post": {
         "operationId": "DashboardController_checkRefundStatus",
         "parameters": [],
@@ -1018,11 +1042,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/refund-resend-callback": {
+    "/api/v1/dashboard/payments/refund-resend-callback": {
       "post": {
         "operationId": "DashboardController_resendRefundCallback",
         "parameters": [],
@@ -1037,11 +1061,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/payment-page": {
+    "/api/v1/dashboard/payments/payment-page": {
       "post": {
         "operationId": "DashboardController_depositViaPaymentPage",
         "parameters": [],
@@ -1056,11 +1080,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/provider-availability": {
+    "/api/v1/dashboard/payments/provider-availability": {
       "post": {
         "operationId": "DashboardController_providerAvailability",
         "parameters": [],
@@ -1075,11 +1099,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/active-configuration": {
+    "/api/v1/dashboard/payments/active-configuration": {
       "post": {
         "operationId": "DashboardController_activeConfiguration",
         "parameters": [],
@@ -1094,11 +1118,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/predict-provider": {
+    "/api/v1/dashboard/payments/predict-provider": {
       "post": {
         "operationId": "DashboardController_predictProvider",
         "parameters": [],
@@ -1113,11 +1137,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/public-keys": {
+    "/api/v1/dashboard/payments/public-keys": {
       "post": {
         "operationId": "DashboardController_publicKeys",
         "parameters": [],
@@ -1132,11 +1156,11 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
         ]
       }
     },
-    "/api/v1/admin/dashboard/payments/wallet-balances": {
+    "/api/v1/dashboard/payments/wallet-balances": {
       "post": {
         "operationId": "DashboardController_walletBalances",
         "parameters": [],
@@ -1151,7 +1175,83 @@
           }
         ],
         "tags": [
-          "Admin Dashboard"
+          "Dashboard"
+        ]
+      }
+    },
+    "/api/v1/dashboard/webhook": {
+      "get": {
+        "operationId": "DashboardController_getWebhook",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current webhook configuration for tenant",
+        "tags": [
+          "Dashboard"
+        ]
+      },
+      "post": {
+        "operationId": "DashboardController_setWebhook",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Set or update webhook URL, secret, and events",
+        "tags": [
+          "Dashboard"
+        ]
+      },
+      "delete": {
+        "operationId": "DashboardController_removeWebhook",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove/disable webhook for tenant",
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
+    "/api/v1/dashboard/webhook/events": {
+      "patch": {
+        "operationId": "DashboardController_updateWebhookEvents",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Add or remove events from webhook subscription",
+        "tags": [
+          "Dashboard"
         ]
       }
     },
@@ -1341,7 +1441,26 @@
     "/api/v1/payments/bulk-payouts": {
       "post": {
         "operationId": "PaymentsController_initiateBulkPayouts",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": ""
@@ -1355,7 +1474,26 @@
     "/api/v1/payments/payout-status": {
       "post": {
         "operationId": "PaymentsController_checkPayoutStatus",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": ""
@@ -1369,7 +1507,26 @@
     "/api/v1/payments/payout-resend-callback": {
       "post": {
         "operationId": "PaymentsController_resendPayoutCallback",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": ""
@@ -1383,7 +1540,26 @@
     "/api/v1/payments/payout-cancel": {
       "post": {
         "operationId": "PaymentsController_cancelEnqueuedPayout",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": ""
@@ -1397,7 +1573,26 @@
     "/api/v1/payments/deposit": {
       "post": {
         "operationId": "PaymentsController_initiateDeposit",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": ""
@@ -1411,7 +1606,26 @@
     "/api/v1/payments/deposit-status": {
       "post": {
         "operationId": "PaymentsController_checkDepositStatus",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": ""
@@ -1425,7 +1639,26 @@
     "/api/v1/payments/deposit-resend-callback": {
       "post": {
         "operationId": "PaymentsController_resendDepositCallback",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": ""
@@ -1439,7 +1672,26 @@
     "/api/v1/payments/refund": {
       "post": {
         "operationId": "PaymentsController_initiateRefund",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": ""
@@ -1453,7 +1705,26 @@
     "/api/v1/payments/refund-status": {
       "post": {
         "operationId": "PaymentsController_checkRefundStatus",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": ""
@@ -1467,7 +1738,26 @@
     "/api/v1/payments/refund-resend-callback": {
       "post": {
         "operationId": "PaymentsController_resendRefundCallback",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": ""
@@ -1481,7 +1771,26 @@
     "/api/v1/payments/payment-page": {
       "post": {
         "operationId": "PaymentsController_depositViaPaymentPage",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": ""
@@ -1495,7 +1804,26 @@
     "/api/v1/payments/provider-availability": {
       "post": {
         "operationId": "PaymentsController_providerAvailability",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": ""
@@ -1509,7 +1837,26 @@
     "/api/v1/payments/active-configuration": {
       "post": {
         "operationId": "PaymentsController_activeConfiguration",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": ""
@@ -1537,7 +1884,26 @@
     "/api/v1/payments/public-keys": {
       "post": {
         "operationId": "PaymentsController_publicKeys",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": ""
@@ -1551,7 +1917,26 @@
     "/api/v1/payments/wallet-balances": {
       "post": {
         "operationId": "PaymentsController_walletBalances",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": ""
@@ -1604,6 +1989,319 @@
         ]
       }
     },
+    "/api/v1/merchant/configuration": {
+      "post": {
+        "operationId": "MerchantConfigurationController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMerchantConfigurationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Merchant configuration created successfully",
+            "headers": {
+              "x-tenant-id": {
+                "description": "Tenant identifier",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "x-api-key": {
+                "description": "Current tenant API key",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantConfigurationResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create merchant configuration",
+        "tags": [
+          "Merchant Configuration"
+        ]
+      },
+      "get": {
+        "operationId": "MerchantConfigurationController_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Merchant configuration retrieved successfully",
+            "headers": {
+              "x-tenant-id": {
+                "description": "Tenant identifier",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "x-api-key": {
+                "description": "Current tenant API key",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantConfigurationResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get merchant configuration",
+        "tags": [
+          "Merchant Configuration"
+        ]
+      },
+      "patch": {
+        "operationId": "MerchantConfigurationController_update",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMerchantConfigurationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Merchant configuration updated successfully",
+            "headers": {
+              "x-tenant-id": {
+                "description": "Tenant identifier",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "x-api-key": {
+                "description": "Current tenant API key",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantConfigurationResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update merchant configuration",
+        "tags": [
+          "Merchant Configuration"
+        ]
+      }
+    },
+    "/api/v1/merchant/configuration/verify/mtn": {
+      "post": {
+        "operationId": "MerchantConfigurationController_verifyMtn",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "MTN credentials verified successfully",
+            "headers": {
+              "x-tenant-id": {
+                "description": "Tenant identifier",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "x-api-key": {
+                "description": "Current tenant API key",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Verify MTN credentials",
+        "tags": [
+          "Merchant Configuration"
+        ]
+      }
+    },
+    "/api/v1/merchant/configuration/verify/airtel": {
+      "post": {
+        "operationId": "MerchantConfigurationController_verifyAirtel",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Airtel credentials verified successfully",
+            "headers": {
+              "x-tenant-id": {
+                "description": "Tenant identifier",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "x-api-key": {
+                "description": "Current tenant API key",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Verify Airtel credentials",
+        "tags": [
+          "Merchant Configuration"
+        ]
+      }
+    },
+    "/api/v1/merchant/configuration/verify/bank": {
+      "post": {
+        "operationId": "MerchantConfigurationController_verifyBank",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Bank account verified successfully",
+            "headers": {
+              "x-tenant-id": {
+                "description": "Tenant identifier",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "x-api-key": {
+                "description": "Current tenant API key",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerificationResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Verify bank account",
+        "tags": [
+          "Merchant Configuration"
+        ]
+      }
+    },
+    "/api/v1/merchant/configuration/webhook/test": {
+      "post": {
+        "operationId": "MerchantConfigurationController_testWebhook",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestWebhookDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook test completed",
+            "headers": {
+              "x-tenant-id": {
+                "description": "Tenant identifier",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "x-api-key": {
+                "description": "Current tenant API key",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookTestResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Test webhook endpoint",
+        "tags": [
+          "Merchant Configuration"
+        ]
+      }
+    },
     "/api/v1/disbursements": {
       "post": {
         "operationId": "DisbursementsController_create",
@@ -1630,6 +2328,138 @@
         "responses": {
           "201": {
             "description": "Disbursement created"
+          }
+        },
+        "tags": [
+          "Disbursements"
+        ]
+      }
+    },
+    "/api/v1/disbursements/bulk-payouts": {
+      "post": {
+        "operationId": "DisbursementsController_initiateBulkPayouts",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Bulk disbursements initiated"
+          }
+        },
+        "tags": [
+          "Disbursements"
+        ]
+      }
+    },
+    "/api/v1/disbursements/payout-status": {
+      "post": {
+        "operationId": "DisbursementsController_checkPayoutStatus",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payout status from pawaPay"
+          }
+        },
+        "tags": [
+          "Disbursements"
+        ]
+      }
+    },
+    "/api/v1/disbursements/payout-resend-callback": {
+      "post": {
+        "operationId": "DisbursementsController_resendPayoutCallback",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payout callback resent"
+          }
+        },
+        "tags": [
+          "Disbursements"
+        ]
+      }
+    },
+    "/api/v1/disbursements/payout-cancel": {
+      "post": {
+        "operationId": "DisbursementsController_cancelEnqueuedPayout",
+        "parameters": [
+          {
+            "name": "x-tenant-id",
+            "in": "header",
+            "description": "Tenant ID for multi-tenancy",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for authentication",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enqueued payout cancelled"
           }
         },
         "tags": [
@@ -2167,319 +2997,6 @@
           "Billing"
         ]
       }
-    },
-    "/api/v1/merchant/configuration": {
-      "post": {
-        "operationId": "MerchantConfigurationController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateMerchantConfigurationDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Merchant configuration created successfully",
-            "headers": {
-              "x-tenant-id": {
-                "description": "Tenant identifier",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "x-api-key": {
-                "description": "Current tenant API key",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MerchantConfigurationResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Create merchant configuration",
-        "tags": [
-          "Merchant Configuration"
-        ]
-      },
-      "get": {
-        "operationId": "MerchantConfigurationController_get",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Merchant configuration retrieved successfully",
-            "headers": {
-              "x-tenant-id": {
-                "description": "Tenant identifier",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "x-api-key": {
-                "description": "Current tenant API key",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MerchantConfigurationResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Get merchant configuration",
-        "tags": [
-          "Merchant Configuration"
-        ]
-      },
-      "patch": {
-        "operationId": "MerchantConfigurationController_update",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateMerchantConfigurationDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Merchant configuration updated successfully",
-            "headers": {
-              "x-tenant-id": {
-                "description": "Tenant identifier",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "x-api-key": {
-                "description": "Current tenant API key",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MerchantConfigurationResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Update merchant configuration",
-        "tags": [
-          "Merchant Configuration"
-        ]
-      }
-    },
-    "/api/v1/merchant/configuration/verify/mtn": {
-      "post": {
-        "operationId": "MerchantConfigurationController_verifyMtn",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "MTN credentials verified successfully",
-            "headers": {
-              "x-tenant-id": {
-                "description": "Tenant identifier",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "x-api-key": {
-                "description": "Current tenant API key",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/VerificationResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Verify MTN credentials",
-        "tags": [
-          "Merchant Configuration"
-        ]
-      }
-    },
-    "/api/v1/merchant/configuration/verify/airtel": {
-      "post": {
-        "operationId": "MerchantConfigurationController_verifyAirtel",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Airtel credentials verified successfully",
-            "headers": {
-              "x-tenant-id": {
-                "description": "Tenant identifier",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "x-api-key": {
-                "description": "Current tenant API key",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/VerificationResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Verify Airtel credentials",
-        "tags": [
-          "Merchant Configuration"
-        ]
-      }
-    },
-    "/api/v1/merchant/configuration/verify/bank": {
-      "post": {
-        "operationId": "MerchantConfigurationController_verifyBank",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Bank account verified successfully",
-            "headers": {
-              "x-tenant-id": {
-                "description": "Tenant identifier",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "x-api-key": {
-                "description": "Current tenant API key",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/VerificationResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Verify bank account",
-        "tags": [
-          "Merchant Configuration"
-        ]
-      }
-    },
-    "/api/v1/merchant/configuration/webhook/test": {
-      "post": {
-        "operationId": "MerchantConfigurationController_testWebhook",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TestWebhookDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Webhook test completed",
-            "headers": {
-              "x-tenant-id": {
-                "description": "Tenant identifier",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "x-api-key": {
-                "description": "Current tenant API key",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/WebhookTestResponseDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Test webhook endpoint",
-        "tags": [
-          "Merchant Configuration"
-        ]
-      }
     }
   },
   "info": {
@@ -2551,6 +3068,18 @@
           "username",
           "email",
           "password"
+        ]
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User email for password reset"
+          }
+        },
+        "required": [
+          "email"
         ]
       },
       "CreateTenantWithAdminDto": {
@@ -2749,26 +3278,6 @@
         ]
       },
       "Payment": {
-        "type": "object",
-        "properties": {}
-      },
-      "CreateSubscriptionDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "UpdateSubscriptionDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "CancelSubscriptionDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "GenerateInvoiceDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "UpdateInvoiceDto": {
         "type": "object",
         "properties": {}
       },
@@ -3396,6 +3905,26 @@
           "statusCode",
           "message"
         ]
+      },
+      "CreateSubscriptionDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateSubscriptionDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CancelSubscriptionDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "GenerateInvoiceDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateInvoiceDto": {
+        "type": "object",
+        "properties": {}
       }
     }
   },

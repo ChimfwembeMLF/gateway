@@ -11,6 +11,7 @@ import { TenantModule } from '../tenant/tenant.module';
 
 import { PaymentsModule } from '../payments/payments.module';
 import { DisbursementsModule } from '../disbursements/disbursements.module';
+import { MerchantConfigurationModule } from '../merchant';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { DisbursementsModule } from '../disbursements/disbursements.module';
     TenantModule,
     PaymentsModule,
     DisbursementsModule,
+    MerchantConfigurationModule
   ],
   controllers: [DashboardController],
   providers: [DashboardService],

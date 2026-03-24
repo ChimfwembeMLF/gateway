@@ -21,13 +21,44 @@ export class DisbursementsController {
     return this.disbursementsService.create({ ...createDisbursementDto, tenantId, clientId: createDisbursementDto.clientId }, req.user);
   }
 
-  // @Get()
-  // @ApiResponse({ status: 200, description: 'List of disbursements' })
-  // @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
-  // @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
-  // async findAll(@Query('clientId') clientId: string, @Req() req: any): Promise<any> {
-  //   const tenantId = req.tenant?.id;
-  //   if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
-  //   return this.disbursementsService.findAll({ tenantId, clientId });
-  // }
+
+  @Post('bulk-payouts')
+  @ApiResponse({ status: 201, description: 'Bulk disbursements initiated' })
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
+  async initiateBulkPayouts(@Body() dto: any, @Req() req: any) {
+    const tenantId = req.tenant?.id;
+    if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
+    return this.disbursementsService.initiateBulkPayouts({ ...dto, tenantId });
+  }
+
+  @Post('payout-status')
+  @ApiResponse({ status: 200, description: 'Payout status from pawaPay' })
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
+  async checkPayoutStatus(@Body() dto: any, @Req() req: any) {
+    const tenantId = req.tenant?.id;
+    if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
+    return this.disbursementsService.checkPayoutStatus({ ...dto, tenantId });
+  }
+
+  @Post('payout-resend-callback')
+  @ApiResponse({ status: 200, description: 'Payout callback resent' })
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
+  async resendPayoutCallback(@Body() dto: any, @Req() req: any) {
+    const tenantId = req.tenant?.id;
+    if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
+    return this.disbursementsService.resendPayoutCallback({ ...dto, tenantId });
+  }
+
+  @Post('payout-cancel')
+  @ApiResponse({ status: 200, description: 'Enqueued payout cancelled' })
+  @ApiHeader({ name: 'x-api-key', description: 'API key for authentication', required: true })
+  @ApiHeader({ name: 'x-tenant-id', description: 'Tenant ID for multi-tenancy', required: true })
+  async cancelEnqueuedPayout(@Body() dto: any, @Req() req: any) {
+    const tenantId = req.tenant?.id;
+    if (!tenantId) throw new BadRequestException('Missing tenantId in request.');
+    return this.disbursementsService.cancelEnqueuedPayout({ ...dto, tenantId });
+  }
 }

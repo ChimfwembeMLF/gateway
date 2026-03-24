@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException, Logger, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Logger, InternalServerErrorException, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Payment, PaymentStatus } from './entities/payment.entity';
@@ -9,6 +9,8 @@ import { normalizeZambiaNetwork } from '../../common/utils/network-normalizer.ut
 import { UuidGeneratorService } from './external-id.service';
 // import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
+import { WebhookNotificationService } from '../../common/webhook-notification.service';
+import { MerchantConfigurationService } from '../merchant/services/merchant-configuration.service';
 import { PawapayService } from '../pawapay/pawapay.service';
 import { InitiatePayoutDto } from '../pawapay/dtos/initiate-payout.dto';
 import { InitiateBulkPayoutsDto } from '../pawapay/dtos/initiate-bulk-payouts.dto';
@@ -41,6 +43,8 @@ export class PaymentsService {
     private readonly uuidGenerator: UuidGeneratorService,
     private readonly configService: ConfigService,
     private readonly pawapayService: PawapayService,
+    private readonly merchantConfigService: MerchantConfigurationService,
+    private readonly webhookNotificationService: WebhookNotificationService,
   ) { }
 
   async findAllByTenant(tenantId: string): Promise<Payment[]> {
@@ -161,6 +165,20 @@ export class PaymentsService {
       response: providerResult ? JSON.stringify(providerResult) : (providerError ? JSON.stringify({ error: providerError?.message, details: providerError?.response?.data }) : ''),
       status: providerError ? PaymentStatus.FAILED : PaymentStatus.PENDING,
     });
+    // Notify tenant webhook for payment.created
+    try {
+      const config = await this.merchantConfigService.findByTenantId(createPaymentDto.tenantId);
+      if (config?.webhookUrl && config?.webhookEnabled && config?.webhookEvents?.includes('payment.created')) {
+        await this.webhookNotificationService.notifyWebhook(
+          config.webhookUrl,
+          'payment.created',
+          { payment: savedPayment },
+          config.webhookSecret,
+        );
+      }
+    } catch (err) {
+      this.logger.warn(`Could not notify tenant webhook: ${err.message}`);
+    }
     if (providerError) {
       // Attach provider error details to the returned payment object for client visibility
       (savedPayment as any).providerError = providerError?.response?.data || providerError?.response || providerError;
@@ -175,10 +193,43 @@ export class PaymentsService {
     return payment;
   }
 
+  // Notify tenant webhook for payment status updates
   async updateStatus(id: string, status: PaymentStatus, tenantId: string): Promise<Payment> {
     const payment = await this.findOne(id, tenantId);
     payment.status = status;
-    return this.paymentRepository.save(payment);
+    const updated = await this.paymentRepository.save(payment);
+    // Webhook notification
+    try {
+      const config = await this.merchantConfigService.findByTenantId(tenantId);
+      if (config?.webhookUrl && config?.webhookEnabled && config?.webhookEvents?.includes('payment.status')) {
+        await this.webhookNotificationService.notifyWebhook(
+          config.webhookUrl,
+          'payment.status',
+          { payment: updated },
+          config.webhookSecret,
+        );
+      }
+    } catch (err) {
+      this.logger.warn(`Could not notify tenant webhook: ${err.message}`);
+    }
+    return updated;
+  }
+
+  // Notify tenant webhook for refund events
+  async notifyRefundEvent(tenantId: string, eventType: string, refund: any) {
+    try {
+      const config = await this.merchantConfigService.findByTenantId(tenantId);
+      if (config?.webhookUrl && config?.webhookEnabled && config?.webhookEvents?.includes(eventType)) {
+        await this.webhookNotificationService.notifyWebhook(
+          config.webhookUrl,
+          eventType,
+          { refund },
+          config.webhookSecret,
+        );
+      }
+    } catch (err) {
+      this.logger.warn(`Could not notify tenant webhook: ${err.message}`);
+    }
   }
 
   // normalizeMsisdn removed: not needed for pawaPay-only integration
@@ -226,69 +277,222 @@ export class PaymentsService {
       phoneNumber: payload.payer?.accountDetails?.phoneNumber,
       customerMessage: payload.customerMessage,
     };
-    return this.pawapayService.initiatePayout(payoutPayload);
+    try {
+      return await this.pawapayService.initiatePayout(payoutPayload);
+    } catch (error) {
+      const failureCode = error?.response?.data?.failureCode;
+      const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+      if (failureCode) {
+        throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+      }
+      throw error;
+    }
   }
   async initiateBulkPayouts(payload: InitiateBulkPayoutsDto) {
-    return this.pawapayService.initiateBulkPayouts(payload);
+    try {
+      return await this.pawapayService.initiateBulkPayouts(payload);
+    } catch (error) {
+      const failureCode = error?.response?.data?.failureCode;
+      const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+      if (failureCode) {
+        throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+      }
+      throw error;
+    }
   }
 
   async checkPayoutStatus(payload: CheckPayoutStatusDto) {
-    return this.pawapayService.checkPayoutStatus(payload);
+    try {
+      return await this.pawapayService.checkPayoutStatus(payload);
+    } catch (error) {
+      const failureCode = error?.response?.data?.failureCode;
+      const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+      if (failureCode) {
+        throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+      }
+      throw error;
+    }
   }
 
   async resendPayoutCallback(payload: ResendPayoutCallbackDto) {
-    return this.pawapayService.resendPayoutCallback(payload);
+    try {
+      return await this.pawapayService.resendPayoutCallback(payload);
+    } catch (error) {
+      const failureCode = error?.response?.data?.failureCode;
+      const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+      if (failureCode) {
+        throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+      }
+      throw error;
+    }
   }
 
   async cancelEnqueuedPayout(payload: CancelEnqueuedPayoutDto) {
-    return this.pawapayService.cancelEnqueuedPayout(payload);
+    try {
+      return await this.pawapayService.cancelEnqueuedPayout(payload);
+    } catch (error) {
+      const failureCode = error?.response?.data?.failureCode;
+      const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+      if (failureCode) {
+        throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+      }
+      throw error;
+    }
   }
 
   async initiateDeposit(payload: InitiateDepositDto) {
-    return this.pawapayService.initiateDeposit(payload);
+    try {
+      return await this.pawapayService.initiateDeposit(payload);
+    } catch (error) {
+      const failureCode = error?.response?.data?.failureCode;
+      const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+      if (failureCode) {
+        throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+      }
+      throw error;
+    }
   }
 
   async checkDepositStatus(payload: CheckDepositStatusDto) {
-    return this.pawapayService.checkDepositStatus(payload);
+    try {
+      return await this.pawapayService.checkDepositStatus(payload);
+    } catch (error) {
+      const failureCode = error?.response?.data?.failureCode;
+      const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+      if (failureCode) {
+        throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+      }
+      throw error;
+    }
   }
 
   async resendDepositCallback(payload: ResendDepositCallbackDto) {
-    return this.pawapayService.resendDepositCallback(payload);
+    try {
+      return await this.pawapayService.resendDepositCallback(payload);
+    } catch (error) {
+      const failureCode = error?.response?.data?.failureCode;
+      const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+      if (failureCode) {
+        throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+      }
+      throw error;
+    }
   }
 
   async initiateRefund(payload: InitiateRefundDto) {
-    return this.pawapayService.initiateRefund(payload);
+    try {
+      return await this.pawapayService.initiateRefund(payload);
+    } catch (error) {
+      const failureCode = error?.response?.data?.failureCode;
+      const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+      if (failureCode) {
+        throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+      }
+      throw error;
+    }
   }
 
   async checkRefundStatus(payload: CheckRefundStatusDto) {
-    return this.pawapayService.checkRefundStatus(payload);
+    try {
+      return await this.pawapayService.checkRefundStatus(payload);
+    } catch (error) {
+      const failureCode = error?.response?.data?.failureCode;
+      const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+      if (failureCode) {
+        throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+      }
+      throw error;
+    }
   }
 
   async resendRefundCallback(payload: ResendRefundCallbackDto) {
-    return this.pawapayService.resendRefundCallback(payload);
+    try {
+      return await this.pawapayService.resendRefundCallback(payload);
+    } catch (error) {
+      const failureCode = error?.response?.data?.failureCode;
+      const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+      if (failureCode) {
+        throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+      }
+      throw error;
+    }
   }
 
   async depositViaPaymentPage(payload: DepositViaPaymentPageDto) {
-    return this.pawapayService.depositViaPaymentPage(payload);
+    try {
+      return await this.pawapayService.depositViaPaymentPage(payload);
+    } catch (error) {
+      const failureCode = error?.response?.data?.failureCode;
+      const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+      if (failureCode) {
+        throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+      }
+      throw error;
+    }
   }
 
   async providerAvailability(payload: ProviderAvailabilityDto) {
-    return this.pawapayService.providerAvailability(payload);
+    try {
+      return await this.pawapayService.providerAvailability(payload);
+    } catch (error) {
+      const failureCode = error?.response?.data?.failureCode;
+      const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+      if (failureCode) {
+        throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+      }
+      throw error;
+    }
   }
 
   async activeConfiguration(payload: ActiveConfigurationDto) {
-    return this.pawapayService.activeConfiguration(payload);
+    try {
+      return await this.pawapayService.activeConfiguration(payload);
+    } catch (error) {
+      const failureCode = error?.response?.data?.failureCode;
+      const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+      if (failureCode) {
+        throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+      }
+      throw error;
+    }
   }
 
   async predictProvider(payload: PredictProviderDto) {
-    return this.pawapayService.predictProvider(payload);
+    try {
+      return await this.pawapayService.predictProvider(payload);
+    } catch (error) {
+      const failureCode = error?.response?.data?.failureCode;
+      const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+      if (failureCode) {
+        throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+      }
+      throw error;
+    }
   }
 
   async publicKeys(payload: PublicKeysDto) {
-    return this.pawapayService.publicKeys(payload);
+    try {
+      return await this.pawapayService.publicKeys(payload);
+    } catch (error) {
+      const failureCode = error?.response?.data?.failureCode;
+      const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+      if (failureCode) {
+        throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+      }
+      throw error;
+    }
   }
 
   async walletBalances(payload: WalletBalancesDto) {
-    return this.pawapayService.walletBalances(payload);
+    try {
+      return await this.pawapayService.walletBalances(payload);
+    } catch (error) {
+      const failureCode = error?.response?.data?.failureCode;
+      const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+      if (failureCode) {
+        throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+      }
+      throw error;
+    }
   }
 }

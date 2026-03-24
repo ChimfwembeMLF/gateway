@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { MerchantConfigurationModule } from '../merchant/merchant.module';
+import { CommonModule } from '../../common/common.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Payment } from './entities/payment.entity';
 import { Transaction } from './entities/transaction.entity';
@@ -15,7 +17,7 @@ import { forwardRef } from '@nestjs/common';
 import { PawapayModule } from '../pawapay/pawapay.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Payment, Transaction]), UserModule, TenantModule, TransactionModule, forwardRef(() => PawapayModule)],
+    imports: [TypeOrmModule.forFeature([Payment, Transaction]), UserModule, TenantModule, TransactionModule, forwardRef(() => PawapayModule), MerchantConfigurationModule, CommonModule],
     controllers: [PaymentsController],
     providers: [
         PaymentsService,

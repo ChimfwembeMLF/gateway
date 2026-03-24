@@ -1,0 +1,30 @@
+{{!< base }}
+{{#*inline "body"}}
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="center">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td style="font-size:24px;font-weight:bold;text-align:center;padding-top:20px;">
+                            Welcome to {{COMPANY_NAME}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center;padding-top:15px;color:#555;">
+                            Your account has been successfully created.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding-top:25px;">
+                            <a href="{{DASHBOARD_URL}}"
+                                style="background:#4CAF50;color:#fff;padding:12px 25px;text-decoration:none;border-radius:5px;">
+                                Open Dashboard
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+{{/inline}}
+{{> base title="Welcome" year=2026 body=(lookup . "body") }}

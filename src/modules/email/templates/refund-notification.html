@@ -1,0 +1,23 @@
+{{!< base }}
+{{#*inline "body"}}
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="center">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td style="font-size:22px;font-weight:bold;text-align:center;padding-top:20px;">
+                            Refund Issued
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top:20px;color:#555;">
+                            Refund Amount: {{AMOUNT}}<br />
+                            Transaction: {{TRANSACTION_ID}}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+{{/inline}}
+{{> base title="Refund Issued" year=2026 body=(lookup . "body") }}

@@ -38,4 +38,10 @@ export class User extends AbstractEntity {
 
   @Column({ type: 'enum', enum: RoleType, default: RoleType.USER })
   role: RoleType;
+
+  @Column({ nullable: true })
+  otpCode?: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  otpExpires?: Date;
 }

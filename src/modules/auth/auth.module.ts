@@ -11,12 +11,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../user/entities/user.entity';
 import { Tenant } from '../tenant/entities/tenant.entity';
 import { TenantModule } from '../tenant/tenant.module';
+import { EmailModule } from '../email/email.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Tenant]),
     PassportModule,
     TenantModule,
+    EmailModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

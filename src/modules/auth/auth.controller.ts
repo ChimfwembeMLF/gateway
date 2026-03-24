@@ -11,6 +11,8 @@ import { UsersService } from '../user/users.service';
 import { RoleType } from 'src/common/enums/role-type.enum';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+
 
 @ApiTags('Auth')
 @Controller('api/v1/auth')
@@ -36,6 +38,11 @@ export class AuthController {
     return this.authService.register(registerDto);
   }
 
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() body: ForgotPasswordDto): Promise<BaseResponseDto> {
+    return this.authService.forgotPassword(body.email);
+  }
   @Get('me')
   @ApiBearerAuth()
   async getMe(@Req() req: Request) {

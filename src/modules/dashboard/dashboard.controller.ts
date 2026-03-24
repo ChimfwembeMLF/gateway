@@ -1,16 +1,19 @@
 
 import {
   Controller, Get, Post, Body, Req, Param, BadRequestException, Logger,
+  Patch,
+  Delete,
 } from '@nestjs/common';
-import { ApiTags, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { TenantService } from '../../modules/tenant/tenant.service';
 import { PaymentsService } from '../payments/payments.service';
 import { RoleType } from '../../common/enums/role-type.enum';
 import { Auth } from 'src/common/decorators/auth.decorator';
 import { DisbursementsService } from '../disbursements/disbursements.service';
+import { MerchantConfigurationService } from '../merchant/services/merchant-configuration.service';
 
-@ApiTags('Admin Dashboard')
-@Controller('api/v1/admin/dashboard')
+@ApiTags('Dashboard')
+@Controller('api/v1/dashboard')
 export class DashboardController {
   private readonly logger = new Logger(DashboardController.name);
 
@@ -18,8 +21,9 @@ export class DashboardController {
     private readonly tenantService: TenantService,
     private readonly paymentsService: PaymentsService,
     private readonly disbursementService: DisbursementsService,
+    private readonly merchantConfigService: MerchantConfigurationService,
   ) { }
-
+  
   private async getTenantId(req: any): Promise<string> {
     const tenantId = req.user?.tenantId;
     if (!tenantId) throw new BadRequestException('Missing tenant ID');
@@ -143,4 +147,49 @@ export class DashboardController {
   @Post('payments/wallet-balances')
   @Auth([RoleType.SUPER_ADMIN, RoleType.ADMIN])
   walletBalances(@Body() dto: any) { return this.paymentsService.walletBalances(dto); }
+
+  // --- WEBHOOK MANAGEMENT ENDPOINTS ---
+
+  @Get('webhook')
+  @Auth([RoleType.ADMIN, RoleType.SUPER_ADMIN])
+  @ApiOperation({ summary: 'Get current webhook configuration for tenant' })
+  async getWebhook(@Req() req: any) {
+    const tenantId = await this.getTenantId(req);
+    return this.merchantConfigService.findByTenantId(tenantId);
+  }
+
+  @Post('webhook')
+  @Auth([RoleType.ADMIN, RoleType.SUPER_ADMIN])
+  @ApiOperation({ summary: 'Set or update webhook URL, secret, and events' })
+  async setWebhook(@Req() req: any, @Body() dto: any) {
+    const tenantId = await this.getTenantId(req);
+    // dto: { webhookUrl, webhookSecret, webhookEvents, webhookEnabled }
+    return this.merchantConfigService.update(tenantId, dto);
+  }
+
+  @Patch('webhook/events')
+  @Auth([RoleType.ADMIN, RoleType.SUPER_ADMIN])
+  @ApiOperation({ summary: 'Add or remove events from webhook subscription' })
+  async updateWebhookEvents(@Req() req: any, @Body() dto: { add?: string[]; remove?: string[] }) {
+    const tenantId = await this.getTenantId(req);
+    const config = await this.merchantConfigService.findByTenantId(tenantId);
+    let events: string[] = config.webhookEvents || [];
+    if (dto.add) {
+      events = Array.from(new Set([...events, ...dto.add]));
+    }
+    if (dto.remove) {
+      events = events.filter((e: string) => !dto.remove?.includes(e));
+    }
+    // Provide required fields for UpdateMerchantConfigurationDto
+    return this.merchantConfigService.update(tenantId, { businessName: config.businessName, webhookEvents: events });
+  }
+
+  @Delete('webhook')
+  @Auth([RoleType.ADMIN, RoleType.SUPER_ADMIN])
+  @ApiOperation({ summary: 'Remove/disable webhook for tenant' })
+  async removeWebhook(@Req() req: any) {
+    const tenantId = await this.getTenantId(req);
+    const config = await this.merchantConfigService.findByTenantId(tenantId);
+    return this.merchantConfigService.update(tenantId, { businessName: config.businessName, webhookUrl: undefined, webhookEnabled: false, webhookEvents: [] });
+  }
 }

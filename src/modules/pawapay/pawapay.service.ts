@@ -50,24 +50,23 @@ export class PawapayService {
         if (!pawapayUrl || !pawapayApiKey) {
             throw new InternalServerErrorException('pawaPay base URL or API Key not configured');
         }
-        // Send the payload as-is, preserving payoutId and recipient structure
         try {
             const response = await axios.post(`${pawapayUrl}/payouts`, payload, {
                 headers: {
                     'Authorization': `Bearer ${pawapayApiKey}`,
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-                    // Add placeholder values for required signature/digest headers
-                    // 'Content-Digest': 'quis minim',
-                    // 'Signature': 'culpa Excepteur',
-                    // 'Signature-Input': 'aute adipisicing qui esse',
-                    // 'Accept-Signature': 'eu exercitation',
-                    // 'Accept-Digest': 'exercitation ea in laboris',
                 },
             });
             return response.data;
         } catch (error) {
             this.logger.error('pawaPay initiatePayout error', error?.response?.data || error.message);
+            // Extract failure code/message if present
+            const failureCode = error?.response?.data?.failureCode;
+            const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+            if (failureCode) {
+                throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+            }
             throw new InternalServerErrorException('Failed to initiate payout with pawaPay');
         }
     }
@@ -85,6 +84,11 @@ export class PawapayService {
             return response.data;
         } catch (error) {
             this.logger.error('pawaPay initiateBulkPayouts error', error?.response?.data || error.message);
+            const failureCode = error?.response?.data?.failureCode;
+            const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+            if (failureCode) {
+                throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+            }
             throw new InternalServerErrorException('Failed to initiate bulk payouts with pawaPay');
         }
     }
@@ -102,6 +106,11 @@ export class PawapayService {
             return response.data;
         } catch (error) {
             this.logger.error('pawaPay checkPayoutStatus error', error?.response?.data || error.message);
+            const failureCode = error?.response?.data?.failureCode;
+            const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+            if (failureCode) {
+                throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+            }
             throw new InternalServerErrorException('Failed to check payout status with pawaPay');
         }
     }
@@ -118,13 +127,17 @@ export class PawapayService {
             });
             return response.data;
         } catch (error) {
-            // Log only serializable parts to avoid circular structure errors
             if (error?.response) {
                 this.logger.error('pawaPay resendPayoutCallback error (status):', error.response.status);
                 this.logger.error('pawaPay resendPayoutCallback error (headers):', JSON.stringify(error.response.headers, null, 2));
                 this.logger.error('pawaPay resendPayoutCallback error (data):', JSON.stringify(error.response.data, null, 2));
             } else {
                 this.logger.error('pawaPay resendPayoutCallback error (raw):', error.message);
+            }
+            const failureCode = error?.response?.data?.failureCode;
+            const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+            if (failureCode) {
+                throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
             }
             throw new InternalServerErrorException('Failed to resend payout callback with pawaPay');
         }
@@ -143,6 +156,11 @@ export class PawapayService {
             return response.data;
         } catch (error) {
             this.logger.error('pawaPay initiateRefund error', error?.response?.data || error.message);
+            const failureCode = error?.response?.data?.failureCode;
+            const failureMessage = error?.response?.data?.failureMessage || error?.response?.data?.message;
+            if (failureCode) {
+                throw new InternalServerErrorException(`pawaPay error [${failureCode}]: ${failureMessage || 'No message provided.'}`);
+            }
             throw new InternalServerErrorException('Failed to initiate refund with pawaPay');
         }
     }
